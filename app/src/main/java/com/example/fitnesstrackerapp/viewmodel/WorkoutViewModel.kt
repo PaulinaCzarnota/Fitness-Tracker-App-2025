@@ -18,4 +18,8 @@ class WorkoutViewModel(private val dao: WorkoutDao) : ViewModel() {
             dao.insertWorkout(workout)
         }
     }
+
+    fun addWorkout(workout: Workout) {
+
+    }
 }

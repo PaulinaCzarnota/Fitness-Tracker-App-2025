@@ -11,7 +11,7 @@ data class Workout(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val type: String,
     val duration: Int,     // Duration in minutes
-    val distance: Double,  // Distance in kilometers
+    val distance: Float,  // Distance in kilometers
     val calories: Int,     // Calories burned
     val notes: String,     // Optional notes
     val date: Long         // Timestamp (System.currentTimeMillis())
