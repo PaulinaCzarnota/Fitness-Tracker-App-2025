@@ -1,3 +1,52 @@
 <resources>
-    <string name="app_name">FitnessTrackerApp</string>
+    <!-- App Name -->
+    <string name="app_name">Fitness Tracker</string>
+
+    <!-- Navigation Labels -->
+    <string name="home">Home</string>
+    <string name="workout">Workout</string>
+    <string name="diet">Diet</string>
+    <string name="goals">Goals</string>
+    <string name="progress">Progress</string>
+
+    <!-- Workout Screen -->
+    <string name="add_workout">Add Workout</string>
+    <string name="workout_type">Workout Type</string>
+    <string name="duration_minutes">Duration (minutes)</string>
+    <string name="distance_km">Distance (km)</string>
+    <string name="calories_burned">Calories Burned</string>
+    <string name="notes">Notes</string>
+    <string name="submit">Submit</string>
+    <string name="workout_logged">Workout Logged!</string>
+    <string name="workout_history">Workout History</string>
+    <string name="no_workouts_found">No workouts found.</string>
+
+    <!-- Diet Screen -->
+    <string name="add_diet">Add Diet</string>
+    <string name="food">Food</string>
+    <string name="calories">Calories</string>
+    <string name="log_diet">Log Diet</string>
+    <string name="diet_history">Diet History</string>
+    <string name="no_diets_found">No diet entries found.</string>
+
+    <!-- Goals Screen -->
+    <string name="add_goal">Add Goal</string>
+    <string name="goal_description">Goal Description</string>
+    <string name="target_value">Target Value</string>
+    <string name="create_goal">Create Goal</string>
+    <string name="goal_list">Your Goals</string>
+    <string name="no_goals_found">No goals created yet.</string>
+
+    <!-- Progress Screen -->
+    <string name="view_progress">View Progress</string>
+    <string name="weekly_summary">Weekly Summary</string>
+    <string name="monthly_summary">Monthly Summary</string>
+    <string name="yearly_summary">Yearly Summary</string>
+
+    <!-- Home -->
+    <string name="welcome_title">Welcome to Fitness Tracker</string>
+    <string name="start_tracking">Start Tracking Your Fitness Journey</string>
+
+    <!-- Error / Empty States -->
+    <string name="invalid_input">Invalid input. Please check your data.</string>
 </resources>

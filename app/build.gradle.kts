@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    id("kotlin-kapt") // Required for Room
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt") // For Room annotation processing
 }
 
 android {
@@ -10,12 +10,12 @@ android {
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -28,24 +28,27 @@ android {
         }
     }
 
+    // Java compatibility for Room, Compose, and Kotlin plugins
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // Kotlin compatibility — must match Java 17
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
+    // Enable Jetpack Compose
     buildFeatures {
         compose = true
-        viewBinding = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8" // Matching Kotlin 1.9.22
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
 
+    // Exclude license files to prevent build errors
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -53,44 +56,48 @@ android {
     }
 }
 
-dependencies {
-    // Jetpack Compose BOM for version alignment
-    implementation(platform("androidx.compose:compose-bom:2024.02.01"))
+// Use JVM toolchain to guarantee all tools use Java 17 (important for kapt compatibility)
+kotlin {
+    jvmToolchain(17)
+}
 
-    // Compose Core
-    implementation("androidx.activity:activity-compose:1.8.2")
+dependencies {
+    // Core Android and KotlinX
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-compose:1.9.0")
+
+    // Jetpack Compose with BOM (Bill of Materials)
+    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // Compose Runtime & Lifecycle
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    implementation("androidx.compose.runtime:runtime-livedata")
-
-    // Core KTX
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-
-    // ViewModel and LiveData
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    // ViewModel and LiveData integration with Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
-    // Coroutines
+    // LiveData binding in Compose
+    implementation("androidx.compose.runtime:runtime-livedata")
+
+    // Coroutines for async work
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // Debugging & Preview
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // Chart library (optional for Progress screen)
+    implementation("com.patrykandpatrick.vico:core:1.13.0")
 
-    // Testing
+    // Unit and Instrumentation Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }

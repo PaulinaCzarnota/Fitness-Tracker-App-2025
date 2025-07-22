@@ -17,8 +17,13 @@ import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerAppTheme
 import com.example.fitnesstrackerapp.viewmodel.WorkoutViewModel
 import com.example.fitnesstrackerapp.viewmodel.WorkoutViewModelFactory
 
+/**
+ * MainActivity is the app's entry point.
+ * It sets the Compose UI and provides the WorkoutViewModel instance.
+ */
 class MainActivity : ComponentActivity() {
 
+    // Initialize WorkoutViewModel using the factory with Application context
     private val viewModel: WorkoutViewModel by viewModels {
         WorkoutViewModelFactory(application)
     }
@@ -26,23 +31,32 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            // Apply the app's theme to all UI
             FitnessTrackerAppTheme {
+                // Root Surface container with full size modifier
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    WorkoutScreen(viewModel = viewModel)
+                    // Call WorkoutScreen and pass the ViewModel for data operations
+                    WorkoutScreen(viewModel)
                 }
             }
         }
     }
 }
 
+/**
+ * Composable displaying workout input form and history list.
+ * @param viewModel WorkoutViewModel instance to observe and insert workouts.
+ */
 @Composable
 fun WorkoutScreen(viewModel: WorkoutViewModel) {
+    // Local UI state variables for user inputs
     var type by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
     var distance by remember { mutableStateOf("") }
     var calories by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
 
+    // Observe the list of workouts from ViewModel as LiveData
     val workouts by viewModel.allWorkouts.observeAsState(emptyList())
 
     Column(
@@ -50,30 +64,39 @@ fun WorkoutScreen(viewModel: WorkoutViewModel) {
             .padding(16.dp)
             .fillMaxSize()
     ) {
+        // Input field for workout type
         OutlinedTextField(
             value = type,
             onValueChange = { type = it },
-            label = { Text("Type") },
+            label = { Text("Workout Type") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Input field for duration (in minutes)
         OutlinedTextField(
             value = duration,
             onValueChange = { duration = it },
-            label = { Text("Duration (min)") },
+            label = { Text("Duration (minutes)") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Input field for distance (in kilometers)
         OutlinedTextField(
             value = distance,
             onValueChange = { distance = it },
             label = { Text("Distance (km)") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Input field for calories burned
         OutlinedTextField(
             value = calories,
             onValueChange = { calories = it },
-            label = { Text("Calories") },
+            label = { Text("Calories Burned") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Input field for optional notes
         OutlinedTextField(
             value = notes,
             onValueChange = { notes = it },
@@ -83,18 +106,24 @@ fun WorkoutScreen(viewModel: WorkoutViewModel) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Button to add workout entry
         Button(
             onClick = {
+                // Validate that workout type is not blank before insertion
                 if (type.isNotBlank()) {
+                    // Create Workout object with safe parsing of numbers
                     val workout = Workout(
                         type = type.trim(),
                         duration = duration.toIntOrNull() ?: 0,
-                        distance = distance.toFloatOrNull() ?: 0f,
+                        distance = distance.toDoubleOrNull() ?: 0.0,
                         calories = calories.toIntOrNull() ?: 0,
                         notes = notes.trim(),
-                        date = System.currentTimeMillis()
+                        date = System.currentTimeMillis() // Current time for timestamp
                     )
-                    viewModel.addWorkout(workout)
+                    // Insert workout via ViewModel
+                    viewModel.insertWorkout(workout)
+
+                    // Reset input fields after successful insertion
                     type = ""
                     duration = ""
                     distance = ""
@@ -109,12 +138,14 @@ fun WorkoutScreen(viewModel: WorkoutViewModel) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Header for workout history list
         Text(
-            text = "Workout History:",
+            text = "Workout History",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(vertical = 8.dp)
         )
 
+        // LazyColumn displaying the list of workouts
         LazyColumn {
             items(workouts) { workout ->
                 Text(

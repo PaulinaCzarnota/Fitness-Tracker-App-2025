@@ -5,21 +5,43 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesstrackerapp.data.Workout
 import com.example.fitnesstrackerapp.data.WorkoutDao
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class WorkoutViewModel(private val dao: WorkoutDao) : ViewModel() {
+/**
+ * ViewModel that manages workout-related operations and provides observable data to the UI.
+ * This separates the UI from data-handling logic and ensures lifecycle awareness.
+ */
+class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
 
-    // Expose the list of workouts as LiveData
-    val allWorkouts: LiveData<List<Workout>> = dao.getAllWorkouts()
+    // Observable list of all workouts from the database
+    val allWorkouts: LiveData<List<Workout>> = workoutDao.getAllWorkouts()
 
-    // Method to insert a workout asynchronously
+    /**
+     * Insert a new workout entry into the database.
+     * This runs in the IO thread to avoid blocking the UI.
+     */
     fun insertWorkout(workout: Workout) {
-        viewModelScope.launch {
-            dao.insertWorkout(workout)
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.insertWorkout(workout)
         }
     }
 
-    fun addWorkout(workout: Workout) {
+    /**
+     * Delete a specific workout from the database.
+     */
+    fun deleteWorkout(workout: Workout) {
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.deleteWorkout(workout)
+        }
+    }
 
+    /**
+     * Optional: Clear all workouts (used for testing or reset).
+     */
+    fun clearAllWorkouts() {
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.clearAll()
+        }
     }
 }
