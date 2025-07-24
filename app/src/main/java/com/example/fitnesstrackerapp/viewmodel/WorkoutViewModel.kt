@@ -9,17 +9,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel that manages workout-related operations and provides observable data to the UI.
- * This separates the UI from data-handling logic and ensures lifecycle awareness.
+ * ViewModel for managing workout data.
+ * Connects the DAO (data layer) to the UI in a lifecycle-aware way.
  */
 class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
 
-    // Observable list of all workouts from the database
+    /**
+     * LiveData for observing all workouts in the database.
+     * UI (Jetpack Compose) observes this for displaying workout history.
+     */
     val allWorkouts: LiveData<List<Workout>> = workoutDao.getAllWorkouts()
 
     /**
-     * Insert a new workout entry into the database.
-     * This runs in the IO thread to avoid blocking the UI.
+     * Insert a workout record into the Room database.
+     * Uses a coroutine on the IO dispatcher (background thread).
      */
     fun insertWorkout(workout: Workout) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -28,7 +31,8 @@ class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
     }
 
     /**
-     * Delete a specific workout from the database.
+     * Delete a workout entry from the database.
+     * Triggered by user actions like swiping or tapping delete.
      */
     fun deleteWorkout(workout: Workout) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -37,11 +41,20 @@ class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
     }
 
     /**
-     * Optional: Clear all workouts (used for testing or reset).
+     * Delete all workout records from the database.
+     * Optional function if you need to clear data (e.g. for testing).
      */
     fun clearAllWorkouts() {
         viewModelScope.launch(Dispatchers.IO) {
             workoutDao.clearAll()
         }
+    }
+
+    /**
+     * Fetch workouts within a date range (e.g., for progress reports).
+     * Example use: View workouts from last 7 days.
+     */
+    fun getWorkoutsBetween(start: Long, end: Long): LiveData<List<Workout>> {
+        return workoutDao.getWorkoutsBetween(start, end)
     }
 }

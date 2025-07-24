@@ -4,17 +4,20 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Entity class representing a diet entry in the local Room database.
- * Each entry includes food name, calorie amount, and the date of intake.
+ * Diet.kt
+ *
+ * Entity class representing a food intake entry for diet and nutrition tracking.
+ * Defines the schema for the 'diets' table in the Room database.
  */
 @Entity(tableName = "diets")
 data class Diet(
+
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,                 // Unique identifier (auto-generated)
+    val id: Int = 0, // Unique identifier for each diet entry (auto-incremented)
 
-    val food: String,                // Name of the food consumed
+    val food: String, // Description of the food item consumed
 
-    val calories: Int,              // Caloric content of the food
+    val calories: Int, // Caloric value of the item
 
-    val date: Long = System.currentTimeMillis()  // Timestamp (stored as milliseconds since epoch)
+    val date: Long = System.currentTimeMillis() // Timestamp of consumption (defaults to now)
 )

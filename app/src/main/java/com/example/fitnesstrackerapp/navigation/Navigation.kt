@@ -5,22 +5,37 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.fitnesstrackerapp.screens.*
 
 /**
- * Sealed class defining app screens and their navigation routes.
+ * Sealed class defining all screen routes in the app.
+ * Using `data object` (Kotlin 2.0+) ensures each screen is a singleton with stable identity.
  */
 sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Workout : Screen("workout")
-    object Diet : Screen("diet")
-    object Goal : Screen("goal")           // singular to match GoalScreen.kt
-    object Progress : Screen("progress")
-    object StepTracker : Screen("step_tracker")  // added step tracker screen
+    data object Home : Screen("home")
+    data object Workout : Screen("workout")
+    data object Diet : Screen("diet")
+    data object Goal : Screen("goal")
+    data object Progress : Screen("progress")
+    data object StepTracker : Screen("step_tracker")
 }
 
 /**
- * Navigation graph connecting routes to composable screens.
+ * Navigation entry point.
+ * Call this from MainActivity to start navigation using NavController.
+ */
+@Composable
+fun Navigation() {
+    val navController = rememberNavController()
+    AppNavigation(navController = navController)
+}
+
+/**
+ * Composable that defines the navigation graph.
+ *
+ * @param navController Used to navigate between screens.
+ * @param modifier Optional modifier for styling.
  */
 @Composable
 fun AppNavigation(
@@ -32,8 +47,9 @@ fun AppNavigation(
         startDestination = Screen.Home.route,
         modifier = modifier
     ) {
+        // Navigation destinations
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController = navController)
         }
         composable(Screen.Workout.route) {
             WorkoutScreen()

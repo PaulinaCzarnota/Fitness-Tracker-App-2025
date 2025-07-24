@@ -7,21 +7,25 @@ import com.example.fitnesstrackerapp.data.FitnessDatabase
 import com.example.fitnesstrackerapp.data.WorkoutDao
 
 /**
- * Factory class for creating instances of WorkoutViewModel with a required DAO.
- * This is necessary because WorkoutViewModel requires a parameter (WorkoutDao),
- * which can't be passed directly using the default ViewModelProvider.
+ * Factory class for instantiating the WorkoutViewModel with a WorkoutDao dependency.
+ * This is needed because ViewModels by default can only be created with no-arg constructors.
+ *
+ * This factory retrieves the DAO from the singleton Room database.
  */
 class WorkoutViewModelFactory(application: Application) : ViewModelProvider.Factory {
 
-    // Retrieve the DAO instance from the singleton FitnessDatabase
+    // Access the DAO from the Room database singleton instance
     private val dao: WorkoutDao = FitnessDatabase.getDatabase(application).workoutDao()
 
-    // Create and return an instance of WorkoutViewModel
+    /**
+     * Creates and returns an instance of WorkoutViewModel if requested,
+     * otherwise throws an exception for unknown ViewModel classes.
+     */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WorkoutViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return WorkoutViewModel(dao) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }

@@ -10,38 +10,42 @@ import androidx.navigation.NavController
 import com.example.fitnesstrackerapp.ui.components.BottomNavigationBar
 
 /**
- * The main Home screen that displays a welcome message and basic instructions/stats.
+ * HomeScreen
+ *
+ * This is the landing screen of the Fitness Tracker App (FitTrack).
+ * It briefly introduces the app and directs users to other features using the bottom navigation bar.
+ *
+ * @param navController NavController for navigating between app screens.
  */
 @Composable
 fun HomeScreen(navController: NavController) {
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = { BottomNavigationBar(navController) } // Reusable bottom nav bar
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding) // Avoids overlap with system UI and nav bar
                 .padding(24.dp),
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Main app welcome title
             Text(
                 text = "Welcome to FitTrack!",
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            // Subtitle with app purpose
             Text(
-                text = "Track your workouts, goals, and diet progress easily.",
+                text = "Track your workouts, goals, and nutrition progress with ease.",
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Add basic info or upcoming goals/summary (optional)
+            // Navigation instructions
             Text(
-                text = "Use the bottom navigation to get started.",
+                text = "Use the bottom navigation bar to get started.",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

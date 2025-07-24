@@ -5,23 +5,27 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 /**
- * ViewModel to hold and manage step count data.
- * Allows UI to observe step count changes in a lifecycle-aware manner.
+ * StepCounterViewModel.kt
+ *
+ * ViewModel responsible for tracking and updating the user's step count.
+ * It provides lifecycle-aware observable data for Compose UI.
  */
 class StepCounterViewModel : ViewModel() {
 
-    // Backing property for step count LiveData
+    // Backing field for internal step count state
     private val _stepCount = MutableLiveData<Int>(0)
 
     /**
-     * Public immutable LiveData exposing the current step count.
+     * Public LiveData exposing the current step count.
+     * UI observes this for real-time updates.
      */
     val stepCount: LiveData<Int> = _stepCount
 
     /**
-     * Updates the current step count.
-     * Typically called from the sensor event listener or service.
-     * @param steps The latest step count value.
+     * Updates the step count value.
+     * Typically called from a step sensor listener or foreground service.
+     *
+     * @param steps The new step count value.
      */
     fun updateStepCount(steps: Int) {
         _stepCount.postValue(steps)
@@ -29,7 +33,7 @@ class StepCounterViewModel : ViewModel() {
 
     /**
      * Resets the step count to zero.
-     * Can be called to start a new count cycle or clear data.
+     * Can be triggered by a user action (e.g., "Reset" button).
      */
     fun resetStepCount() {
         _stepCount.postValue(0)

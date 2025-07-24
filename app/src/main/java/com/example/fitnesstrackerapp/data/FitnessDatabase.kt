@@ -6,40 +6,46 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 /**
- * Main Room database for the Fitness Tracker App.
- * Includes all app entities: Workout, Goal, and Diet.
+ * FitnessDatabase
+ *
+ * Main Room database class for the Fitness Tracker App.
+ * Provides access to DAOs for workout logging, goal tracking, and diet entries.
  */
 @Database(
-    entities = [Workout::class, Goal::class, Diet::class],
-    version = 1,
-    exportSchema = false
+    entities = [Workout::class, Goal::class, Diet::class], // Tables in the DB
+    version = 1, // Increment this if schema changes
+    exportSchema = false // Avoid exporting schema files to disk
 )
 abstract class FitnessDatabase : RoomDatabase() {
 
-    // DAO accessors for the different entity tables
+    /** Accessor for workout DAO */
     abstract fun workoutDao(): WorkoutDao
+
+    /** Accessor for goal DAO */
     abstract fun goalDao(): GoalDao
+
+    /** Accessor for diet DAO */
     abstract fun dietDao(): DietDao
 
     companion object {
-        // Singleton instance of the database (thread-safe)
         @Volatile
         private var INSTANCE: FitnessDatabase? = null
 
         /**
-         * Returns the singleton database instance.
-         * Creates the database if it does not already exist.
+         * Singleton accessor for database instance.
+         * Builds the database using Room if not yet created.
          */
         fun getDatabase(context: Context): FitnessDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     FitnessDatabase::class.java,
-                    "fitness_db" // Database file name
+                    "fitness_db"
                 )
-                    // Wipes and rebuilds instead of crashing if no migration is provided
-                    .fallbackToDestructiveMigration()
+
+                    .fallbackToDestructiveMigration(dropAllTables = true)
                     .build()
+
                 INSTANCE = instance
                 instance
             }
