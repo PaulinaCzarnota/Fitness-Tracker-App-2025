@@ -1,30 +1,39 @@
 [versions]
-# Kotlin & AGP
+# Kotlin language version and Android Gradle Plugin (AGP)
 kotlin = "2.1.10"
 agp = "8.6.1"
 
-# Compose BOM and libraries
+# Jetpack Compose BOM and modules
 composeBom = "2025.07.00"
 activityCompose = "1.10.1"
+
+# AndroidX Core & Architecture Components
 lifecycle = "2.9.2"
 navigation = "2.9.2"
 room = "2.7.2"
 coreKtx = "1.16.0"
 runtimeLiveData = "1.8.3"
 
+# JUnit (used for local unit testing)
+junit = "4.13.2"
+
 [libraries]
-# Jetpack Core & Lifecycle
+
+# Core AndroidX Kotlin extensions
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+
+# Lifecycle and ViewModel for Compose
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
-# Compose + Activity
+# Compose and Activity integration
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
-# Compose BOM
+# Compose BOM (central version control for all Compose modules)
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 
-# Compose UI libraries (versions managed by BOM)
+# Jetpack Compose UI Components (versioned by BOM)
 androidx-ui = { module = "androidx.compose.ui:ui" }
 androidx-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 androidx-ui-text = { module = "androidx.compose.ui:ui-text" }
@@ -33,22 +42,32 @@ androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 
-# Material 3
+# Material Design 3 UI components for Compose
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 
-# Navigation
+# Compose Navigation
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 
-# LiveData in Compose
+# LiveData support for Compose (for observeAsState on LiveData)
 androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLiveData" }
 
-# Room
+# Room Database components
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
+# Unit Testing (JUnit 4)
+junit = { module = "junit:junit", version.ref = "junit" }
+
 [plugins]
+# Android application plugin
 android-application = { id = "com.android.application", version.ref = "agp" }
+
+# Kotlin Android plugin
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+# Kotlin KAPT plugin for annotation processing (Room, etc.)
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+
+# Jetpack Compose compiler plugin
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

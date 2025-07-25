@@ -1,1 +1,26 @@
-/build
+# Ignore build output
+/build/
+
+# Ignore local Gradle config
+.gradle/
+local.properties
+
+# Ignore IDE-specific files
+*.iml
+.idea/
+
+# Ignore external build outputs and native builds
+.cxx/
+.externalNativeBuild/
+
+# Ignore test artifacts and screenshots
+/captures/
+
+# Ignore macOS metadata files
+.DS_Store
+
+# Android Studio asset wizard
+.idea/assetWizardSettings.xml
+
+# Misc
+*.log

@@ -1,5 +1,6 @@
 package com.example.fitnesstrackerapp.screens
 
+import android.app.Application
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,94 +12,97 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fitnesstrackerapp.data.Workout
 import com.example.fitnesstrackerapp.viewmodel.WorkoutViewModel
+import com.example.fitnesstrackerapp.viewmodel.WorkoutViewModelFactory
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
- * WorkoutScreen
- *
- * Allows users to log workouts and view past entries.
- * Uses Jetpack Compose + ViewModel + Room (StateFlow + collectAsStateWithLifecycle).
+ * Composable screen for logging and viewing workouts.
  */
 @Composable
-fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
+fun WorkoutScreen() {
     val context = LocalContext.current
 
-    // Form inputs
+    // ViewModel with application context using factory
+    val viewModel: WorkoutViewModel = viewModel(
+        factory = WorkoutViewModelFactory(context.applicationContext as Application)
+    )
+
+    // State variables for input fields
     var type by remember { mutableStateOf("") }
     var duration by remember { mutableStateOf("") }
     var distance by remember { mutableStateOf("") }
     var calories by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
 
-    // Collect workouts from ViewModel (lifecycle-aware)
+    // Collect list of workouts from ViewModel
     val workouts by viewModel.allWorkouts.collectAsStateWithLifecycle(initialValue = emptyList())
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text("Log a Workout", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(12.dp))
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
 
-        // Input fields
-        OutlinedTextField(
-            value = type,
-            onValueChange = { type = it },
-            label = { Text("Workout Type (e.g., Run)") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Text("Log New Workout", style = MaterialTheme.typography.titleLarge)
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Type input
+        OutlinedTextField(
+            value = type,
+            onValueChange = { type = it },
+            label = { Text("Workout Type") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text)
+        )
+
+        // Duration input
         OutlinedTextField(
             value = duration,
             onValueChange = { duration = it },
             label = { Text("Duration (minutes)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
+        // Distance input
         OutlinedTextField(
             value = distance,
             onValueChange = { distance = it },
             label = { Text("Distance (km)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
+        // Calories input
         OutlinedTextField(
             value = calories,
             onValueChange = { calories = it },
             label = { Text("Calories Burned") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
+        // Notes input
         OutlinedTextField(
             value = notes,
             onValueChange = { notes = it },
-            label = { Text("Notes (optional)") },
-            modifier = Modifier.fillMaxWidth()
+            label = { Text("Notes") },
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
+        // Save button
         Button(
             onClick = {
-                val trimmedType = type.trim()
-                if (trimmedType.isNotBlank()) {
+                if (type.isNotBlank()) {
                     val workout = Workout(
-                        type = trimmedType,
+                        type = type.trim(),
                         duration = duration.toIntOrNull() ?: 0,
                         distance = distance.toDoubleOrNull() ?: 0.0,
                         calories = calories.toIntOrNull() ?: 0,
@@ -107,59 +111,58 @@ fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
                     )
                     viewModel.insertWorkout(workout)
 
+                    // Reset fields
                     type = ""
                     duration = ""
                     distance = ""
                     calories = ""
                     notes = ""
 
-                    Toast.makeText(context, "Workout saved", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Workout saved!", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "Please enter a workout type", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Workout type is required.", Toast.LENGTH_SHORT).show()
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Add Workout")
+            Text("Save Workout")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Previous Workouts", style = MaterialTheme.typography.titleMedium)
+        Text("Workout History", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
 
-        // List of saved workouts
+        // Display list of workouts
         LazyColumn {
             items(workouts) { workout ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text("Type: ${workout.type}")
-                        Text("Duration: ${workout.duration} min")
-                        Text("Distance: %.2f km".format(workout.distance))
-                        Text("Calories: ${workout.calories}")
-                        if (workout.notes.isNotBlank()) {
-                            Text("Notes: ${workout.notes}")
-                        }
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        // Text-based delete button (no icon used)
-                        TextButton(
-                            onClick = {
-                                viewModel.deleteWorkout(workout)
-                                Toast.makeText(context, "Workout deleted", Toast.LENGTH_SHORT).show()
-                            }
-                        ) {
-                            Text("Delete Workout")
-                        }
-                    }
-                }
+                WorkoutCard(workout = workout)
             }
+        }
+    }
+}
+
+/**
+ * Displays a single workout entry.
+ */
+@Composable
+fun WorkoutCard(workout: Workout) {
+    val dateFormat = remember { SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()) }
+    val formattedDate = dateFormat.format(Date(workout.date))
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text("Type: ${workout.type}")
+            Text("Duration: ${workout.duration} mins")
+            Text("Distance: ${workout.distance} km")
+            Text("Calories: ${workout.calories}")
+            Text("Notes: ${workout.notes}")
+            Text("Date: $formattedDate")
         }
     }
 }

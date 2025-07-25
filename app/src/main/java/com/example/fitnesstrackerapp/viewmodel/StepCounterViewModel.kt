@@ -1,41 +1,42 @@
 package com.example.fitnesstrackerapp.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * StepCounterViewModel.kt
+ * StepCounterViewModel
  *
- * ViewModel responsible for tracking and updating the user's step count.
- * It provides lifecycle-aware observable data for Compose UI.
+ * ViewModel responsible for managing the user's step count in a lifecycle-aware manner.
+ * Provides a StateFlow for Compose UI to observe updates efficiently and safely.
  */
 class StepCounterViewModel : ViewModel() {
 
-    // Backing field for internal step count state
-    private val _stepCount = MutableLiveData<Int>(0)
+    // Internal mutable flow holding the current step count
+    private val _stepCount = MutableStateFlow(0)
 
     /**
-     * Public LiveData exposing the current step count.
-     * UI observes this for real-time updates.
+     * Public immutable StateFlow to expose step count to observers.
+     * Collected safely in Compose using collectAsStateWithLifecycle().
      */
-    val stepCount: LiveData<Int> = _stepCount
+    val stepCount: StateFlow<Int> = _stepCount.asStateFlow()
 
     /**
-     * Updates the step count value.
-     * Typically called from a step sensor listener or foreground service.
+     * Updates the step count to a new value.
+     * Typically triggered from a BroadcastReceiver observing STEP_UPDATE.
      *
-     * @param steps The new step count value.
+     * @param steps The number of steps to display.
      */
     fun updateStepCount(steps: Int) {
-        _stepCount.postValue(steps)
+        _stepCount.value = steps
     }
 
     /**
      * Resets the step count to zero.
-     * Can be triggered by a user action (e.g., "Reset" button).
+     * This can be called from a reset button in the StepTrackerScreen UI.
      */
     fun resetStepCount() {
-        _stepCount.postValue(0)
+        _stepCount.value = 0
     }
 }

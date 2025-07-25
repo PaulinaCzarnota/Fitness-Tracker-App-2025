@@ -1,10 +1,11 @@
 package com.example.fitnesstrackerapp.screens
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,107 +13,80 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fitnesstrackerapp.viewmodel.StepCounterViewModel
 
 /**
  * StepTrackerScreen
  *
- * Displays real-time steps from the step counter sensor.
- * The sensor tracks the number of steps since the last reboot.
+ * Displays the current step count and listens for updates from the StepCounterService.
  */
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
 @Composable
-fun StepTrackerScreen() {
+fun StepTrackerScreen(
+    stepCounterViewModel: StepCounterViewModel = viewModel()
+) {
     val context = LocalContext.current
 
-    // Access the device's SensorManager system service
-    val sensorManager = remember {
-        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    }
+    // Observe step count from ViewModel with lifecycle-awareness
+    val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle(0)
 
-    // Use Compose state for integer (preferred over mutableStateOf for Int)
-    var stepCount by remember { mutableIntStateOf(0) }
-
-    // Get the default step counter sensor
-    val stepSensor = remember {
-        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-    }
-
-    // Define the listener for step sensor changes
-    val sensorListener = remember {
-        object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent) {
-                if (event.sensor.type == Sensor.TYPE_STEP_COUNTER && event.values.isNotEmpty()) {
-                    stepCount = event.values[0].toInt() // Update the step count state
+    // Register BroadcastReceiver when composable is active
+    DisposableEffect(Unit) {
+        val stepReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == "STEP_UPDATE") {
+                    val steps = intent.getIntExtra("steps", 0)
+                    stepCounterViewModel.updateStepCount(steps)
                 }
             }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                // No-op
-            }
-        }
-    }
-
-    // Register the listener when the composable enters the composition
-    // and unregister it when it leaves
-    DisposableEffect(stepSensor) {
-        stepSensor?.let {
-            sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_UI)
         }
 
-        onDispose {
-            sensorManager.unregisterListener(sensorListener)
-        }
-    }
+        val filter = IntentFilter("STEP_UPDATE")
 
-    // UI Surface
-    Surface(modifier = Modifier.fillMaxSize()) {
-        if (stepSensor == null) {
-            // Sensor not available
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Step Tracker",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Step sensor not available on this device.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Pass the required receiver flag explicitly for Android 13+
+            context.registerReceiver(
+                stepReceiver,
+                filter,
+                Context.RECEIVER_NOT_EXPORTED // Receiver is internal to app only
+            )
         } else {
-            // Sensor available - show step count
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Step Tracker",
-                    style = MaterialTheme.typography.headlineMedium
-                )
+            context.registerReceiver(stepReceiver, filter)
+        }
 
-                Spacer(modifier = Modifier.height(32.dp))
+        // Unregister receiver when the composable leaves the composition
+        onDispose {
+            context.unregisterReceiver(stepReceiver)
+        }
+    }
 
-                Text(
-                    text = "Steps Taken",
-                    style = MaterialTheme.typography.titleLarge
-                )
+    // --- UI ---
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Step Tracker", style = MaterialTheme.typography.headlineMedium)
+            Spacer(modifier = Modifier.height(32.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Text("Steps Taken", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = stepCount.toString(),
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+            Text(
+                text = stepCount.toString(),
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(onClick = { stepCounterViewModel.resetStepCount() }) {
+                Text("Reset Steps")
             }
         }
     }

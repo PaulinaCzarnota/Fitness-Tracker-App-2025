@@ -2,15 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions required by the app -->
-    <!-- For step tracking (Android 10+) -->
+    <!-- Permissions -->
+
+    <!-- Step counting (for Android 10 and above) -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
-    <!-- For sensor access like heart rate (some fitness devices) -->
+    <!-- Sensors like heart rate (optional, use only if needed) -->
     <uses-permission android:name="android.permission.BODY_SENSORS" />
 
-    <!-- For syncing data or accessing external APIs -->
+    <!-- Required for using internet services (e.g., syncing or fetching data) -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Optional for network state monitoring (not used in current app) -->
+    <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
 
     <application
         android:allowBackup="true"
@@ -22,20 +26,23 @@
         android:theme="@style/Theme.FitnessTrackerApp"
         tools:targetApi="31">
 
-        <!-- Main launcher activity -->
+        <!-- Entry point of the app -->
         <activity
-            android:name="com.example.fitnesstrackerapp.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.FitnessTrackerApp">
 
             <intent-filter>
-                <!-- Launcher entry point -->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- You may declare other activities/fragments here if needed -->
-
+        <!-- Background step counter service -->
+        <service
+            android:name="com.example.fitnesstrackerapp.sensors.StepCounterService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
+
 </manifest>

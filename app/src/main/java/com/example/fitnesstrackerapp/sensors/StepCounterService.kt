@@ -12,65 +12,72 @@ import android.util.Log
 /**
  * StepCounterService
  *
- * A background service that listens for step count updates using the device's step counter sensor.
- * This service continues collecting data even if the app is in the background.
+ * A background Android Service that listens to the TYPE_STEP_COUNTER sensor.
+ * Tracks the number of steps taken since the service started.
+ * Can be extended to send broadcasts or save steps persistently.
  */
 class StepCounterService : Service(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null
 
-    // Initial total steps at the time the service starts
-    private var initialStepCount = -1
-
-    // Relative step count since the service started
-    private var currentSteps = 0
+    private var initialStepCount: Int = -1
+    private var currentSteps: Int = 0
 
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize the sensor manager and get the default step counter sensor
+        // Obtain SensorManager and Step Counter Sensor
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
-        // Register listener if sensor is available
-        stepSensor?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
-            Log.d("StepCounterService", "Step counter sensor registered")
-        } ?: Log.e("StepCounterService", "Step Counter Sensor not available on this device.")
+        if (stepSensor != null) {
+            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            Log.d("StepCounterService", "Step counter sensor registered.")
+        } else {
+            Log.e("StepCounterService", "Step Counter Sensor not available on this device.")
+        }
     }
 
+    /**
+     * Called when a new step count event is received.
+     * Calculates relative step count since the service started.
+     */
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER && event.values.isNotEmpty()) {
             val totalSteps = event.values[0].toInt()
 
-            // Record initial step count on first reading
+            // Set baseline step count on first trigger
             if (initialStepCount == -1) {
                 initialStepCount = totalSteps
             }
 
-            // Compute steps taken since service started
             currentSteps = totalSteps - initialStepCount
 
-            Log.d("StepCounterService", "Steps since service started: $currentSteps")
+            Log.d("StepCounterService", "Steps since start: $currentSteps")
 
-            // TODO: Broadcast step count or persist it if needed
-            // Example: sendBroadcast(Intent("STEP_UPDATE").putExtra("steps", currentSteps))
+            // Optional: Broadcast steps to ViewModel/Activity
+            val intent = Intent("STEP_UPDATE")
+            intent.putExtra("steps", currentSteps)
+            sendBroadcast(intent)
+
+            // Optional TODO: Save to Room or DataStore
         }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Not used, but required for interface
+        // Not used, but required override
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        return null // This is a started service, not a bound service
+        // This is a started service (not bound), so return null
+        return null
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Always unregister the sensor listener to avoid memory leaks
+        // Important: Unregister listener to avoid memory leaks
         sensorManager.unregisterListener(this)
-        Log.d("StepCounterService", "Step counter sensor unregistered")
+        Log.d("StepCounterService", "Sensor listener unregistered.")
     }
 }

@@ -1,35 +1,38 @@
-// Configure where Gradle should fetch plugins from
 pluginManagement {
     repositories {
-        // Google's repository for Android plugins
+        // Google's Maven repository for Android Gradle Plugin and Jetpack libraries
         google {
             content {
+                // Limit to Android and Google plugin groups to speed up resolution
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
                 includeGroupByRegex("androidx.*")
             }
         }
-        // Maven Central for Java/Kotlin/Jetpack libraries
+
+        // Maven Central for standard Kotlin/Java libraries and third-party dependencies
         mavenCentral()
-        // Gradle Plugin Portal for third-party Gradle plugins
+
+        // Gradle Plugin Portal for any plugins not in Google/MavenCentral
         gradlePluginPortal()
     }
 }
 
-// Control dependency resolution for all modules
 dependencyResolutionManagement {
-    // Enforce that subprojects should NOT declare their own repositories
+    // Fail if any subproject declares its own repositories to enforce central control
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
-        // Official repositories
+        // Android libraries and Google-specific dependencies
         google()
+
+        // Kotlin/Java and other third-party dependencies
         mavenCentral()
     }
 }
 
-// Set the root project name
+// Set the name of the root project (used in IDEs and Gradle outputs)
 rootProject.name = "FitnessTrackerApp"
 
-// Include app module in the build
+// Include the app module (source lives in /app)
 include(":app")

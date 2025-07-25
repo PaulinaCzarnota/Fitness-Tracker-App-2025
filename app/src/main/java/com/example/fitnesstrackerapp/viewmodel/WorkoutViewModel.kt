@@ -1,28 +1,29 @@
 package com.example.fitnesstrackerapp.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesstrackerapp.data.Workout
 import com.example.fitnesstrackerapp.data.WorkoutDao
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel for managing workout data.
- * Connects the DAO (data layer) to the UI in a lifecycle-aware way.
+ * WorkoutViewModel
+ *
+ * ViewModel exposing workout data as Flow and supporting async operations.
  */
-class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
+class WorkoutViewModel(
+    private val workoutDao: WorkoutDao
+) : ViewModel() {
 
     /**
-     * LiveData for observing all workouts in the database.
-     * UI (Jetpack Compose) observes this for displaying workout history.
+     * All workouts from the database, exposed as Flow for Compose UI.
      */
-    val allWorkouts: LiveData<List<Workout>> = workoutDao.getAllWorkouts()
+    val allWorkouts: Flow<List<Workout>> = workoutDao.getAllWorkouts()
 
     /**
-     * Insert a workout record into the Room database.
-     * Uses a coroutine on the IO dispatcher (background thread).
+     * Insert a new workout entry in the background.
      */
     fun insertWorkout(workout: Workout) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -31,8 +32,7 @@ class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
     }
 
     /**
-     * Delete a workout entry from the database.
-     * Triggered by user actions like swiping or tapping delete.
+     * Delete a specific workout entry in the background.
      */
     fun deleteWorkout(workout: Workout) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,8 +41,7 @@ class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
     }
 
     /**
-     * Delete all workout records from the database.
-     * Optional function if you need to clear data (e.g. for testing).
+     * Clear all workouts (used for resets or testing).
      */
     fun clearAllWorkouts() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -51,10 +50,13 @@ class WorkoutViewModel(private val workoutDao: WorkoutDao) : ViewModel() {
     }
 
     /**
-     * Fetch workouts within a date range (e.g., for progress reports).
-     * Example use: View workouts from last 7 days.
+     * Get workouts between two timestamps for filtering.
+     *
+     * @param start Start timestamp (inclusive)
+     * @param end End timestamp (inclusive)
+     * @return Flow of filtered workouts
      */
-    fun getWorkoutsBetween(start: Long, end: Long): LiveData<List<Workout>> {
+    fun getWorkoutsBetween(start: Long, end: Long): Flow<List<Workout>> {
         return workoutDao.getWorkoutsBetween(start, end)
     }
 }

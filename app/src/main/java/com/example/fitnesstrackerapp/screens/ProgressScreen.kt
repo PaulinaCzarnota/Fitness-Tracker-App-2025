@@ -7,9 +7,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnesstrackerapp.viewmodel.WorkoutViewModel
 import com.example.fitnesstrackerapp.data.Workout
@@ -18,12 +18,14 @@ import com.example.fitnesstrackerapp.util.formatDate
 /**
  * ProgressScreen
  *
- * Displays overall progress summary and workout history.
+ * Shows overall fitness metrics and workout history.
  */
 @Composable
 fun ProgressScreen(viewModel: WorkoutViewModel = viewModel()) {
-    val workouts by viewModel.allWorkouts.observeAsState(emptyList())
+    // Observe workouts from ViewModel (LiveData/Flow)
+    val workouts by viewModel.allWorkouts.collectAsStateWithLifecycle(initialValue = emptyList())
 
+    // Calculate totals
     val totalWorkouts = workouts.size
     val totalCalories = workouts.sumOf { it.calories }
     val totalDistance = workouts.sumOf { it.distance }
@@ -42,7 +44,9 @@ fun ProgressScreen(viewModel: WorkoutViewModel = viewModel()) {
         Text("Total Distance: %.2f km".format(totalDistance), style = MaterialTheme.typography.titleMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
+
         HorizontalDivider()
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Text("Workout History", style = MaterialTheme.typography.titleMedium)
@@ -56,6 +60,11 @@ fun ProgressScreen(viewModel: WorkoutViewModel = viewModel()) {
     }
 }
 
+/**
+ * WorkoutItem
+ *
+ * Displays individual workout details inside a card.
+ */
 @Composable
 fun WorkoutItem(workout: Workout) {
     Card(

@@ -9,57 +9,65 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * DietViewModel.kt
+ * DietViewModel
  *
- * ViewModel that manages diet-related operations and provides data to the UI.
- * Acts as a bridge between the database and composable UI.
+ * A lifecycle-aware ViewModel responsible for handling all data operations
+ * related to diet entries. It exposes LiveData for real-time UI updates
+ * and runs Room database operations using coroutines.
  *
- * Uses LiveData for observation and Kotlin coroutines for background execution.
- *
- * @param dietDao The DAO interface to access the 'diets' table.
+ * @param dietDao DAO interface for interacting with the 'diet' table in Room.
  */
 class DietViewModel(private val dietDao: DietDao) : ViewModel() {
 
     /**
-     * Observable list of all diet entries.
-     * Automatically updates the UI when the data changes.
+     * LiveData list of all diet records in the database.
+     * Observed by the Compose UI to update whenever data changes.
      */
     val allDiets: LiveData<List<Diet>> = dietDao.getAllDiets()
 
     /**
-     * Inserts a new diet record into the database.
-     * Runs on a background thread to prevent UI blocking.
+     * Inserts a new diet entry into the database.
+     * Typically triggered by the user adding a food item.
      *
-     * @param diet The Diet object to be inserted.
+     * @param diet The new Diet object to insert.
      */
-    fun addDiet(diet: Diet) = viewModelScope.launch(Dispatchers.IO) {
-        dietDao.insertDiet(diet)
+    fun addDiet(diet: Diet) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dietDao.insertDiet(diet)
+        }
     }
 
     /**
-     * Updates an existing diet entry.
-     * Typically used to correct food info or calorie count.
+     * Updates an existing diet record in the database.
+     * Useful when editing calorie counts or food name.
      *
-     * @param diet The updated Diet object.
+     * @param diet The modified Diet object.
      */
-    fun updateDiet(diet: Diet) = viewModelScope.launch(Dispatchers.IO) {
-        dietDao.updateDiet(diet)
+    fun updateDiet(diet: Diet) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dietDao.updateDiet(diet)
+        }
     }
 
     /**
      * Deletes a specific diet entry from the database.
+     * Called when the user removes a previously added food item.
      *
-     * @param diet The Diet object to be deleted.
+     * @param diet The Diet object to delete.
      */
-    fun deleteDiet(diet: Diet) = viewModelScope.launch(Dispatchers.IO) {
-        dietDao.deleteDiet(diet)
+    fun deleteDiet(diet: Diet) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dietDao.deleteDiet(diet)
+        }
     }
 
     /**
-     * Deletes all diet records from the database.
-     * Useful for data reset or testing.
+     * Clears all diet records from the database.
+     * Typically used in reset functionality or for testing.
      */
-    fun clearAllDiets() = viewModelScope.launch(Dispatchers.IO) {
-        dietDao.clearAll()
+    fun clearAllDiets() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dietDao.clearAll()
+        }
     }
 }

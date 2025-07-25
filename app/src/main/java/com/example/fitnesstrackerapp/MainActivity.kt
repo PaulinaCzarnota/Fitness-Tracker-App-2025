@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.fitnesstrackerapp.navigation.Navigation
@@ -12,23 +13,28 @@ import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerAppTheme
 /**
  * MainActivity
  *
- * The root entry point for the Fitness Tracker App.
- * It applies the custom Material3 theme and hosts the navigation system.
+ * The main entry point of the Fitness Tracker App.
+ * This activity initializes the Jetpack Compose UI and sets up theming and navigation.
  */
 class MainActivity : ComponentActivity() {
 
+    /**
+     * Called when the activity is first created.
+     * Sets up the full Compose UI inside a Material3 Surface.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Set the root Compose UI content
+        // Compose root content
         setContent {
-            // Wrap app content with the theme
+            // Apply the custom theme defined in ui.theme package
             FitnessTrackerAppTheme {
-                // Surface provides the base container with background color
+                // Surface provides a themed background for the UI
                 Surface(
-                    modifier = Modifier.fillMaxSize() // Fills full screen
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    // Load and display the app's navigation graph
+                    // Load the Navigation composable to manage app screens
                     Navigation()
                 }
             }

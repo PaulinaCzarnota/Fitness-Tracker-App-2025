@@ -3,16 +3,15 @@ package com.example.fitnesstrackerapp.ui.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fitnesstrackerapp.navigation.Screen
 
 /**
- * Represents a single item in the bottom navigation bar.
+ * Data class representing a bottom navigation item.
  *
- * @property route Navigation route this item navigates to.
- * @property label Label text shown in the navigation bar.
+ * @param route The navigation route associated with this tab.
+ * @param label The text label displayed in the bottom nav.
  */
 data class BottomNavItem(
     val route: String,
@@ -20,16 +19,17 @@ data class BottomNavItem(
 )
 
 /**
- * BottomNavigationBar composable.
+ * BottomNavigationBar
  *
- * Provides tabbed navigation without icons, using labels only.
- * Highlights the current tab based on NavController's state.
+ * A composable function that displays a Material 3 bottom navigation bar.
+ * It allows switching between major app screens like Home, Workout, Diet, etc.
+ * Highlights the currently selected tab and uses text-only items for simplicity.
  *
- * @param navController NavController for navigation between screens.
+ * @param navController NavController used for navigating between screens.
  */
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    // List of navigation items (labels only, no icons)
+    // Define all screens as navigation items
     val items = listOf(
         BottomNavItem(Screen.Home.route, "Home"),
         BottomNavItem(Screen.Workout.route, "Workout"),
@@ -39,25 +39,28 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavItem(Screen.StepTracker.route, "Steps")
     )
 
-    // Get current back stack entry to highlight selected tab
+    // Get the current route from the navigation back stack
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Render the Material3 NavigationBar
+    // Material3 bottom navigation bar
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                icon = {}, // No icon shown
+                icon = {}, // Optional: could add icons later
                 label = { Text(text = item.label) },
                 selected = currentRoute == item.route,
                 alwaysShowLabel = true,
                 onClick = {
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
+                            // Avoid multiple copies of the same destination
                             launchSingleTop = true
+                            // Remove previous instances up to the start destination
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
+                            // Restore scroll position or input state
                             restoreState = true
                         }
                     }

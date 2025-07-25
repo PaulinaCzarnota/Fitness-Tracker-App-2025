@@ -1,4 +1,4 @@
-// Apply required Gradle plugins
+// Apply Gradle plugins using aliases from libs.versions.toml
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,7 +8,6 @@ plugins {
 
 android {
     namespace = "com.example.fitnesstrackerapp"
-
     compileSdk = 35
 
     defaultConfig {
@@ -18,13 +17,18 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Required for Android Instrumented Testing
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+
+        // Enable backward compatibility for vector drawables
+        vectorDrawables {
+            useSupportLibrary = true
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false // Set to true only for production builds with ProGuard/R8
+            isMinifyEnabled = false // Set to true in production
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -33,10 +37,12 @@ android {
     }
 
     buildFeatures {
+        // Enable Jetpack Compose
         compose = true
     }
 
     composeOptions {
+        // Jetpack Compose Compiler compatible with Kotlin 2.1.10
         kotlinCompilerExtensionVersion = "1.5.13"
     }
 
@@ -61,38 +67,39 @@ android {
 }
 
 dependencies {
-    // --- Jetpack Compose BOM to align all Compose libraries ---
+    // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
-    // --- Core Jetpack libraries ---
+    // Core & Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.runtime.livedata)
 
-    // --- Jetpack Compose UI ---
+    implementation(libs.androidx.ui.text)
+
+    // UI components
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.text)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // --- Compose Navigation and Activity support ---
+    // Navigation & Activity
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
 
-    // --- LiveData support in Compose ---
-    implementation(libs.androidx.runtime.livedata)
-
-    // --- Room database support ---
+    // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
-    // --- Compose tooling for previews and debug ---
+    // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // --- UI Testing ---
+    // Tests
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.junit) // Optional but good practice
 }

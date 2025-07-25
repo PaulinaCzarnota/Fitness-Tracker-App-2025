@@ -6,47 +6,39 @@ import androidx.room.*
 /**
  * DietDao
  *
- * DAO interface for managing diet entries in the Room database.
- * Provides methods for inserting, updating, deleting, and querying diet logs.
+ * DAO interface for the 'diets' table in Room.
+ * Provides operations to insert, update, delete, and observe food entries.
  */
 @Dao
 interface DietDao {
 
     /**
-     * Inserts a new diet entry into the database.
-     * If a conflict occurs on the primary key, the existing entry is replaced.
-     *
-     * @param diet The Diet entity to insert.
+     * Inserts a new diet entry.
+     * If the ID already exists, replaces the entry.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDiet(diet: Diet)
 
     /**
-     * Updates an existing diet entry.
-     *
-     * @param diet The modified Diet object.
+     * Updates an existing diet record.
      */
     @Update
     suspend fun updateDiet(diet: Diet)
 
     /**
-     * Deletes a specific diet entry from the database.
-     *
-     * @param diet The Diet object to remove.
+     * Deletes a specific diet record.
      */
     @Delete
     suspend fun deleteDiet(diet: Diet)
 
     /**
-     * Retrieves all diet entries sorted by date in descending order.
-     *
-     * @return A LiveData list of all diet entries for observation by the UI.
+     * Returns all food logs ordered from most recent to oldest.
      */
     @Query("SELECT * FROM diets ORDER BY date DESC")
     fun getAllDiets(): LiveData<List<Diet>>
 
     /**
-     * Deletes all entries from the diets table.
+     * Removes all diet entries from the table.
      */
     @Query("DELETE FROM diets")
     suspend fun clearAll()

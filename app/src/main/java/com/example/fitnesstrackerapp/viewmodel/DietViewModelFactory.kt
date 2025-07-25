@@ -4,24 +4,27 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.data.FitnessDatabase
+import com.example.fitnesstrackerapp.viewmodel.DietViewModel
 
 /**
- * DietViewModelFactory.kt
+ * DietViewModelFactory
  *
- * Custom ViewModelProvider.Factory for instantiating DietViewModel with its required DietDao.
- * This enables proper dependency injection in the MVVM architecture.
+ * A custom ViewModelProvider.Factory implementation that enables
+ * DietViewModel to receive a DietDao dependency from the Room database.
+ *
+ * This is required because DietViewModel has a non-empty constructor.
  */
 class DietViewModelFactory(application: Application) : ViewModelProvider.Factory {
 
-    // Retrieve the DietDao from the singleton instance of the Room database
+    // Access DietDao from the singleton Room database instance
     private val dao = FitnessDatabase.getDatabase(application).dietDao()
 
     /**
-     * Creates an instance of the requested ViewModel (DietViewModel).
+     * Creates a new instance of the requested ViewModel.
      *
-     * @param modelClass The class of the ViewModel to create.
-     * @return The DietViewModel instance with DietDao injected.
-     * @throws IllegalArgumentException If the ViewModel class is not supported.
+     * @param modelClass The ViewModel class being requested.
+     * @return The DietViewModel instance if the type matches.
+     * @throws IllegalArgumentException if the ViewModel class is unknown.
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DietViewModel::class.java)) {

@@ -1,15 +1,43 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle
+.gradle/
+build/
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local configuration
 local.properties
+.cxx/
+.externalNativeBuild/
+
+# IntelliJ/Android Studio
+*.iml
+.idea/
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# macOS
+.DS_Store
+
+# Android Studio Captures
+captures/
+
+# Keystore files (NEVER commit signing keys)
+*.jks
+*.keystore
+
+# Kotlin
+*.kotlin_module
+
+# Log files
+*.log
+
+# Misc
+*.swp
+*.tmp
+
+# Jetpack Compose previews
+.idea/compose-preview/
