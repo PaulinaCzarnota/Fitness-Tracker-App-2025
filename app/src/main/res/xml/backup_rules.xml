@@ -1,13 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
-   See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older that API 31
-   See https://developer.android.com/about/versions/12/backup-restore
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    backup_rules.xml
+    Defines the backup rules for Auto Backup introduced in Android 6.0+.
+    This file is respected only on devices running API 31+ (Android 12+).
+
+    Docs: https://developer.android.com/guide/topics/data/autobackup
 -->
+
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+
+    <!-- INCLUDE shared preferences -->
+    <include domain="sharedpref" path="." />
+    <!-- INCLUDE local database (Room) -->
+    <include domain="database" path="." />
+    <!-- INCLUDE internal files stored in app-specific storage -->
+    <include domain="file" path="." />
+    <!-- INCLUDE cache (optional - usually not needed) -->
+    <!-- <include domain="cache" path="." /> -->
+
+    <!-- EXCLUDE specific files if needed -->
+    <!-- <exclude domain="sharedpref" path="temp.xml" /> -->
+    <!-- <exclude domain="file" path="debug.log" /> -->
+
 </full-backup-content>

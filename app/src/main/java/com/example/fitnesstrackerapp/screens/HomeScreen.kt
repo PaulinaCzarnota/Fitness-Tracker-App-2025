@@ -12,40 +12,44 @@ import com.example.fitnesstrackerapp.ui.components.BottomNavigationBar
 /**
  * HomeScreen
  *
- * This is the landing screen of the Fitness Tracker App (FitTrack).
- * It briefly introduces the app and directs users to other features using the bottom navigation bar.
+ * This is the main dashboard shown after login. It introduces the app and provides
+ * a clean welcome layout with navigation instructions.
  *
- * @param navController NavController for navigating between app screens.
+ * @param navController NavController passed down for navigation handling.
  */
 @Composable
 fun HomeScreen(navController: NavController) {
+    // Scaffold layout wraps the screen and includes the bottom navigation bar
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) } // Reusable bottom nav bar
+        bottomBar = {
+            BottomNavigationBar(navController)
+        }
     ) { innerPadding ->
+        // Main content column with responsive padding
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding) // Avoids overlap with system UI and nav bar
-                .padding(24.dp),
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp, vertical = 32.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Main app welcome title
+            // App name / welcome message
             Text(
                 text = "Welcome to FitTrack!",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
             )
 
-            // Subtitle with app purpose
+            // App description / summary of features
             Text(
-                text = "Track your workouts, goals, and nutrition progress with ease.",
+                text = "Track your workouts, set goals, and monitor your nutrition with ease.",
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            // Navigation instructions
+            // Call to action for new users
             Text(
-                text = "Use the bottom navigation bar to get started.",
+                text = "Use the bottom navigation bar below to get started.",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

@@ -4,33 +4,41 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.data.FitnessDatabase
-import com.example.fitnesstrackerapp.viewmodel.DietViewModel
 
 /**
  * DietViewModelFactory
  *
- * A custom ViewModelProvider.Factory implementation that enables
- * DietViewModel to receive a DietDao dependency from the Room database.
+ * A ViewModelProvider.Factory responsible for constructing the DietViewModel
+ * with its required DietDao dependency from the Room database.
  *
- * This is required because DietViewModel has a non-empty constructor.
+ * This is necessary because DietViewModel has a non-default constructor.
  */
-class DietViewModelFactory(application: Application) : ViewModelProvider.Factory {
-
-    // Access DietDao from the singleton Room database instance
-    private val dao = FitnessDatabase.getDatabase(application).dietDao()
+class DietViewModelFactory(
+    private val application: Application
+) : ViewModelProvider.Factory {
 
     /**
-     * Creates a new instance of the requested ViewModel.
+     * Creates a new instance of the given ViewModel class.
      *
-     * @param modelClass The ViewModel class being requested.
-     * @return The DietViewModel instance if the type matches.
-     * @throws IllegalArgumentException if the ViewModel class is unknown.
+     * @param modelClass The class of the ViewModel to create.
+     * @return A properly constructed DietViewModel instance with DietDao injected.
+     *
+     * @throws IllegalArgumentException if the ViewModel is not DietViewModel.
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(DietViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return DietViewModel(dao) as T
+        return when {
+            modelClass.isAssignableFrom(DietViewModel::class.java) -> {
+                val dietDao = FitnessDatabase
+                    .getDatabase(application)
+                    .dietDao()
+
+                @Suppress("UNCHECKED_CAST")
+                DietViewModel(dietDao) as T
+            }
+
+            else -> throw IllegalArgumentException(
+                "Unknown ViewModel class: ${modelClass.name}"
+            )
         }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }

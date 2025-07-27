@@ -8,10 +8,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fitnesstrackerapp.navigation.Screen
 
 /**
- * Data class representing a bottom navigation item.
+ * BottomNavItem
  *
- * @param route The navigation route associated with this tab.
- * @param label The text label displayed in the bottom nav.
+ * Represents a single tab item in the bottom navigation bar.
+ *
+ * @param route The destination route this tab navigates to.
+ * @param label The text label shown under the tab.
  */
 data class BottomNavItem(
     val route: String,
@@ -21,15 +23,14 @@ data class BottomNavItem(
 /**
  * BottomNavigationBar
  *
- * A composable function that displays a Material 3 bottom navigation bar.
- * It allows switching between major app screens like Home, Workout, Diet, etc.
- * Highlights the currently selected tab and uses text-only items for simplicity.
+ * A composable that displays a Material3 bottom navigation bar with multiple tabs.
+ * Handles navigation between key screens and highlights the selected screen.
  *
- * @param navController NavController used for navigating between screens.
+ * @param navController The app's NavController used to navigate between screens.
  */
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    // Define all screens as navigation items
+    // Define the tab items shown in the bottom navigation bar
     val items = listOf(
         BottomNavItem(Screen.Home.route, "Home"),
         BottomNavItem(Screen.Workout.route, "Workout"),
@@ -39,28 +40,27 @@ fun BottomNavigationBar(navController: NavController) {
         BottomNavItem(Screen.StepTracker.route, "Steps")
     )
 
-    // Get the current route from the navigation back stack
+    // Track the currently active route using the back stack
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Material3 bottom navigation bar
+    // Render the navigation bar with tabs
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                icon = {}, // Optional: could add icons later
-                label = { Text(text = item.label) },
+                // Optional: You can add icons here if needed
+                icon = { /* e.g. Icon(Icons.Default.Home, contentDescription = item.label) */ },
+                label = { Text(item.label) },
                 selected = currentRoute == item.route,
                 alwaysShowLabel = true,
                 onClick = {
+                    // Navigate only if we're not already on the selected screen
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            // Avoid multiple copies of the same destination
-                            launchSingleTop = true
-                            // Remove previous instances up to the start destination
+                            launchSingleTop = true // Prevent duplicates
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
-                            // Restore scroll position or input state
                             restoreState = true
                         }
                     }

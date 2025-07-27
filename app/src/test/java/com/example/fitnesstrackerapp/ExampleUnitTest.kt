@@ -1,21 +1,28 @@
 package com.example.fitnesstrackerapp
 
-// Import the JUnit 4 test annotation and assertion
+// Import JUnit 4 testing framework and assertion methods
 import org.junit.Test
 import org.junit.Assert.assertEquals
 
 /**
- * Example local unit test for demonstration.
- * It runs on the development machine (host) and checks that 2 + 2 = 4.
+ * ExampleUnitTest
+ *
+ * This class demonstrates basic unit-testing capabilities within the Fitness Tracker App project.
+ * The tests run locally on the development machine (host JVM) without needing an emulator or device.
+ *
+ * Extend this test class or add new ones to test additional functionality and logic of the app.
  */
 class ExampleUnitTest {
 
     /**
-     * Test function that checks if addition works correctly.
-     * This is useful for validating basic logic and ensuring the test environment works.
+     * Verifies basic arithmetic correctness.
+     *
+     * This simple test ensures the testing environment is properly set up
+     * and can perform assertions correctly.
      */
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        // Checks that the expression 2 + 2 equals 4.
+        assertEquals("Basic addition should return correct result", 4, 2 + 2)
     }
 }

@@ -9,22 +9,25 @@ import com.example.fitnesstrackerapp.data.WorkoutDao
 /**
  * WorkoutViewModelFactory
  *
- * Provides an instance of WorkoutViewModel with a custom constructor (WorkoutDao).
- * Required because Android's default ViewModelProvider cannot pass parameters.
+ * A custom implementation of ViewModelProvider.Factory used to instantiate
+ * WorkoutViewModel with its required WorkoutDao dependency.
  *
- * @param application The application context used to retrieve the singleton Room database.
+ * Since ViewModel constructors typically have no parameters, we need this
+ * factory to inject dependencies manually (like DAOs from Room).
+ *
+ * @param application The application context used to access the Room database.
  */
 class WorkoutViewModelFactory(application: Application) : ViewModelProvider.Factory {
 
-    // DAO retrieved from singleton database instance
+    // Access the WorkoutDao from the singleton Room database
     private val dao: WorkoutDao = FitnessDatabase.getDatabase(application).workoutDao()
 
     /**
-     * Creates a new instance of the requested ViewModel.
+     * Creates a new instance of WorkoutViewModel with the injected WorkoutDao.
      *
-     * @param modelClass The class of the ViewModel to create.
-     * @return An instance of WorkoutViewModel with the DAO injected.
-     * @throws IllegalArgumentException If an unsupported ViewModel class is requested.
+     * @param modelClass The ViewModel class being requested.
+     * @return A WorkoutViewModel instance if the requested class matches.
+     * @throws IllegalArgumentException If an unknown ViewModel class is requested.
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WorkoutViewModel::class.java)) {

@@ -1,26 +1,42 @@
-# Ignore build output
+# ============================================================
+#  Git Ignore file for Fitness Tracker App (Android Project)
+# ============================================================
+
+# ------------------------------------------------------------
+# Build and output directories
+# ------------------------------------------------------------
 /build/
 
-# Ignore local Gradle config
+# ------------------------------------------------------------
+# Gradle files and local configuration
+# ------------------------------------------------------------
 .gradle/
 local.properties
 
-# Ignore IDE-specific files
+# ------------------------------------------------------------
+# Android Studio IDE files and settings
+# ------------------------------------------------------------
 *.iml
 .idea/
+.idea/assetWizardSettings.xml
 
-# Ignore external build outputs and native builds
+# ------------------------------------------------------------
+# Native build output directories (C++ builds)
+# ------------------------------------------------------------
 .cxx/
 .externalNativeBuild/
 
-# Ignore test artifacts and screenshots
+# ------------------------------------------------------------
+# Testing artifacts and captured screenshots
+# ------------------------------------------------------------
 /captures/
 
-# Ignore macOS metadata files
+# ------------------------------------------------------------
+# macOS and system metadata files
+# ------------------------------------------------------------
 .DS_Store
 
-# Android Studio asset wizard
-.idea/assetWizardSettings.xml
-
-# Misc
+# ------------------------------------------------------------
+# Log files and miscellaneous temporary files
+# ------------------------------------------------------------
 *.log

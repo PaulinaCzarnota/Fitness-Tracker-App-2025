@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    themes.xml - XML fallback theme for Compose-based Fitness Tracker App
+
+    This theme is required to be referenced in the AndroidManifest.xml but is not used
+    for actual UI theming, which is handled entirely via Jetpack Compose in Theme.kt.
+
+    Avoid referencing unsupported Material3 styles like Theme.Material3.Light or attributes
+    like colorPrimary in XML. These are replaced with valid base theme and minimal styling
+    for compatibility and build success.
+-->
 <resources>
 
-    <style name="Theme.FitnessTrackerApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base app theme -->
+    <style name="Theme.FitnessTrackerApp" parent="android:Theme.Material.Light">
+        <!-- Basic background color -->
+        <item name="android:windowBackground">@color/white</item>
+
+        <!-- Text colors for legacy Views (if ever used) -->
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/teal_700</item>
+
+        <!-- Remove ActionBar for full Compose control -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+
+        <!-- Optional: disable default activity transition animations -->
+        <!-- <item name="android:windowAnimationStyle">@null</item> -->
+    </style>
+
 </resources>

@@ -20,7 +20,12 @@ import com.example.fitnesstrackerapp.viewmodel.StepCounterViewModel
 /**
  * StepTrackerScreen
  *
- * Displays the current step count and listens for updates from the StepCounterService.
+ * Displays the user's current step count. Listens for real-time updates from the
+ * StepCounterService via broadcast intents and updates ViewModel state.
+ *
+ * - Automatically registers/unregisters BroadcastReceiver
+ * - Works across all Android versions safely
+ * - Includes "Reset Steps" button to clear the count
  */
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
 @Composable
@@ -29,10 +34,10 @@ fun StepTrackerScreen(
 ) {
     val context = LocalContext.current
 
-    // Observe step count from ViewModel with lifecycle-awareness
-    val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle(0)
+    // Step count is observed using lifecycle-aware state collection
+    val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle(initialValue = 0)
 
-    // Register BroadcastReceiver when composable is active
+    // Register BroadcastReceiver on composition and unregister on disposal
     DisposableEffect(Unit) {
         val stepReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -45,24 +50,24 @@ fun StepTrackerScreen(
 
         val filter = IntentFilter("STEP_UPDATE")
 
+        // Register differently depending on Android version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Pass the required receiver flag explicitly for Android 13+
             context.registerReceiver(
                 stepReceiver,
                 filter,
-                Context.RECEIVER_NOT_EXPORTED // Receiver is internal to app only
+                Context.RECEIVER_NOT_EXPORTED
             )
         } else {
             context.registerReceiver(stepReceiver, filter)
         }
 
-        // Unregister receiver when the composable leaves the composition
+        // Clean up the receiver when this composable is disposed
         onDispose {
             context.unregisterReceiver(stepReceiver)
         }
     }
 
-    // --- UI ---
+    // --- UI Layout ---
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -71,12 +76,15 @@ fun StepTrackerScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Title
             Text("Step Tracker", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(32.dp))
 
+            // Subheading
             Text("Steps Taken", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Step count value (live)
             Text(
                 text = stepCount.toString(),
                 style = MaterialTheme.typography.displayLarge,
@@ -85,7 +93,12 @@ fun StepTrackerScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = { stepCounterViewModel.resetStepCount() }) {
+            // Reset steps button
+            Button(
+                onClick = {
+                    stepCounterViewModel.resetStepCount()
+                }
+            ) {
                 Text("Reset Steps")
             }
         }

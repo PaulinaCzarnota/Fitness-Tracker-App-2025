@@ -1,10 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Color resources for the Fitness Tracker App.
+
+    These color definitions align with Material Design 3.
+    Used across themes, buttons, backgrounds, surfaces, text, etc.
+-->
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- ========================== -->
+    <!--       PRIMARY COLORS       -->
+    <!-- ========================== -->
+
+    <!-- Main branding color -->
+    <color name="purple_500">#6200EE</color>
+
+    <!-- Darker variant of primary -->
+    <color name="purple_700">#3700B3</color>
+
+    <!-- Lighter variant of primary -->
+    <color name="purple_200">#BB86FC</color>
+
+
+    <!-- ========================== -->
+    <!--      SECONDARY COLORS      -->
+    <!-- ========================== -->
+
+    <!-- Accent color for highlights, icons -->
+    <color name="teal_200">#03DAC5</color>
+
+    <!-- Darker secondary variant -->
+    <color name="teal_700">#018786</color>
+
+
+    <!-- ========================== -->
+    <!--        NEUTRAL COLORS      -->
+    <!-- ========================== -->
+
+    <!-- Standard black for text/icons -->
+    <color name="black">#000000</color>
+
+    <!-- Standard white for backgrounds/surfaces -->
+    <color name="white">#FFFFFF</color>
+
+    <!-- Soft surface background for cards/sheets -->
+    <color name="surface_light">#FAFAFA</color>
+
+    <!-- Optional gray background (used sparingly) -->
+    <color name="background_grey">#F0F0F0</color>
+
+
+    <!-- ========================== -->
+    <!--         ERROR COLOR        -->
+    <!-- ========================== -->
+
+    <!-- Standard Material3 error red -->
+    <color name="error_red">#B00020</color>
+
 </resources>

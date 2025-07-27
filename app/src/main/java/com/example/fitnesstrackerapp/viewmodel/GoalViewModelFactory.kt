@@ -4,34 +4,34 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.data.FitnessDatabase
-import com.example.fitnesstrackerapp.viewmodel.GoalViewModel
 
 /**
  * GoalViewModelFactory
  *
- * A custom ViewModelProvider.Factory that allows the GoalViewModel
- * to be constructed with its required dependency (GoalDao).
+ * A ViewModelProvider.Factory that supplies a GoalViewModel instance with
+ * a required GoalDao dependency from the Room database.
  *
- * This is needed because the default ViewModel constructor can't handle
- * parameters like Room DAO objects unless we use a Factory.
+ * This is essential because GoalViewModel does not have a default constructor.
  */
-class GoalViewModelFactory(application: Application) : ViewModelProvider.Factory {
-
-    // Access the GoalDao from the singleton FitnessDatabase instance
-    private val dao = FitnessDatabase.getDatabase(application).goalDao()
+class GoalViewModelFactory(
+    private val application: Application
+) : ViewModelProvider.Factory {
 
     /**
-     * Creates a new instance of the GoalViewModel with the DAO injected.
+     * Creates and returns an instance of GoalViewModel with injected DAO.
      *
-     * @param modelClass The ViewModel class being requested.
-     * @return An instance of GoalViewModel if the type matches.
-     * @throws IllegalArgumentException if the requested ViewModel is unknown.
+     * @param modelClass The class of the ViewModel requested.
+     * @return A GoalViewModel instance if requested, otherwise throws exception.
      */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(GoalViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return GoalViewModel(dao) as T
+        return when {
+            modelClass.isAssignableFrom(GoalViewModel::class.java) -> {
+                val goalDao = FitnessDatabase.getDatabase(application).goalDao()
+                @Suppress("UNCHECKED_CAST")
+                GoalViewModel(goalDao) as T
+            }
+
+            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
-        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }

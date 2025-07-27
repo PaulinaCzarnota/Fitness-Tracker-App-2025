@@ -1,37 +1,41 @@
 package com.example.fitnesstrackerapp.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesstrackerapp.data.Goal
 import com.example.fitnesstrackerapp.data.GoalDao
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
  * GoalViewModel
  *
- * A lifecycle-aware ViewModel that manages the business logic
- * and data operations for fitness goals.
- *
- * This ViewModel separates the UI from the data layer (Room DB)
- * and allows the Compose UI to observe goal updates via LiveData.
- *
- * @param goalDao DAO interface to interact with the goal table in Room.
+ * ViewModel that manages the UI-related data for goal tracking.
+ * Interacts with the GoalDao to read/write data to the Room database.
+ * Exposes goal data using StateFlow for Jetpack Compose UI reactivity.
  */
-class GoalViewModel(private val goalDao: GoalDao) : ViewModel() {
+class GoalViewModel(
+    private val goalDao: GoalDao
+) : ViewModel() {
 
     /**
-     * LiveData stream of all fitness goals in the database.
-     * Automatically updates the UI when the data changes.
+     * A reactive StateFlow of all goals from the database.
+     * Observed in the UI using collectAsStateWithLifecycle() or collectAsState().
      */
-    val allGoals: LiveData<List<Goal>> = goalDao.getAllGoals()
+    val allGoals: StateFlow<List<Goal>> = goalDao.getAllGoals()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     /**
      * Inserts a new goal into the database.
-     * Called when the user creates a new fitness goal.
      *
-     * @param goal The Goal object to insert.
+     * @param goal The Goal object to be added.
      */
     fun addGoal(goal: Goal) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -40,10 +44,10 @@ class GoalViewModel(private val goalDao: GoalDao) : ViewModel() {
     }
 
     /**
-     * Updates an existing goal, such as marking it as completed
-     * or updating the current progress.
+     * Updates an existing goal entry.
+     * Typically used when the user modifies goal target, name, or progress.
      *
-     * @param goal The modified Goal object.
+     * @param goal The updated Goal object.
      */
     fun updateGoal(goal: Goal) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,7 +56,8 @@ class GoalViewModel(private val goalDao: GoalDao) : ViewModel() {
     }
 
     /**
-     * Deletes a single goal from the database.
+     * Deletes a specific goal from the database.
+     * Called when the user manually removes a goal entry.
      *
      * @param goal The Goal to delete.
      */
@@ -63,8 +68,8 @@ class GoalViewModel(private val goalDao: GoalDao) : ViewModel() {
     }
 
     /**
-     * Deletes all goals from the database.
-     * Useful for reset actions or admin tools.
+     * Clears all goal entries from the database.
+     * Useful for "Reset" features or developer testing.
      */
     fun clearAllGoals() {
         viewModelScope.launch(Dispatchers.IO) {

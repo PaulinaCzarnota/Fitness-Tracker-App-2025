@@ -1,38 +1,40 @@
+@file:Suppress("UnstableApiUsage")
+
+/**
+ * This file configures repository sources, plugin management, and included modules.
+ */
+
 pluginManagement {
     repositories {
-        // Google's Maven repository for Android Gradle Plugin and Jetpack libraries
+        // Google's Maven repository — primary source for Android tools and Jetpack libraries
         google {
             content {
-                // Limit to Android and Google plugin groups to speed up resolution
+                // Include only groups related to Android and Google tools to optimize resolution speed
                 includeGroupByRegex("com\\.android.*")
                 includeGroupByRegex("com\\.google.*")
                 includeGroupByRegex("androidx.*")
             }
         }
 
-        // Maven Central for standard Kotlin/Java libraries and third-party dependencies
+        // Maven Central — provides Kotlin, third-party libraries, and general purpose tools
         mavenCentral()
 
-        // Gradle Plugin Portal for any plugins not in Google/MavenCentral
+        // Gradle Plugin Portal — used for community-developed Gradle plugins
         gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
-    // Fail if any subproject declares its own repositories to enforce central control
+    // Prevent subprojects (like :app) from using their own repositories
+    // This ensures all dependencies come from the repositories declared below
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
-        // Android libraries and Google-specific dependencies
         google()
-
-        // Kotlin/Java and other third-party dependencies
         mavenCentral()
     }
 }
 
-// Set the name of the root project (used in IDEs and Gradle outputs)
 rootProject.name = "FitnessTrackerApp"
 
-// Include the app module (source lives in /app)
 include(":app")

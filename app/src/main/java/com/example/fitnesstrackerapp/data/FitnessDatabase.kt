@@ -8,43 +8,47 @@ import androidx.room.RoomDatabase
 /**
  * FitnessDatabase
  *
- * Room database for the Fitness Tracker App.
- * This database holds tables for Workout, Goal, and Diet entities.
- * It exposes DAO interfaces to access each table.
+ * Main Room database for the Fitness Tracker App.
+ * Includes entities: Workout, Goal, Diet, and User.
+ * Provides DAOs for data access.
  */
 @Database(
-    entities = [Workout::class, Goal::class, Diet::class], // Your 3 main entities
+    entities = [Workout::class, Goal::class, Diet::class, User::class],
     version = 1,
-    exportSchema = false // No schema file needed for local app use
+    exportSchema = false
 )
 abstract class FitnessDatabase : RoomDatabase() {
 
-    /** Provides access to Workout table operations */
+    // --- DAO accessors ---
     abstract fun workoutDao(): WorkoutDao
-
-    /** Provides access to Goal table operations */
     abstract fun goalDao(): GoalDao
-
-    /** Provides access to Diet table operations */
     abstract fun dietDao(): DietDao
+    abstract fun userDao(): UserDao
 
     companion object {
+        // Singleton instance for application-wide DB access
         @Volatile
         private var INSTANCE: FitnessDatabase? = null
 
         /**
-         * Returns the singleton database instance.
-         * Uses synchronized block for thread-safe initialization.
+         * Gets the singleton instance of the FitnessDatabase.
+         * Builds the database using fallbackToDestructiveMigration with `true`
+         * to safely drop all tables on schema changes.
+         *
+         * @param context Application context (do not use Activity context)
+         * @return FitnessDatabase instance
          */
         fun getDatabase(context: Context): FitnessDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     FitnessDatabase::class.java,
-                    "fitness_db" // Database file name
+                    "fitness_database"
                 )
-                    .fallbackToDestructiveMigration(dropAllTables = true) // Reset DB on version mismatch
+                    // Corrected: Pass `true` to indicate all tables may be dropped if needed
+                    .fallbackToDestructiveMigration(true)
                     .build()
+
                 INSTANCE = instance
                 instance
             }

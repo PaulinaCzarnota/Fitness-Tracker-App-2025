@@ -1,5 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    String resources for Fitness Tracker App.
+
+    Organized by screens and functionality for easier maintainability,
+    readability, and internationalization.
+-->
 <resources>
-    <!-- App Name -->
+
+    <!-- Application Name -->
     <string name="app_name">Fitness Tracker</string>
 
     <!-- Navigation Labels -->
@@ -43,10 +51,11 @@
     <string name="monthly_summary">Monthly Summary</string>
     <string name="yearly_summary">Yearly Summary</string>
 
-    <!-- Home -->
+    <!-- Home Screen -->
     <string name="welcome_title">Welcome to Fitness Tracker</string>
     <string name="start_tracking">Start Tracking Your Fitness Journey</string>
 
-    <!-- Error / Empty States -->
+    <!-- Error / Validation Messages -->
     <string name="invalid_input">Invalid input. Please check your data.</string>
+
 </resources>
