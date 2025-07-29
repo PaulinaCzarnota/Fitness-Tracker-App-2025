@@ -6,25 +6,25 @@ import kotlinx.coroutines.flow.Flow
 /**
  * GoalDao
  *
- * Data Access Object for interacting with the "goal_table" in the Room database.
- * Provides CRUD operations and supports reactive data streams via Flow.
+ * DAO (Data Access Object) for the "goal_table".
+ * Provides suspend functions for inserting, updating, deleting, and retrieving fitness goals.
+ * Supports reactive updates using Kotlin Flow to keep the UI in sync.
  */
 @Dao
 interface GoalDao {
 
     /**
-     * Inserts a new goal into the database.
-     * If the goal already exists (same ID), it will be replaced.
+     * Inserts a new goal or replaces an existing goal with the same ID.
      *
-     * @param goal The goal to insert or replace.
+     * @param goal The [Goal] entity to insert or replace.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGoal(goal: Goal)
 
     /**
-     * Updates an existing goal.
+     * Updates an existing goal in the database.
      *
-     * @param goal The goal entity with updated values.
+     * @param goal The [Goal] entity with updated fields.
      */
     @Update
     suspend fun updateGoal(goal: Goal)
@@ -32,23 +32,23 @@ interface GoalDao {
     /**
      * Deletes a specific goal from the database.
      *
-     * @param goal The goal entity to remove.
+     * @param goal The [Goal] entity to delete.
      */
     @Delete
     suspend fun deleteGoal(goal: Goal)
 
     /**
-     * Retrieves all goals from the database, ordered by descending ID
-     * so the most recently added goals appear first.
+     * Retrieves all goals stored in the database, ordered by newest first.
+     * Automatically emits updates using Kotlin Flow when the data changes.
      *
-     * @return A Flow emitting a list of goals whenever the data changes.
+     * @return A Flow list of [Goal]s, ordered by ID descending.
      */
     @Query("SELECT * FROM goal_table ORDER BY id DESC")
     fun getAllGoals(): Flow<List<Goal>>
 
     /**
-     * Deletes all goals from the database.
-     * Useful for resetting or clearing user data.
+     * Deletes all goal entries from the database.
+     * Use with caution — this clears all goal progress and history.
      */
     @Query("DELETE FROM goal_table")
     suspend fun clearAll()

@@ -1,72 +1,106 @@
 package com.example.fitnesstrackerapp.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnesstrackerapp.data.FitnessDatabase
-import com.example.fitnesstrackerapp.data.User
-import kotlinx.coroutines.Dispatchers
+import com.example.fitnesstrackerapp.auth.AuthService
+import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 /**
  * UserViewModel
  *
- * ViewModel responsible for handling user login and registration
- * using Room database and exposing methods to the UI layer.
- *
- * It uses coroutines to perform operations asynchronously,
- * keeping the UI thread unblocked.
+ * ViewModel that manages user authentication and session state using FirebaseAuth.
+ * Delegates operations to [AuthService] for registration, login, logout, and reset password.
+ * Exposes a StateFlow<FirebaseUser?> for the UI to observe authentication state.
  */
-class UserViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class UserViewModel @Inject constructor(
+    private val authService: AuthService
+) : ViewModel() {
 
-    // Get instance of UserDao from the singleton Room database
-    private val userDao = FitnessDatabase.getDatabase(application).userDao()
+    // StateFlow holding the currently authenticated user
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(null)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser
+
+    init {
+        // Load session if a user is already authenticated
+        _currentUser.value = authService.getCurrentUser()
+    }
 
     /**
-     * Register a new user by inserting into the Room database.
+     * Registers a user using email and password.
+     * Updates [currentUser] if successful.
      *
-     * @param email Email entered by the user.
-     * @param password Password entered by the user.
-     * @param onResult Callback returning true if registration successful, false if user exists.
+     * @param email The user's email.
+     * @param password The user's password.
+     * @param onResult Callback with success state.
      */
     fun register(email: String, password: String, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
-                // Trim inputs and create new User object
-                val newUser = User(email = email.trim(), password = password.trim())
-
-                // Attempt to insert user (may fail on duplicate due to unique constraint)
-                userDao.insertUser(newUser)
-
-                // Notify success on main thread
-                withContext(Dispatchers.Main) {
-                    onResult(true)
-                }
+                val user = authService.register(email.trim(), password.trim())
+                _currentUser.value = user
+                Log.i("UserViewModel", "Registration successful: ${user?.email}")
+                onResult(user != null)
             } catch (e: Exception) {
-                // Notify failure (user already exists or DB error)
-                withContext(Dispatchers.Main) {
-                    onResult(false)
-                }
+                Log.e("UserViewModel", "Registration failed", e)
+                onResult(false)
             }
         }
     }
 
     /**
-     * Authenticate an existing user by verifying email and password.
+     * Logs in an existing user using email and password.
+     * Updates [currentUser] on success.
      *
-     * @param email Email entered by the user.
-     * @param password Password entered by the user.
-     * @param onResult Callback returning true if login successful, false otherwise.
+     * @param email The user's email.
+     * @param password The user's password.
+     * @param onResult Callback with success state.
      */
     fun login(email: String, password: String, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            // Query the database for a user with matching credentials
-            val user = userDao.authenticate(email.trim(), password.trim())
-
-            // Return the result on main thread
-            withContext(Dispatchers.Main) {
+        viewModelScope.launch {
+            try {
+                val user = authService.login(email.trim(), password.trim())
+                _currentUser.value = user
+                Log.i("UserViewModel", "Login successful: ${user?.email}")
                 onResult(user != null)
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Login failed", e)
+                onResult(false)
+            }
+        }
+    }
+
+    /**
+     * Logs out the current user and clears session.
+     * Sets [currentUser] to null.
+     */
+    fun logout() {
+        authService.logout()
+        _currentUser.value = null
+        Log.i("UserViewModel", "User logged out")
+    }
+
+    /**
+     * Sends a password reset email to the provided address.
+     *
+     * @param email The email address to send reset link.
+     * @param onResult Callback with success state.
+     */
+    fun sendPasswordReset(email: String, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                authService.sendPasswordResetEmail(email.trim())
+                Log.i("UserViewModel", "Password reset email sent to $email")
+                onResult(true)
+            } catch (e: Exception) {
+                Log.e("UserViewModel", "Failed to send reset email", e)
+                onResult(false)
             }
         }
     }

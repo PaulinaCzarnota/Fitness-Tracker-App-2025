@@ -8,37 +8,39 @@ import kotlinx.coroutines.flow.asStateFlow
 /**
  * StepCounterViewModel
  *
- * ViewModel that holds and manages the current step count in a lifecycle-aware manner.
- * This ViewModel allows the UI to observe real-time updates using StateFlow.
- * Step count data is typically updated by a BroadcastReceiver receiving
- * data from a foreground StepCounterService.
+ * A lifecycle-aware [ViewModel] that manages step count data.
+ * Exposes a [StateFlow] for real-time UI updates using Jetpack Compose.
+ *
+ * This ViewModel is intended to be updated by a step sensor listener,
+ * such as a foreground service or BroadcastReceiver receiving sensor events.
  */
 class StepCounterViewModel : ViewModel() {
 
-    // Mutable state for internal use — step count initialized to 0
+    /**
+     * Internal mutable state for the current step count.
+     * Starts at 0 and is updated from sensor data.
+     */
     private val _stepCount = MutableStateFlow(0)
 
     /**
-     * Public immutable view of step count for external UI observers.
-     * Composable UIs observe this using `collectAsStateWithLifecycle()`.
+     * Public read-only state for observing the current step count in the UI.
+     * UI should observe this using `collectAsStateWithLifecycle()` in Compose.
      */
     val stepCount: StateFlow<Int> = _stepCount.asStateFlow()
 
     /**
-     * Update the step count with the latest value.
+     * Updates the current step count.
+     * Should be called with new step data from a sensor or service.
      *
-     * Typically called from a BroadcastReceiver or a service listener.
-     *
-     * @param steps New step count value, received from step sensor or service.
+     * @param steps The new step count value.
      */
     fun updateStepCount(steps: Int) {
         _stepCount.value = steps
     }
 
     /**
-     * Resets the current step count to 0.
-     *
-     * Typically triggered by a UI "Reset" button to start a new daily count.
+     * Resets the step count back to zero.
+     * Typically triggered by a "Reset" action in the UI.
      */
     fun resetStepCount() {
         _stepCount.value = 0

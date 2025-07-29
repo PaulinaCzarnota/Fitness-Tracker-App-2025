@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    backup_rules.xml
     Defines the backup rules for Auto Backup introduced in Android 6.0+.
     This file is respected only on devices running API 31+ (Android 12+).
 

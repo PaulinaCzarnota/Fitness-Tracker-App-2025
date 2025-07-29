@@ -13,117 +13,138 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.fitnesstrackerapp.data.Goal
 import com.example.fitnesstrackerapp.viewmodel.GoalViewModel
 import com.example.fitnesstrackerapp.viewmodel.GoalViewModelFactory
+import com.example.fitnesstrackerapp.ui.components.BottomNavigationBar
 
 /**
  * GoalScreen
  *
- * Displays a form for users to set goals, view all saved goals,
- * track progress, and clear all goals. Uses ViewModel with DAO.
+ * Allows users to set and manage fitness goals.
+ * Provides functionality to create, track progress, and complete goals.
+ *
+ * @param navController Optional navigation controller for consistency with Navigation.kt.
  */
 @Composable
-fun GoalScreen() {
+fun GoalScreen(navController: NavHostController? = null) {
     val context = LocalContext.current
+    val application = context.applicationContext as Application
 
-    // Inject GoalViewModel using custom factory to pass Application context
+    // Initialize ViewModel with application context
     val viewModel: GoalViewModel = viewModel(
-        factory = GoalViewModelFactory(context.applicationContext as Application)
+        factory = GoalViewModelFactory(application)
     )
 
-    // States for user input
+    // State variables for goal input fields
     var description by remember { mutableStateOf("") }
     var target by remember { mutableStateOf("") }
 
-    // Observe list of goals from ViewModel (StateFlow)
-    val goals by viewModel.allGoals.collectAsState(initial = emptyList())
+    // Observe all goals from ViewModel
+    val goals by viewModel.allGoals.collectAsStateWithLifecycle(initialValue = emptyList())
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // --- Form Header ---
-        Text("Set a Goal", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // --- Goal Description Input ---
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // --- Target Number Input ---
-        OutlinedTextField(
-            value = target,
-            onValueChange = { target = it },
-            label = { Text("Target (e.g. 10 sessions)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // --- Add Goal Button ---
-        Button(
-            onClick = {
-                val trimmedDesc = description.trim()
-                val parsedTarget = target.toIntOrNull()
-
-                if (trimmedDesc.isEmpty()) {
-                    Toast.makeText(context, "Please enter a goal description.", Toast.LENGTH_SHORT).show()
-                } else if (parsedTarget == null || parsedTarget <= 0) {
-                    Toast.makeText(context, "Please enter a valid positive number.", Toast.LENGTH_SHORT).show()
-                } else {
-                    val newGoal = Goal(description = trimmedDesc, target = parsedTarget)
-                    viewModel.addGoal(newGoal)
-                    description = ""
-                    target = ""
-                    Toast.makeText(context, "Goal added!", Toast.LENGTH_SHORT).show()
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Add Goal")
+    // App layout using Scaffold with BottomNavigationBar
+    Scaffold(
+        bottomBar = { 
+            navController?.let { BottomNavigationBar(navController = it) }
         }
+    ) { innerPadding ->
+        // Main content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            // --- Header and Goal Input Form ---
+            Text("Set a Goal", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider() // Updated to modern equivalent of Divider
-        Spacer(modifier = Modifier.height(16.dp))
+            // Input for Goal Description
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // --- Goal List Header ---
-        Text("Your Goals", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // --- Goal List Display ---
-        if (goals.isEmpty()) {
-            Text("No goals added yet.")
-        } else {
-            LazyColumn {
-                items(goals) { goal ->
-                    GoalCard(
-                        goal = goal,
-                        onUpdate = { viewModel.updateGoal(it) },
-                        onDelete = { viewModel.deleteGoal(it) }
-                    )
-                }
-            }
-
+            // Input for Goal Target Value
+            OutlinedTextField(
+                value = target,
+                onValueChange = { target = it },
+                label = { Text("Target (e.g. 10 sessions)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Clear All Goals Button ---
+            // Button to Add New Goal
             Button(
                 onClick = {
-                    viewModel.clearAllGoals()
-                    Toast.makeText(context, "All goals cleared!", Toast.LENGTH_SHORT).show()
+                    val desc = description.trim()
+                    val targetValue = target.toIntOrNull()
+
+                    // Basic input validation
+                    when {
+                        desc.isEmpty() -> {
+                            Toast.makeText(context, "Please enter a goal description.", Toast.LENGTH_SHORT).show()
+                        }
+                        targetValue == null || targetValue <= 0 -> {
+                            Toast.makeText(context, "Enter a valid target number.", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            viewModel.addGoal(Goal(description = desc, target = targetValue))
+                            description = ""
+                            target = ""
+                            Toast.makeText(context, "Goal added!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Clear All Goals")
+                Text("Add Goal")
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // --- Goal List Section ---
+            Text("Your Goals", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (goals.isEmpty()) {
+                Text("No goals added yet.")
+            } else {
+                // Scrollable list of goal cards
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(goals, key = { it.id }) { goal ->
+                        GoalCard(
+                            goal = goal,
+                            onUpdate = { viewModel.updateGoal(it) },
+                            onDelete = { viewModel.deleteGoal(it) }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Button to clear all goals
+                Button(
+                    onClick = {
+                        viewModel.clearAllGoals()
+                        Toast.makeText(context, "All goals cleared!", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Clear All Goals")
+                }
             }
         }
     }
@@ -132,9 +153,15 @@ fun GoalScreen() {
 /**
  * GoalCard
  *
- * A card UI element that shows an individual goal with buttons to:
- * - Increment progress
- * - Delete the goal
+ * Renders a card for an individual goal.
+ * Includes:
+ * - Description, target, progress
+ * - Add Progress button
+ * - Delete button
+ *
+ * @param goal the goal instance to display
+ * @param onUpdate callback when progress is incremented
+ * @param onDelete callback to remove the goal
  */
 @Composable
 fun GoalCard(
@@ -143,9 +170,7 @@ fun GoalCard(
     onDelete: (Goal) -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -159,7 +184,7 @@ fun GoalCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // --- Add Progress Button ---
+                // Button to add progress (increments current count)
                 Button(
                     onClick = {
                         val newProgress = goal.current + 1
@@ -173,7 +198,7 @@ fun GoalCard(
                     Text("Add Progress")
                 }
 
-                // --- Delete Goal Button ---
+                // Button to delete this goal
                 Button(
                     onClick = { onDelete(goal) },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)

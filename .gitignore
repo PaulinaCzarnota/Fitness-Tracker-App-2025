@@ -1,43 +1,83 @@
-# Gradle
+# ============================================================
+# Optimized for: Android Studio, Kotlin, Compose, Room, Hilt
+# ============================================================
+
+# ================================
+# Gradle Build Output
+# ================================
 .gradle/
 build/
-*/build/
-!gradle/wrapper/gradle-wrapper.jar
-
-# Local configuration
-local.properties
+**/build/
 .cxx/
 .externalNativeBuild/
-
-# IntelliJ/Android Studio
-*.iml
-.idea/
-.idea/caches
-.idea/libraries
-.idea/modules.xml
-.idea/workspace.xml
-.idea/navEditor.xml
-.idea/assetWizardSettings.xml
-
-# macOS
-.DS_Store
-
-# Android Studio Captures
+intermediates/
+outputs/
 captures/
 
-# Keystore files (NEVER commit signing keys)
-*.jks
-*.keystore
+# ================================
+# Local Environment and Secrets
+# ================================
+local.properties          # Contains SDK path — machine-specific
+google-services.json      # Firebase configuration — keep private
+*.keystore                # Signing key (if used)
+*.jks                     # Java key store — sensitive
+secrets.properties        # Optional: API keys or secrets
+*.env                     # Optional: dotenv-style environment config
 
-# Kotlin
-*.kotlin_module
+# ================================
+# IDE Configuration (Android Studio, IntelliJ)
+# ================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/                 # Visual Studio Code settings (if used)
 
-# Log files
+# ================================
+# OS-Specific Files
+# ================================
+.DS_Store                # macOS Finder metadata
+Thumbs.db                # Windows thumbnail cache
+ehthumbs.db              # Windows enhanced thumbs
+Desktop.ini              # Windows desktop info
+*~
+
+# ================================
+# Compose, Room, and Codegen Output
+# ================================
+build/generated/         # KAPT / annotation processor output
+schemas/                 # Room schema files (if not manually versioned)
+.ui/                     # Jetpack Compose preview cache
+
+# ================================
+# Logs, Reports, and Debug Output
+# ================================
 *.log
-
-# Misc
-*.swp
 *.tmp
+*.bak
+crashlytics-build.properties
+lint-report.html
+lint-results.*
+test-results/
+*.hprof
 
-# Jetpack Compose previews
-.idea/compose-preview/
+# ================================
+# APKs and Artifacts
+# ================================
+*.apk
+*.ap_
+*.aab
+
+# ================================
+# Editor and Merge Artifacts
+# ================================
+*.swp
+*.swo
+*.orig
+*.rej
+
+# ================================
+# Optional: Local Git hooks / Notes
+# ================================
+.git/hooks/
+.git/info/

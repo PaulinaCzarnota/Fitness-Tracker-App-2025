@@ -6,51 +6,52 @@ import kotlinx.coroutines.flow.Flow
 /**
  * WorkoutDao
  *
- * Data Access Object (DAO) for managing operations related to the "workouts" table.
- * Provides suspend functions for inserting and deleting, and reactive queries using Flow.
+ * Data Access Object (DAO) for managing workout entries in the "workouts" table.
+ * Provides methods to insert, delete, retrieve, and filter workout records.
+ * Supports reactive updates using Kotlin Flow.
  */
 @Dao
 interface WorkoutDao {
 
     /**
-     * Inserts a new workout into the database.
-     * If a workout with the same ID already exists, it will be replaced.
+     * Inserts a new [Workout] into the database.
+     * If a record with the same ID already exists, it will be replaced.
      *
-     * @param workout The Workout entity to be inserted.
+     * @param workout The workout to insert or update.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWorkout(workout: Workout)
 
     /**
-     * Deletes a specific workout from the database.
+     * Deletes a specific [Workout] from the database.
      *
-     * @param workout The Workout entity to be removed.
+     * @param workout The workout to remove.
      */
     @Delete
     suspend fun deleteWorkout(workout: Workout)
 
     /**
-     * Retrieves all workout entries from the database, ordered by date (newest first).
+     * Retrieves all workouts ordered by date (most recent first).
      *
-     * @return A Flow that emits the current list of workouts when data changes.
+     * @return A [Flow] emitting the list of workouts, auto-updated on DB change.
      */
     @Query("SELECT * FROM workouts ORDER BY date DESC")
     fun getAllWorkouts(): Flow<List<Workout>>
 
     /**
      * Retrieves all workouts that occurred between two dates (inclusive).
-     * Useful for progress tracking and reporting.
+     * Dates must be in Unix time milliseconds.
      *
-     * @param start Start date in milliseconds (epoch time).
-     * @param end End date in milliseconds (epoch time).
-     * @return A Flow that emits the filtered list of workouts.
+     * @param start Start date/time in epoch milliseconds.
+     * @param end End date/time in epoch milliseconds.
+     * @return A [Flow] emitting the filtered list of workouts.
      */
     @Query("SELECT * FROM workouts WHERE date BETWEEN :start AND :end ORDER BY date DESC")
     fun getWorkoutsBetween(start: Long, end: Long): Flow<List<Workout>>
 
     /**
-     * Clears all workout records from the database.
-     * Useful for resetting app state or debugging.
+     * Deletes all workouts from the database.
+     * This operation clears the "workouts" table entirely.
      */
     @Query("DELETE FROM workouts")
     suspend fun clearAll()

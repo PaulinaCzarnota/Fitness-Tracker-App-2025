@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    themes.xml - XML fallback theme for Compose-based Fitness Tracker App
+    Fallback XML theme for Compose-based Fitness Tracker App.
 
-    This theme is required to be referenced in the AndroidManifest.xml but is not used
-    for actual UI theming, which is handled entirely via Jetpack Compose in Theme.kt.
-
-    Avoid referencing unsupported Material3 styles like Theme.Material3.Light or attributes
-    like colorPrimary in XML. These are replaced with valid base theme and minimal styling
-    for compatibility and build success.
+    While UI theming is handled entirely via Jetpack Compose's Theme.kt,
+    this XML theme must still be defined and referenced in AndroidManifest.xml.
 -->
 <resources>
 
-    <!-- Base app theme -->
+    <!-- Base app theme for legacy compatibility -->
     <style name="Theme.FitnessTrackerApp" parent="android:Theme.Material.Light">
-        <!-- Basic background color -->
-        <item name="android:windowBackground">@color/white</item>
 
-        <!-- Text colors for legacy Views (if ever used) -->
-        <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:textColorSecondary">@color/teal_700</item>
+        <!-- Set default background color -->
+        <item name="android:windowBackground">@color/color_white</item>
 
-        <!-- Remove ActionBar for full Compose control -->
+        <!-- Optional: colors for Views (in case any non-Compose components are used) -->
+        <item name="android:textColorPrimary">@color/color_black</item>
+        <item name="android:textColorSecondary">@color/color_hint</item>
+
+        <!-- Hide ActionBar (Compose apps manage UI manually) -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
 
-        <!-- Optional: disable default activity transition animations -->
-        <!-- <item name="android:windowAnimationStyle">@null</item> -->
+        <!-- Optional: enable edge-to-edge layout if needed -->
+        <item name="android:windowTranslucentStatus">true</item>
+
     </style>
 
 </resources>

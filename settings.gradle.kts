@@ -1,40 +1,51 @@
 @file:Suppress("UnstableApiUsage")
 
-/**
- * This file configures repository sources, plugin management, and included modules.
- */
+// ============================================================
+// Root Gradle Settings
+// ============================================================
+//
+// Purpose:
+// - Set up secure and optimized plugin & dependency resolution
+// - Avoid duplicate repository definitions
+// - Enforce repository mode and clean module structure
+// - Prevent issues related to version catalog multiple-from() calls
+// ============================================================
 
 pluginManagement {
     repositories {
-        // Google's Maven repository — primary source for Android tools and Jetpack libraries
+        // Google's Maven repository for Android Gradle Plugin, Jetpack, Firebase, etc.
         google {
             content {
-                // Include only groups related to Android and Google tools to optimize resolution speed
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
+                includeGroupByRegex("com\\.android.*")   // Android build tools
+                includeGroupByRegex("androidx.*")        // Jetpack libraries
+                includeGroupByRegex("com\\.google.*")    // Firebase, Play Services, etc.
             }
         }
 
-        // Maven Central — provides Kotlin, third-party libraries, and general purpose tools
+        // Maven Central repository for Kotlin libraries and other essentials
         mavenCentral()
 
-        // Gradle Plugin Portal — used for community-developed Gradle plugins
+        // Gradle Plugin Portal for third-party Gradle plugins like Kotlin, Hilt, etc.
         gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
-    // Prevent subprojects (like :app) from using their own repositories
-    // This ensures all dependencies come from the repositories declared below
+    // Enforce centralized repository management for all modules
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
+        // Standard repositories needed for Android + Kotlin
         google()
         mavenCentral()
     }
+
+    // NOTE: Intentionally no versionCatalogs block here to avoid from() duplication error
+    // If you’re using a libs.versions.toml, make sure it’s configured only in one location
 }
 
+// Project name (as displayed in Android Studio)
 rootProject.name = "FitnessTrackerApp"
 
+// Include the main application module
 include(":app")

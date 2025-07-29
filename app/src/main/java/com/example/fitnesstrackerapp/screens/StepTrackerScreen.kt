@@ -12,45 +12,52 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.example.fitnesstrackerapp.sensors.StepCounterService
 import com.example.fitnesstrackerapp.viewmodel.StepCounterViewModel
+import com.example.fitnesstrackerapp.ui.components.BottomNavigationBar
 
 /**
  * StepTrackerScreen
  *
- * Displays the user's current step count. Listens for real-time updates from the
- * StepCounterService via broadcast intents and updates ViewModel state.
+ * Displays the user's step count, listens for updates from StepCounterService via BroadcastReceiver,
+ * and provides a reset button. This screen is Compose-safe and lifecycle-aware.
  *
- * - Automatically registers/unregisters BroadcastReceiver
- * - Works across all Android versions safely
- * - Includes "Reset Steps" button to clear the count
+ * @param navController Optional NavHostController for screen transitions
+ * @param stepCounterViewModel ViewModel containing step tracking logic and state
  */
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
 @Composable
 fun StepTrackerScreen(
+    navController: NavHostController? = null,
     stepCounterViewModel: StepCounterViewModel = viewModel()
 ) {
     val context = LocalContext.current
 
-    // Step count is observed using lifecycle-aware state collection
-    val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle(initialValue = 0)
+    // Collect step count as state (from ViewModel's StateFlow or LiveData)
+    val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle(
+        initialValue = 0,
+        lifecycle = LocalLifecycleOwner.current.lifecycle
+    )
 
-    // Register BroadcastReceiver on composition and unregister on disposal
+    // Lifecycle-aware registration of the BroadcastReceiver
     DisposableEffect(Unit) {
         val stepReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == "STEP_UPDATE") {
-                    val steps = intent.getIntExtra("steps", 0)
+                if (intent?.action == StepCounterService.STEP_UPDATE_ACTION) {
+                    val steps = intent.getIntExtra(StepCounterService.EXTRA_STEPS, 0)
                     stepCounterViewModel.updateStepCount(steps)
                 }
             }
         }
 
-        val filter = IntentFilter("STEP_UPDATE")
+        val filter = IntentFilter(StepCounterService.STEP_UPDATE_ACTION)
 
-        // Register differently depending on Android version
+        // Handle receiver registration for API 33+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(
                 stepReceiver,
@@ -61,30 +68,44 @@ fun StepTrackerScreen(
             context.registerReceiver(stepReceiver, filter)
         }
 
-        // Clean up the receiver when this composable is disposed
+        // Unregister when Composable is removed from the composition
         onDispose {
             context.unregisterReceiver(stepReceiver)
         }
     }
 
-    // --- UI Layout ---
-    Surface(modifier = Modifier.fillMaxSize()) {
+    // App layout using Scaffold with BottomNavigationBar
+    Scaffold(
+        bottomBar = { 
+            navController?.let { BottomNavigationBar(navController = it) }
+        }
+    ) { innerPadding ->
+        // Main content
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Title
-            Text("Step Tracker", style = MaterialTheme.typography.headlineMedium)
+            Text(
+                text = "Step Tracker",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Subheading
-            Text("Steps Taken", style = MaterialTheme.typography.titleLarge)
+            // Section Label
+            Text(
+                text = "Steps Taken",
+                style = MaterialTheme.typography.titleLarge
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Step count value (live)
+            // Dynamic Step Count
             Text(
                 text = stepCount.toString(),
                 style = MaterialTheme.typography.displayLarge,
@@ -93,12 +114,8 @@ fun StepTrackerScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Reset steps button
-            Button(
-                onClick = {
-                    stepCounterViewModel.resetStepCount()
-                }
-            ) {
+            // Reset Button
+            Button(onClick = { stepCounterViewModel.resetStepCount() }) {
                 Text("Reset Steps")
             }
         }

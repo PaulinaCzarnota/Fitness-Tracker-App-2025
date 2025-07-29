@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Color resources for the Fitness Tracker App.
-
-    These color definitions align with Material Design 3.
-    Used across themes, buttons, backgrounds, surfaces, text, etc.
+    Aligned with Material Design 3 guidelines.
+    Structured by purpose: primary, secondary, neutrals, error, etc.
 -->
 <resources>
 
@@ -11,49 +10,59 @@
     <!--       PRIMARY COLORS       -->
     <!-- ========================== -->
 
-    <!-- Main branding color -->
-    <color name="purple_500">#6200EE</color>
+    <!-- Main brand color (used for buttons, top bars, accents) -->
+    <color name="color_primary">#6200EE</color> <!-- purple_500 -->
+    <color name="color_primary_variant">#3700B3</color> <!-- purple_700 -->
+    <color name="color_on_primary">#FFFFFF</color> <!-- Text/icons on primary -->
 
-    <!-- Darker variant of primary -->
-    <color name="purple_700">#3700B3</color>
-
-    <!-- Lighter variant of primary -->
-    <color name="purple_200">#BB86FC</color>
+    <!-- Light variant (for backgrounds or elevated components) -->
+    <color name="color_primary_light">#BB86FC</color> <!-- purple_200 -->
 
 
     <!-- ========================== -->
     <!--      SECONDARY COLORS      -->
     <!-- ========================== -->
 
-    <!-- Accent color for highlights, icons -->
-    <color name="teal_200">#03DAC5</color>
-
-    <!-- Darker secondary variant -->
-    <color name="teal_700">#018786</color>
+    <!-- Accent color for highlights, FABs, toggles -->
+    <color name="color_secondary">#03DAC5</color> <!-- teal_200 -->
+    <color name="color_secondary_variant">#018786</color> <!-- teal_700 -->
+    <color name="color_on_secondary">#000000</color> <!-- Text/icons on secondary -->
 
 
     <!-- ========================== -->
     <!--        NEUTRAL COLORS      -->
     <!-- ========================== -->
 
-    <!-- Standard black for text/icons -->
-    <color name="black">#000000</color>
+    <!-- Standard black text -->
+    <color name="color_black">#000000</color>
 
-    <!-- Standard white for backgrounds/surfaces -->
-    <color name="white">#FFFFFF</color>
+    <!-- Standard white background -->
+    <color name="color_white">#FFFFFF</color>
 
-    <!-- Soft surface background for cards/sheets -->
-    <color name="surface_light">#FAFAFA</color>
+    <!-- Surface background (e.g. for cards) -->
+    <color name="color_surface">#FAFAFA</color> <!-- surface_light -->
 
-    <!-- Optional gray background (used sparingly) -->
-    <color name="background_grey">#F0F0F0</color>
+    <!-- Optional light gray background -->
+    <color name="color_background_grey">#F0F0F0</color>
 
 
     <!-- ========================== -->
-    <!--         ERROR COLOR        -->
+    <!--         ERROR COLORS       -->
     <!-- ========================== -->
 
-    <!-- Standard Material3 error red -->
-    <color name="error_red">#B00020</color>
+    <!-- Error red (used in form validation, alerts) -->
+    <color name="color_error">#B00020</color> <!-- error_red -->
+    <color name="color_on_error">#FFFFFF</color> <!-- Text/icons on error background -->
+
+
+    <!-- ========================== -->
+    <!--      OPTIONAL STATUS UI    -->
+    <!-- ========================== -->
+
+    <!-- For disabled buttons, etc. -->
+    <color name="color_disabled">#BDBDBD</color>
+
+    <!-- For text inputs, dividers -->
+    <color name="color_hint">#9E9E9E</color>
 
 </resources>

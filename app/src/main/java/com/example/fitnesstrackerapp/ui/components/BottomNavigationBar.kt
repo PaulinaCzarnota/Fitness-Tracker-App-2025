@@ -3,65 +3,69 @@ package com.example.fitnesstrackerapp.ui.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.fitnesstrackerapp.R
 import com.example.fitnesstrackerapp.navigation.Screen
 
 /**
  * BottomNavItem
  *
- * Represents a single tab item in the bottom navigation bar.
+ * Represents a single navigation tab shown in the bottom navigation bar.
  *
- * @param route The destination route this tab navigates to.
- * @param label The text label shown under the tab.
+ * @property route The unique route string used for navigation.
+ * @property labelResId The string resource ID for the label displayed to the user.
+ * // You may add: val icon: ImageVector for future icon support.
  */
 data class BottomNavItem(
     val route: String,
-    val label: String
+    val labelResId: Int
 )
 
 /**
  * BottomNavigationBar
  *
- * A composable that displays a Material3 bottom navigation bar with multiple tabs.
- * Handles navigation between key screens and highlights the selected screen.
+ * Displays a Material 3 navigation bar at the bottom of the screen.
+ * Provides quick access to core screens using [NavigationBarItem].
  *
- * @param navController The app's NavController used to navigate between screens.
+ * @param navController NavHostController instance for managing navigation state.
  */
 @Composable
-fun BottomNavigationBar(navController: NavController) {
-    // Define the tab items shown in the bottom navigation bar
-    val items = listOf(
-        BottomNavItem(Screen.Home.route, "Home"),
-        BottomNavItem(Screen.Workout.route, "Workout"),
-        BottomNavItem(Screen.Diet.route, "Diet"),
-        BottomNavItem(Screen.Goal.route, "Goals"),
-        BottomNavItem(Screen.Progress.route, "Progress"),
-        BottomNavItem(Screen.StepTracker.route, "Steps")
+fun BottomNavigationBar(navController: NavHostController) {
+    // Define navigation tabs to show in the bottom nav
+    val navItems = listOf(
+        BottomNavItem(Screen.Home.route, R.string.home),
+        BottomNavItem(Screen.Workout.route, R.string.workout),
+        BottomNavItem(Screen.Diet.route, R.string.diet),
+        BottomNavItem(Screen.Goal.route, R.string.goals),
+        BottomNavItem(Screen.Progress.route, R.string.progress),
+        BottomNavItem(Screen.StepTracker.route, R.string.steps)
     )
 
-    // Track the currently active route using the back stack
+    // Get the currently active screen route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Render the navigation bar with tabs
+    // Render bottom navigation bar
     NavigationBar {
-        items.forEach { item ->
+        navItems.forEach { item ->
             NavigationBarItem(
-                // Optional: You can add icons here if needed
-                icon = { /* e.g. Icon(Icons.Default.Home, contentDescription = item.label) */ },
-                label = { Text(item.label) },
+                icon = {
+                    // Placeholder for future icons
+                    // Icon(imageVector = item.icon, contentDescription = stringResource(item.labelResId))
+                },
+                label = { Text(text = stringResource(item.labelResId)) },
                 selected = currentRoute == item.route,
                 alwaysShowLabel = true,
                 onClick = {
-                    // Navigate only if we're not already on the selected screen
                     if (currentRoute != item.route) {
                         navController.navigate(item.route) {
-                            launchSingleTop = true // Prevent duplicates
+                            launchSingleTop = true           // Avoid multiple copies
+                            restoreState = true              // Restore previous screen state
                             popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                                saveState = true             // Save popped screen state
                             }
-                            restoreState = true
                         }
                     }
                 }

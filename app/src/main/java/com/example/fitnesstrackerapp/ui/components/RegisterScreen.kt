@@ -1,58 +1,73 @@
 package com.example.fitnesstrackerapp.ui.components
 
-import android.app.Application
+import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.fitnesstrackerapp.navigation.Screen
+import com.example.fitnesstrackerapp.util.SecurityUtils
 import com.example.fitnesstrackerapp.viewmodel.UserViewModel
-import com.example.fitnesstrackerapp.viewmodel.UserViewModelFactory
 
 /**
  * RegisterScreen
  *
- * A Jetpack Compose screen that allows new users to register by entering
- * an email and password. Uses ViewModel to insert the new user into
- * the Room database. Displays input validation and feedback messages.
+ * Displays registration UI for new user accounts.
+ * Validates email and password, registers via ViewModel,
+ * and navigates to the login screen on success.
  *
- * @param navController NavController for navigation flow.
+ * @param navController NavHostController used for screen navigation
  */
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavHostController) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
-    // Use the ViewModel factory to avoid unused warning
-    val userViewModel: UserViewModel = viewModel(
-        factory = UserViewModelFactory(context.applicationContext as Application)
-    )
+    // ViewModel that handles user authentication and registration logic
+    val userViewModel: UserViewModel = hiltViewModel()
 
-    // --- Form input states ---
+    // State variables for form fields
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    // --- UI feedback state ---
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var passwordVisible by remember { mutableStateOf(false) }
 
-    // --- Screen layout ---
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Register", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(16.dp))
+        Text("Register", style = MaterialTheme.typography.headlineSmall)
+        Spacer(modifier = Modifier.height(20.dp))
 
-        // --- Email input field ---
+        // Email input field
         OutlinedTextField(
             value = email,
             onValueChange = {
@@ -61,13 +76,13 @@ fun RegisterScreen(navController: NavController) {
             },
             label = { Text("Email") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // --- Password input field ---
+        // Password input with toggle visibility
         OutlinedTextField(
             value = password,
             onValueChange = {
@@ -75,51 +90,78 @@ fun RegisterScreen(navController: NavController) {
                 errorMessage = null
             },
             label = { Text("Password") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            trailingIcon = {
+                TextButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Text(if (passwordVisible) "Hide" else "Show")
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // --- Error message ---
+        // Show error message if any
         errorMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error)
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        // --- Register button ---
+        // Register button
         Button(
             onClick = {
-                if (email.isBlank() || password.isBlank()) {
-                    errorMessage = "Please fill in all fields."
-                    return@Button
-                }
+                val trimmedEmail = SecurityUtils.normaliseEmail(email)
+                val trimmedPassword = password.trim()
 
-                isLoading = true
+                when {
+                    trimmedEmail.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() ->
+                        errorMessage = "Please enter a valid email address."
 
-                // Call ViewModel to register the user
-                userViewModel.register(email.trim(), password.trim()) { success ->
-                    isLoading = false
-                    if (success) {
-                        Toast.makeText(context, "Registered successfully!", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack() // Navigate back to login
-                    } else {
-                        errorMessage = "Registration failed. Email may already be in use."
+                    trimmedPassword.length < 6 ->
+                        errorMessage = "Password must be at least 6 characters."
+
+                    else -> {
+                        isLoading = true
+                        focusManager.clearFocus()
+
+                        // Call ViewModel to perform registration
+                        userViewModel.register(trimmedEmail, trimmedPassword) { success ->
+                            isLoading = false
+                            if (success) {
+                                Toast.makeText(context, "Registration successful!", Toast.LENGTH_SHORT).show()
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(Screen.Register.route) { inclusive = true }
+                                }
+                            } else {
+                                errorMessage = "Registration failed. Email may already be in use."
+                            }
+                        }
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(if (isLoading) "Registering..." else "Register")
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // --- Link to login screen ---
-        TextButton(onClick = { navController.popBackStack() }) {
+        // Navigation to login screen
+        TextButton(
+            onClick = {
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Register.route) { inclusive = true }
+                }
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
             Text("Already have an account? Login")
         }
     }

@@ -13,29 +13,31 @@ import kotlinx.coroutines.launch
 /**
  * GoalViewModel
  *
- * ViewModel that manages the UI-related data for goal tracking.
- * Interacts with the GoalDao to read/write data to the Room database.
- * Exposes goal data using StateFlow for Jetpack Compose UI reactivity.
+ * ViewModel that handles all logic related to user goals in the Fitness Tracker App.
+ * Communicates with [GoalDao] to manage Room database operations.
+ * Exposes a [StateFlow] to keep the UI reactive and up to date.
+ *
+ * @param goalDao DAO interface for accessing goal-related data.
  */
 class GoalViewModel(
     private val goalDao: GoalDao
 ) : ViewModel() {
 
     /**
-     * A reactive StateFlow of all goals from the database.
-     * Observed in the UI using collectAsStateWithLifecycle() or collectAsState().
+     * A reactive stream of all goals in the database, observed by the UI.
+     * Backed by Kotlin [StateFlow] for efficient recomposition in Jetpack Compose.
      */
     val allGoals: StateFlow<List<Goal>> = goalDao.getAllGoals()
         .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            scope = viewModelScope, // Coroutine scope tied to this ViewModel's lifecycle
+            started = SharingStarted.WhileSubscribed(5000), // Avoids leaks and unnecessary work
             initialValue = emptyList()
         )
 
     /**
-     * Inserts a new goal into the database.
+     * Inserts a new goal entry into the Room database.
      *
-     * @param goal The Goal object to be added.
+     * @param goal The [Goal] object to be inserted.
      */
     fun addGoal(goal: Goal) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -45,9 +47,9 @@ class GoalViewModel(
 
     /**
      * Updates an existing goal entry.
-     * Typically used when the user modifies goal target, name, or progress.
+     * Use this to modify description, progress, or completion status.
      *
-     * @param goal The updated Goal object.
+     * @param goal The [Goal] entity with updated values.
      */
     fun updateGoal(goal: Goal) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -56,10 +58,10 @@ class GoalViewModel(
     }
 
     /**
-     * Deletes a specific goal from the database.
-     * Called when the user manually removes a goal entry.
+     * Deletes a goal from the database.
+     * Usually triggered when a user removes a goal manually.
      *
-     * @param goal The Goal to delete.
+     * @param goal The [Goal] object to delete.
      */
     fun deleteGoal(goal: Goal) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -68,8 +70,8 @@ class GoalViewModel(
     }
 
     /**
-     * Clears all goal entries from the database.
-     * Useful for "Reset" features or developer testing.
+     * Deletes all goal entries from the database.
+     * Use with caution — this operation is irreversible.
      */
     fun clearAllGoals() {
         viewModelScope.launch(Dispatchers.IO) {

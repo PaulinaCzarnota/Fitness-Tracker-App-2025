@@ -14,134 +14,154 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.navigation.NavHostController
 import com.example.fitnesstrackerapp.data.Diet
-import com.example.fitnesstrackerapp.util.formatDate
 import com.example.fitnesstrackerapp.viewmodel.DietViewModel
 import com.example.fitnesstrackerapp.viewmodel.DietViewModelFactory
+import com.example.fitnesstrackerapp.ui.components.BottomNavigationBar
+import com.example.fitnesstrackerapp.util.formatDate
 
 /**
  * DietScreen
  *
- * Screen to log and display diet entries (food + calories).
- * Integrates with Room database via DietViewModel.
- * Supports add, edit, delete, and clear operations.
+ * Allows users to log their daily food intake and track nutrition.
+ * Provides functionality to add, edit, delete, and view diet entries.
+ *
+ * @param navController Optional navigation controller for consistency with Navigation.kt.
  */
 @Composable
-fun DietScreen() {
+fun DietScreen(navController: NavHostController? = null) {
     val context = LocalContext.current
+    val application = context.applicationContext as Application
 
-    // Use DietViewModelFactory to construct the ViewModel with database access
+    // Initialize ViewModel with application context
     val viewModel: DietViewModel = viewModel(
-        factory = DietViewModelFactory(context.applicationContext as Application)
+        factory = DietViewModelFactory(application)
     )
 
-    // State for form inputs and edit tracking
-    var foodInput by remember { mutableStateOf("") }
-    var caloriesInput by remember { mutableStateOf("") }
+    // State variables for diet input fields
+    var food by remember { mutableStateOf("") }
+    var calories by remember { mutableStateOf("") }
     var editingDietId by remember { mutableStateOf<Int?>(null) }
 
-    // Live data list of diet logs
-    val dietList by viewModel.allDiets.observeAsState(emptyList())
+    // Observe all diets from ViewModel
+    val diets by viewModel.allDiets.observeAsState(initial = emptyList())
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-
-        Text("Log Food Intake", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Food input
-        OutlinedTextField(
-            value = foodInput,
-            onValueChange = { foodInput = it },
-            label = { Text("Food") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Calories input
-        OutlinedTextField(
-            value = caloriesInput,
-            onValueChange = { caloriesInput = it },
-            label = { Text("Calories") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Add or Update button
-        Button(
-            onClick = {
-                val food = foodInput.trim()
-                val calories = caloriesInput.toIntOrNull()
-
-                if (food.isNotBlank() && calories != null && calories > 0) {
-                    val diet = Diet(
-                        id = editingDietId ?: 0,
-                        food = food,
-                        calories = calories,
-                        date = System.currentTimeMillis()
-                    )
-
-                    if (editingDietId == null) {
-                        viewModel.addDiet(diet)
-                        Toast.makeText(context, "Diet entry added", Toast.LENGTH_SHORT).show()
-                    } else {
-                        viewModel.editDiet(diet)
-                        Toast.makeText(context, "Diet entry updated", Toast.LENGTH_SHORT).show()
-                        editingDietId = null
-                    }
-
-                    foodInput = ""
-                    caloriesInput = ""
-                } else {
-                    Toast.makeText(context, "Please enter valid food and calories", Toast.LENGTH_SHORT).show()
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(if (editingDietId == null) "Add Diet Entry" else "Update Entry")
+    // App layout using Scaffold with BottomNavigationBar
+    Scaffold(
+        bottomBar = { 
+            navController?.let { BottomNavigationBar(navController = it) }
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Clear All button
-        Button(
-            onClick = {
-                viewModel.resetAllDiets()
-                Toast.makeText(context, "All entries cleared", Toast.LENGTH_SHORT).show()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+    ) { innerPadding ->
+        // Main content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
         ) {
-            Text("Clear All")
-        }
+            // --- Input Form ---
+            Text("Log Food Intake", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = food,
+                onValueChange = { food = it },
+                label = { Text("Food") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Diet log list
-        Text("Diet Log", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = calories,
+                onValueChange = { calories = it },
+                label = { Text("Calories") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
 
-        if (dietList.isEmpty()) {
-            Text("No entries yet.")
-        } else {
-            LazyColumn {
-                items(dietList) { diet ->
-                    DietCard(
-                        diet = diet,
-                        onEdit = {
-                            foodInput = it.food
-                            caloriesInput = it.calories.toString()
-                            editingDietId = it.id
-                        },
-                        onDelete = {
-                            viewModel.removeDiet(it)
-                            Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show()
+            // Add or Update Entry Button
+            Button(
+                onClick = {
+                    val foodTrimmed = food.trim()
+                    val caloriesInt = calories.toIntOrNull()
+
+                    if (foodTrimmed.isNotBlank() && caloriesInt != null && caloriesInt > 0) {
+                        val diet = Diet(
+                            id = editingDietId ?: 0,
+                            food = foodTrimmed,
+                            calories = caloriesInt,
+                            date = System.currentTimeMillis()
+                        )
+
+                        if (editingDietId == null) {
+                            viewModel.addDiet(diet)
+                            Toast.makeText(context, "Diet entry added", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.editDiet(diet)
+                            Toast.makeText(context, "Diet entry updated", Toast.LENGTH_SHORT).show()
+                            editingDietId = null
                         }
-                    )
+
+                        // Reset fields
+                        food = ""
+                        calories = ""
+                    } else {
+                        Toast.makeText(context, "Enter valid food and calories", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (editingDietId == null) "Add Diet Entry" else "Update Entry")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Clear All Button
+            Button(
+                onClick = {
+                    viewModel.resetAllDiets()
+                    Toast.makeText(context, "All entries cleared", Toast.LENGTH_SHORT).show()
+                    // Reset form fields as well
+                    food = ""
+                    calories = ""
+                    editingDietId = null
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Clear All")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // --- Diet Log Section ---
+            Text("Diet Log", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (diets.isEmpty()) {
+                Text("No entries yet.")
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(diets, key = { it.id }) { diet ->
+                        DietCard(
+                            diet = diet,
+                            onEdit = {
+                                food = it.food
+                                calories = it.calories.toString()
+                                editingDietId = it.id
+                            },
+                            onDelete = {
+                                viewModel.removeDiet(it)
+                                Toast.makeText(context, "Entry deleted", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -151,8 +171,7 @@ fun DietScreen() {
 /**
  * DietCard
  *
- * Displays one diet entry in the list.
- * Provides Edit and Delete buttons for interaction.
+ * Displays a single diet log entry with edit and delete options.
  */
 @Composable
 fun DietCard(
@@ -164,19 +183,23 @@ fun DietCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text("Food: ${diet.food}")
             Text("Calories: ${diet.calories}")
             Text("Date: ${formatDate(diet.date)}")
             Spacer(modifier = Modifier.height(8.dp))
+
             Row {
                 OutlinedButton(onClick = { onEdit(diet) }) {
                     Text("Edit")
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                OutlinedButton(onClick = { onDelete(diet) }) {
+                OutlinedButton(
+                    onClick = { onDelete(diet) },
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
                     Text("Delete")
                 }
             }

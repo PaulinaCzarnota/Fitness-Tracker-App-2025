@@ -3,35 +3,35 @@ package com.example.fitnesstrackerapp.viewmodel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.fitnesstrackerapp.data.FitnessDatabase
+import com.example.fitnesstrackerapp.data.GoalDao
+import com.example.fitnesstrackerapp.di.DatabaseModule
 
 /**
  * GoalViewModelFactory
  *
- * A ViewModelProvider.Factory that supplies a GoalViewModel instance with
- * a required GoalDao dependency from the Room database.
+ * Factory class for creating [GoalViewModel] instances with their required dependencies.
+ * This factory ensures that the ViewModel receives the correct [GoalDao] from the database.
  *
- * This is essential because GoalViewModel does not have a default constructor.
+ * Usage in Jetpack Compose:
+ * ```kotlin
+ * val viewModel: GoalViewModel = viewModel(
+ *     factory = GoalViewModelFactory(application)
+ * )
+ * ```
  */
 class GoalViewModelFactory(
     private val application: Application
 ) : ViewModelProvider.Factory {
 
-    /**
-     * Creates and returns an instance of GoalViewModel with injected DAO.
-     *
-     * @param modelClass The class of the ViewModel requested.
-     * @return A GoalViewModel instance if requested, otherwise throws exception.
-     */
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(GoalViewModel::class.java) -> {
-                val goalDao = FitnessDatabase.getDatabase(application).goalDao()
-                @Suppress("UNCHECKED_CAST")
-                GoalViewModel(goalDao) as T
-            }
-
-            else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        if (modelClass.isAssignableFrom(GoalViewModel::class.java)) {
+            // Create database and DAO instances
+            val database = DatabaseModule.provideDatabase(application)
+            val goalDao = database.goalDao()
+            
+            return GoalViewModel(goalDao) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

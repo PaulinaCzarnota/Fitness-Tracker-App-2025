@@ -3,42 +3,35 @@ package com.example.fitnesstrackerapp.viewmodel
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.fitnesstrackerapp.data.FitnessDatabase
+import com.example.fitnesstrackerapp.data.DietDao
+import com.example.fitnesstrackerapp.di.DatabaseModule
 
 /**
  * DietViewModelFactory
  *
- * A ViewModelProvider.Factory responsible for constructing the DietViewModel
- * with its required DietDao dependency from the Room database.
+ * Factory class for creating [DietViewModel] instances with their required dependencies.
+ * This factory ensures that the ViewModel receives the correct [DietDao] from the database.
  *
- * This is necessary because DietViewModel has a non-default constructor.
+ * Usage in Jetpack Compose:
+ * ```kotlin
+ * val viewModel: DietViewModel = viewModel(
+ *     factory = DietViewModelFactory(application)
+ * )
+ * ```
  */
 class DietViewModelFactory(
     private val application: Application
 ) : ViewModelProvider.Factory {
 
-    /**
-     * Creates a new instance of the given ViewModel class.
-     *
-     * @param modelClass The class of the ViewModel to create.
-     * @return A properly constructed DietViewModel instance with DietDao injected.
-     *
-     * @throws IllegalArgumentException if the ViewModel is not DietViewModel.
-     */
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return when {
-            modelClass.isAssignableFrom(DietViewModel::class.java) -> {
-                val dietDao = FitnessDatabase
-                    .getDatabase(application)
-                    .dietDao()
-
-                @Suppress("UNCHECKED_CAST")
-                DietViewModel(dietDao) as T
-            }
-
-            else -> throw IllegalArgumentException(
-                "Unknown ViewModel class: ${modelClass.name}"
-            )
+        if (modelClass.isAssignableFrom(DietViewModel::class.java)) {
+            // Create database and DAO instances
+            val database = DatabaseModule.provideDatabase(application)
+            val dietDao = database.dietDao()
+            
+            return DietViewModel(dietDao) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

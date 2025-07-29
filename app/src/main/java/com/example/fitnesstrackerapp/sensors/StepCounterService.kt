@@ -1,104 +1,127 @@
 package com.example.fitnesstrackerapp.sensors
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import com.example.fitnesstrackerapp.R
 
 /**
  * StepCounterService
  *
- * Foreground service that listens to step counter sensor data.
- * Sends broadcasts with relative step count updates every time a step is detected.
- *
- * ⚠️ Note: Works only on devices with a built-in step counter sensor.
+ * Foreground service that listens to the step counter sensor and broadcasts step updates.
  */
 class StepCounterService : Service(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null
 
-    // Used to establish baseline on service start
     private var initialStepCount: Int = -1
-
-    // Relative step count since service began
     private var currentSteps: Int = 0
 
-    /**
-     * Called when the service is created (once per service lifecycle).
-     * Initializes sensor manager and registers sensor listener.
-     */
+    companion object {
+        const val STEP_UPDATE_ACTION = "com.example.fitnesstrackerapp.STEP_UPDATE"
+        const val EXTRA_STEPS = "steps"
+        const val ACTION_STOP_SERVICE = "STOP_STEP_SERVICE"
+        private const val CHANNEL_ID = "step_counter_channel"
+        private const val NOTIFICATION_ID = 101
+    }
+
     override fun onCreate() {
         super.onCreate()
 
+        // Get sensor manager and register for step counter sensor updates
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
         if (stepSensor != null) {
-            // Register for sensor updates
-            sensorManager.registerListener(
-                this,
-                stepSensor,
-                SensorManager.SENSOR_DELAY_NORMAL
-            )
+            sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL)
             Log.d("StepCounterService", "Step sensor registered.")
         } else {
-            Log.e("StepCounterService", "Step Counter Sensor not available on this device.")
+            Log.e("StepCounterService", "Step sensor not available.")
+            stopSelf()
         }
+
+        // Start service as a foreground service with a persistent notification
+        startForeground(NOTIFICATION_ID, createNotification())
     }
 
-    /**
-     * Called when sensor values change.
-     * Handles step count updates and broadcasts the current step count.
-     */
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Handle custom intent to stop the service externally
+        if (intent?.action == ACTION_STOP_SERVICE) {
+            Log.d("StepCounterService", "Received STOP action.")
+            stopSelf()
+        }
+        return START_STICKY
+    }
+
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER && event.values.isNotEmpty()) {
             val totalSteps = event.values[0].toInt()
 
-            // Record initial step count as baseline
             if (initialStepCount == -1) {
                 initialStepCount = totalSteps
             }
 
-            // Calculate relative steps since this service started
             currentSteps = totalSteps - initialStepCount
-
             Log.d("StepCounterService", "Steps since start: $currentSteps")
 
-            // Send broadcast to UI/ViewModel
-            val broadcast = Intent("STEP_UPDATE").apply {
-                putExtra("steps", currentSteps)
+            // Send broadcast with updated step count
+            val broadcast = Intent(STEP_UPDATE_ACTION).apply {
+                putExtra(EXTRA_STEPS, currentSteps)
             }
             sendBroadcast(broadcast)
-
-            // Optional: Store step count persistently here (e.g. using DataStore or Room)
         }
     }
 
-    /**
-     * Required method but unused for this service.
-     */
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // No accuracy handling needed
+        // Not used in this context
     }
 
-    /**
-     * Required for services — returns null since this is an unbound service.
-     */
     override fun onBind(intent: Intent?): IBinder? {
+        // This is a started service, not a bound service
         return null
     }
 
-    /**
-     * Called when the service is being stopped. Cleans up listeners.
-     */
     override fun onDestroy() {
         super.onDestroy()
+        // Unregister the sensor listener when service is stopped
         sensorManager.unregisterListener(this)
-        Log.d("StepCounterService", "Step sensor listener unregistered.")
+        Log.d("StepCounterService", "Sensor unregistered and service destroyed.")
+    }
+
+    /**
+     * Creates a persistent notification required by Android O+ for background services.
+     */
+    private fun createNotification(): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Step Tracking",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Tracks your steps in the background"
+            }
+
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+        }
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Tracking Steps")
+            .setContentText("Step tracking is active")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setOngoing(true)
+            .build()
     }
 }

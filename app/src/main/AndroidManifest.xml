@@ -1,89 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    AndroidManifest.xml for the Fitness Tracker App.
-    Defines app permissions, activities, services, and broadcast receivers.
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- ================================= -->
-    <!--            PERMISSIONS            -->
-    <!-- ================================= -->
+    <!-- ================= PERMISSIONS ================= -->
 
-    <!-- Required for detecting steps (physical activity sensors) -->
+    <!-- Required for detecting step count using sensors -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-
-    <!-- Optional: For accessing body sensors (e.g., heart rate monitor) -->
     <uses-permission android:name="android.permission.BODY_SENSORS" />
 
-    <!-- Required for any internet communication (e.g., APIs, cloud sync) -->
+    <!-- Required for accessing the internet (e.g., Firebase or remote APIs) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Required from Android 13+ to show notifications -->
+    <!-- Required to show notifications from Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Allows rescheduling notifications after device restarts -->
+    <!-- Required to auto-start app components like alarms after phone reboot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 
-    <!-- ================================= -->
-    <!--           APPLICATION              -->
-    <!-- ================================= -->
+    <!-- ================= APPLICATION ================= -->
 
     <application
+        android:name=".FitnessTrackerApplication"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FitnessTrackerApp"
-        tools:targetApi="31">
+        tools:targetApi="33">
 
-        <!-- ================================= -->
-        <!--           MAIN ACTIVITY           -->
-        <!-- ================================= -->
+        <!-- Main launcher activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.FitnessTrackerApp">
             <intent-filter>
-                <!-- Launcher entry point -->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- ================================= -->
-        <!--       STEP COUNTER SERVICE        -->
-        <!-- ================================= -->
+        <!-- Foreground service for live step tracking (with TYPE: health) -->
         <service
             android:name=".sensors.StepCounterService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="health" />
 
-        <!-- ================================= -->
-        <!--     NOTIFICATION RECEIVERS        -->
-        <!-- ================================= -->
-
-        <!-- Triggered by AlarmManager for daily notifications -->
+        <!-- Broadcast receiver for daily notifications -->
         <receiver
             android:name=".notifications.NotificationReceiver"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedReceiver" />
 
-        <!-- Reschedules reminders on device reboot -->
+        <!-- Broadcast receiver to re-register alarms when device reboots -->
         <receiver
             android:name=".notifications.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <!-- Broadcast when the device finishes booting -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
     </application>
-
 </manifest>

@@ -1,57 +1,43 @@
 package com.example.fitnesstrackerapp.data
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.fitnesstrackerapp.data.converter.DateConverter
 
 /**
- * FitnessDatabase
+ * Main Room database class for the Fitness Tracker App.
  *
- * Main Room database for the Fitness Tracker App.
- * Includes entities: Workout, Goal, Diet, and User.
- * Provides DAOs for data access.
+ * @Database:
+ *  - entities: the data tables in this database.
+ *  - version: bump this whenever you change the schema.
+ *  - exportSchema: set to false to skip keeping a schema file in your repo.
+ *
+ * @TypeConverters:
+ *  Register any converters for non‑primitive types (e.g. Date).
  */
 @Database(
-    entities = [Workout::class, Goal::class, Diet::class, User::class],
+    entities = [
+        User::class,
+        Diet::class,
+        Workout::class,
+        Goal::class
+    ],
     version = 1,
     exportSchema = false
 )
+@TypeConverters(DateConverter::class)
 abstract class FitnessDatabase : RoomDatabase() {
 
-    // --- DAO accessors ---
-    abstract fun workoutDao(): WorkoutDao
-    abstract fun goalDao(): GoalDao
-    abstract fun dietDao(): DietDao
+    /** Provides access to user-related database operations. */
     abstract fun userDao(): UserDao
 
-    companion object {
-        // Singleton instance for application-wide DB access
-        @Volatile
-        private var INSTANCE: FitnessDatabase? = null
+    /** Provides access to diet-related database operations. */
+    abstract fun dietDao(): DietDao
 
-        /**
-         * Gets the singleton instance of the FitnessDatabase.
-         * Builds the database using fallbackToDestructiveMigration with `true`
-         * to safely drop all tables on schema changes.
-         *
-         * @param context Application context (do not use Activity context)
-         * @return FitnessDatabase instance
-         */
-        fun getDatabase(context: Context): FitnessDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    FitnessDatabase::class.java,
-                    "fitness_database"
-                )
-                    // Corrected: Pass `true` to indicate all tables may be dropped if needed
-                    .fallbackToDestructiveMigration(true)
-                    .build()
+    /** Provides access to workout-related database operations. */
+    abstract fun workoutDao(): WorkoutDao
 
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
+    /** Provides access to goal-related database operations. */
+    abstract fun goalDao(): GoalDao
 }

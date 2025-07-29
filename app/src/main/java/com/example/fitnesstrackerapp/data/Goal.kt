@@ -6,44 +6,48 @@ import androidx.room.PrimaryKey
 /**
  * Goal
  *
- * Represents a fitness goal set by the user, such as:
+ * Represents a fitness goal defined by the user, such as:
  * - "Run 10 km this week"
  * - "Burn 3000 calories this month"
- * - "Do 5 workouts this week"
+ * - "Complete 5 workouts this week"
  *
- * Stored in the Room database table "goal_table".
+ * Each goal includes a description, a measurable target, current progress,
+ * and a flag to indicate whether the goal has been achieved.
+ * This data is stored in the "goal_table" Room table.
  */
 @Entity(tableName = "goal_table")
 data class Goal(
 
     /**
      * Primary key for the goal.
-     * Auto-generated unique ID for each entry.
+     * Automatically generated unique ID for each goal entry.
      */
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
     /**
-     * A descriptive label for the goal.
-     * Example: "Workout 5 times a week"
+     * Text description of the goal.
+     * Should be short but informative.
+     * Example: "Workout 5 times this week"
      */
     val description: String,
 
     /**
-     * The target value to achieve.
-     * Example: 5 workouts
+     * The target number to reach (e.g., 5 workouts, 3000 calories).
+     * Must be positive (enforce via UI or ViewModel).
      */
     val target: Int,
 
     /**
-     * Tracks the user's current progress.
+     * Tracks the current progress made toward the goal.
+     * Must be less than or equal to 'target'.
      * Example: 3 workouts completed so far.
      */
     val current: Int = 0,
 
     /**
-     * Indicates if the goal has been achieved.
-     * Automatically set by logic in ViewModel/UI.
+     * Boolean indicating if the goal has been achieved.
+     * Automatically updated by logic in ViewModel or business layer.
      */
     val achieved: Boolean = false
 )

@@ -1,31 +1,42 @@
 package com.example.fitnesstrackerapp.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
  * User
  *
- * Represents a registered user of the Fitness Tracker App.
- * This data class defines a Room entity stored in the "users" table.
+ * Represents a registered user in the local Room database.
+ * Used for login authentication and account management.
  *
- * @property email The unique email address of the user, used as the primary key.
- * @property password The user's password (stored in plain text here for simplicity).
+ * Security:
+ * - Email is normalized before saving (trimmed + lowercase).
+ * - Password must be stored as a SHA-256 hash, not plaintext.
  */
-@Entity(tableName = "users")
+@Entity(
+    tableName = "users",
+    indices = [Index(value = ["email"], unique = true)] // Unique constraint on email
+)
 data class User(
 
     /**
-     * Primary key: The user's unique email address.
-     * Room will enforce uniqueness and use this to identify users.
+     * Auto-generated primary key for the user.
      */
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Int = 0,
+
+    /**
+     * User's login email (normalized).
+     */
+    @ColumnInfo(name = "email")
     val email: String,
 
     /**
-     * The user's password.
-     * WARNING: Stored in plain text for assignment/demo purposes.
-     * In production apps, always hash and salt passwords before storing them.
+     * SHA-256 hashed password in hexadecimal string format.
      */
-    val password: String
+    @ColumnInfo(name = "password_hash")
+    val passwordHash: String
 )

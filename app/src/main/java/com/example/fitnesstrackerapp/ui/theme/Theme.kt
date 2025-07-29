@@ -7,52 +7,52 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 /**
- * -----------------------------------
- * Material 3 Theme for the App
- * -----------------------------------
- * This theme applies consistent styling using Material Design 3 and supports:
- * - Light and Dark mode
- * - Optional Material You (dynamic color) on Android 12+
- * - Custom colors from Color.kt
- * - Custom typography from Typography.kt
+ * This file defines the overall app theme using Material Design 3.
+ * Supports:
+ * - Light and dark modes
+ * - Dynamic Material You colors on Android 12+
+ * - Custom color palettes (see Color.kt)
+ * - Custom typography (see Typography.kt)
  */
 
 // ----------------------------
 // DARK THEME COLOR SCHEME
 // ----------------------------
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,        // Main brand color in dark mode
-    secondary = PurpleGrey80,  // Secondary brand/accent color
-    tertiary = Pink80          // Tertiary/accent color
+    primary = Purple80,        // Primary color for dark theme
+    secondary = PurpleGrey80,  // Secondary/accent color for dark theme
+    tertiary = Pink80,         // Tertiary/accent color for dark theme
+
+    // Optional overrides (if you need advanced color tuning)
+    // background = Color(0xFF121212),
+    // surface = Color(0xFF1E1E1E),
+    // onPrimary = Color.Black,
+    // onSecondary = Color.Black,
+    // onTertiary = Color.Black
 )
 
 // ----------------------------
 // LIGHT THEME COLOR SCHEME
 // ----------------------------
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,        // Main brand color in light mode
-    secondary = PurpleGrey40,  // Secondary brand/accent color
-    tertiary = Pink40          // Tertiary/accent color
+    primary = Purple40,        // Primary color for light theme
+    secondary = PurpleGrey40,  // Secondary/accent color for light theme
+    tertiary = Pink40,         // Tertiary/accent color for light theme
 
-    // Optional overrides for advanced customization:
+    // Optional overrides (uncomment to customize deeply)
     // background = Color.White,
     // surface = Color(0xFFFFFBFE),
     // onPrimary = Color.White,
     // onSecondary = Color.Black,
-    // onTertiary = Color.White,
-    // onBackground = Color.Black,
-    // onSurface = Color.Black,
+    // onTertiary = Color.White
 )
 
 /**
- * FitnessTrackerAppTheme
+ * Wraps your app’s UI in a consistent Material 3 theme.
  *
- * Central theming composable that wraps your app UI.
- * Applies Material3 color schemes and typography to all content.
- *
- * @param darkTheme Whether to use dark mode (defaults to system setting)
- * @param dynamicColor Whether to enable Material You dynamic color (Android 12+)
- * @param content The app's Composable UI
+ * @param darkTheme Enables dark mode. Defaults to system setting.
+ * @param dynamicColor Enables Material You dynamic colors (only on Android 12+).
+ * @param content The UI content wrapped inside the themed MaterialTheme.
  */
 @Composable
 fun FitnessTrackerAppTheme(
@@ -60,23 +60,23 @@ fun FitnessTrackerAppTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    // Choose appropriate color scheme
+    // Resolve the appropriate color scheme
     val colorScheme = when {
-        // Android 12+ dynamic colors from system wallpaper
+        // Use dynamic color if supported (Android 12+)
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        // Fallback to static palettes
+        // Otherwise, use custom dark or light theme
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
-    // Apply the theme using MaterialTheme from Material3
+    // Apply the Material 3 theme to the app
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography, // Defined in Typography.kt
-        content = content         // Your app's UI
+        typography = Typography, // Imported from Typography.kt
+        content = content         // Composable content wrapped in theme
     )
 }

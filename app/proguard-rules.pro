@@ -2,85 +2,104 @@
 # General Debug & Optimization Settings
 ########################################
 
-# Keep line numbers for stack traces
+# Keep source file and line numbers for easier debugging (stack traces)
 -keepattributes SourceFile,LineNumberTable
 
-# Optionally hide the original source file names
+# Optional: Remove original source file name from stack trace (privacy)
 #-renamesourcefileattribute SourceFile
 
 
 ########################################
-# Jetpack Compose
+# Jetpack Compose Runtime & UI Tooling
 ########################################
 
-# Required to keep Compose runtime code
+# Keep all Compose runtime classes and suppress related warnings
 -keep class androidx.compose.** { *; }
 -dontwarn androidx.compose.**
 
-# Needed for preview support (optional)
+# Keep Compose UI tooling classes for Previews and UI inspector
 -keep class androidx.compose.ui.tooling.** { *; }
 -dontwarn androidx.compose.ui.tooling.**
+
 
 ########################################
 # Kotlin & Coroutines
 ########################################
 
-# Keep Kotlin metadata for reflection and annotations
+# Preserve Kotlin metadata for reflection, annotations, etc.
 -keep class kotlin.Metadata { *; }
 
-# Keep all suspend functions and coroutine state machines
+# Preserve all coroutine internal state and suppress warnings
 -keep class kotlinx.coroutines.** { *; }
 -dontwarn kotlinx.coroutines.**
 
+
 ########################################
-# AndroidX Lifecycle & ViewModel
+# AndroidX Lifecycle, ViewModel, LiveData
 ########################################
 
+# Keep lifecycle classes (ViewModel, LiveData, etc.)
 -keep class androidx.lifecycle.** { *; }
 -dontwarn androidx.lifecycle.**
 
-# Keep ViewModel subclasses
+# Preserve any custom ViewModel subclasses (used in Compose navigation or state)
 -keep class * extends androidx.lifecycle.ViewModel
 
+
 ########################################
-# Room Database
+# Room Database Annotations & Classes
 ########################################
 
-# Keep Room entities, DAOs, and database
+# Preserve Room’s core annotations and generated classes
 -keep class androidx.room.** { *; }
 -dontwarn androidx.room.**
 
+# Keep Room database, entity, and DAO structures
 -keep class * extends androidx.room.RoomDatabase
 -keep class * extends androidx.room.Entity
 -keep interface * implements androidx.room.Dao
 
+
 ########################################
-# Material3 & Jetpack UI
+# Material3 UI Components
 ########################################
 
+# Keep Material3 component classes to avoid UI loss in release builds
 -keep class androidx.compose.material3.** { *; }
 -dontwarn androidx.compose.material3.**
 
-########################################
-# Optional: Keep for Retrofit, Gson, Moshi, etc.
-########################################
-
-# Uncomment below if you use Retrofit or Gson
-# -keepattributes Signature
-# -keepattributes *Annotation*
-
-# Retrofit interfaces
-# -keep interface retrofit2.* { *; }
-# -keep class retrofit2.converter.gson.** { *; }
-# -dontwarn retrofit2.**
-
-# Gson models
-# -keep class com.yourpackage.model.** { *; }
 
 ########################################
-# WebView JS Interface (if applicable)
+# Optional: Retrofit, Gson, Moshi (Uncomment if used)
 ########################################
 
+# Uncomment these rules if using Retrofit + Gson for networking
+#-keepattributes Signature
+#-keepattributes *Annotation*
+
+# Retrofit interfaces (API declarations)
+#-keep interface retrofit2.* { *; }
+#-keep class retrofit2.converter.gson.** { *; }
+#-dontwarn retrofit2.**
+
+# Gson POJOs
+#-keep class com.yourpackage.model.** { *; }
+
+
+########################################
+# Optional: WebView JavaScript Interface
+########################################
+
+# Uncomment this if using JavaScript interfaces in WebViews
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
+#    public *;
 #}
+
+
+########################################
+# Testing Tools (if needed)
+########################################
+
+# Required if you use Compose UI testing or Espresso
+#-keep class androidx.test.** { *; }
+#-dontwarn androidx.test.**

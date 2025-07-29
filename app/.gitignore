@@ -1,42 +1,83 @@
 # ============================================================
-#  Git Ignore file for Fitness Tracker App (Android Project)
+# Optimized for: Android Studio, Kotlin, Compose, Room, Hilt
 # ============================================================
 
-# ------------------------------------------------------------
-# Build and output directories
-# ------------------------------------------------------------
-/build/
-
-# ------------------------------------------------------------
-# Gradle files and local configuration
-# ------------------------------------------------------------
+# ================================
+# Gradle Build Output
+# ================================
 .gradle/
-local.properties
-
-# ------------------------------------------------------------
-# Android Studio IDE files and settings
-# ------------------------------------------------------------
-*.iml
-.idea/
-.idea/assetWizardSettings.xml
-
-# ------------------------------------------------------------
-# Native build output directories (C++ builds)
-# ------------------------------------------------------------
+build/
+**/build/
 .cxx/
 .externalNativeBuild/
+intermediates/
+outputs/
+captures/
 
-# ------------------------------------------------------------
-# Testing artifacts and captured screenshots
-# ------------------------------------------------------------
-/captures/
+# ================================
+# Local Environment and Secrets
+# ================================
+local.properties          # Contains SDK path — machine-specific
+google-services.json      # Firebase configuration — keep private
+*.keystore                # Signing key (if used)
+*.jks                     # Java key store — sensitive
+secrets.properties        # Optional: API keys or secrets
+*.env                     # Optional: dotenv-style environment config
 
-# ------------------------------------------------------------
-# macOS and system metadata files
-# ------------------------------------------------------------
-.DS_Store
+# ================================
+# IDE Configuration (Android Studio, IntelliJ)
+# ================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/                 # Visual Studio Code settings (if used)
 
-# ------------------------------------------------------------
-# Log files and miscellaneous temporary files
-# ------------------------------------------------------------
+# ================================
+# OS-Specific Files
+# ================================
+.DS_Store                # macOS Finder metadata
+Thumbs.db                # Windows thumbnail cache
+ehthumbs.db              # Windows enhanced thumbs
+Desktop.ini              # Windows desktop info
+*~
+
+# ================================
+# Compose, Room, and Codegen Output
+# ================================
+build/generated/         # KAPT / annotation processor output
+schemas/                 # Room schema files (if not manually versioned)
+.ui/                     # Jetpack Compose preview cache
+
+# ================================
+# Logs, Reports, and Debug Output
+# ================================
 *.log
+*.tmp
+*.bak
+crashlytics-build.properties
+lint-report.html
+lint-results.*
+test-results/
+*.hprof
+
+# ================================
+# APKs and Artifacts
+# ================================
+*.apk
+*.ap_
+*.aab
+
+# ================================
+# Editor and Merge Artifacts
+# ================================
+*.swp
+*.swo
+*.orig
+*.rej
+
+# ================================
+# Optional: Local Git hooks / Notes
+# ================================
+.git/hooks/
+.git/info/

@@ -1,17 +1,26 @@
-// Top-level Gradle build script for the entire FitnessTrackerApp project.
-// This script declares common plugin aliases from the Version Catalog (libs.versions.toml)
-// but does NOT apply them here — each subproject (e.g., app module) applies them individually.
+// ============================================================
+// Top-level Gradle build script (Kotlin DSL)
+// ============================================================
+//
+// Purpose:
+// - Declares plugin aliases centrally using version catalog
+// - Does NOT apply any plugin directly (apply false)
+// - Keeps plugin versions consistent across modules
+// ============================================================
 
 plugins {
-    // Declare Android application plugin alias (applied in module-level build.gradle.kts)
+    // Android Application plugin (applied in :app module)
     alias(libs.plugins.android.application) apply false
 
-    // Declare Kotlin Android plugin alias (used for Kotlin support in Android)
+    // Kotlin plugin for Android
     alias(libs.plugins.kotlin.android) apply false
 
-    // Declare Kotlin KAPT plugin alias (required for annotation processing e.g., Room)
+    // Kotlin KAPT plugin for annotation processing (used by Room, Hilt)
     alias(libs.plugins.kotlin.kapt) apply false
 
-    // Declare Kotlin Compose plugin alias (required for Jetpack Compose features)
-    alias(libs.plugins.kotlin.compose) apply false
+    // Dagger Hilt plugin for dependency injection
+    alias(libs.plugins.hilt.android) apply false
+
+    // Google Services plugin for Firebase
+    alias(libs.plugins.google.services) apply false
 }

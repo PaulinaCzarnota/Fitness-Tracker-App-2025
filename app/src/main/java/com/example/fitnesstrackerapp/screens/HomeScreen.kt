@@ -1,55 +1,92 @@
 package com.example.fitnesstrackerapp.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.example.fitnesstrackerapp.R
+import com.example.fitnesstrackerapp.notifications.NotificationUtils
 import com.example.fitnesstrackerapp.ui.components.BottomNavigationBar
+import com.example.fitnesstrackerapp.viewmodel.UserViewModel
 
 /**
  * HomeScreen
  *
- * This is the main dashboard shown after login. It introduces the app and provides
- * a clean welcome layout with navigation instructions.
+ * Displays a welcome message and overview of features.
+ * Uses ViewModel to retrieve logged-in user data.
+ * Triggers a daily notification using NotificationUtils.
  *
- * @param navController NavController passed down for navigation handling.
+ * @param navController Used to enable navigation and support BottomNavigationBar.
  */
 @Composable
-fun HomeScreen(navController: NavController) {
-    // Scaffold layout wraps the screen and includes the bottom navigation bar
+fun HomeScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
+    // Initialize the ViewModel using Hilt injection
+    val userViewModel: UserViewModel = hiltViewModel()
+
+    // Observe user state using StateFlow + collectAsStateWithLifecycle
+    val currentUser by userViewModel.currentUser.collectAsStateWithLifecycle(initialValue = null)
+
+    // Schedule a daily notification when the screen is shown
+    LaunchedEffect(Unit) {
+        NotificationUtils.scheduleDailyReminder(context)
+    }
+
+    // App layout using Scaffold
     Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController)
-        }
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) { innerPadding ->
-        // Main content column with responsive padding
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.Top),
+            verticalArrangement = Arrangement.spacedBy(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // App name / welcome message
+
+            // Display fitness icon (ensure R.drawable.ic_fitness exists)
+            Image(
+                painter = painterResource(id = R.drawable.ic_fitness),
+                contentDescription = "Fitness Icon",
+                modifier = Modifier.size(100.dp)
+            )
+
+            // Display user's email if available, else fallback welcome
             Text(
-                text = "Welcome to FitTrack!",
+                text = currentUser?.email?.let { "Welcome, $it!" } ?: "Welcome to FitTrack!",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
             )
 
-            // App description / summary of features
+            // Description text
             Text(
-                text = "Track your workouts, set goals, and monitor your nutrition with ease.",
-                style = MaterialTheme.typography.bodyLarge
+                text = "Track workouts, log meals, count steps, set goals,\nand monitor your progress—all in one place.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Call to action for new users
+            // UI hint
             Text(
-                text = "Use the bottom navigation bar below to get started.",
+                text = "Use the bottom navigation bar to explore.",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

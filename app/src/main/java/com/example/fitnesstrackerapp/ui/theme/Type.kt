@@ -7,28 +7,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Typography.kt
+ * Defines the text styles for the Fitness Tracker App.
+ * Uses Jetpack Compose Material 3 Typography structure.
  *
- * Defines the app's text style system using Material3's `Typography`.
- * Each style represents a different use-case such as titles, body text, captions, labels, etc.
+ * These styles are accessed automatically through:
+ *      MaterialTheme.typography
  *
- * These styles are used automatically when you call MaterialTheme.typography.*
- * You can override them in individual composables if needed.
+ * You can override them in Composables as needed.
  */
 
-// Default Material3 typography overridden with custom settings
+// Main typography definition
 val Typography = Typography(
 
-    // Large body text – default style for most UI text
+    // Used for general text content (e.g. screen paragraphs)
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,         // Recommended default
+        fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
 
-    // Medium body text – for secondary information or subtitles
+    // Used for supporting text or secondary body content
     bodyMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -37,7 +37,7 @@ val Typography = Typography(
         letterSpacing = 0.25.sp
     ),
 
-    // Small body text – typically used for footnotes, hints, or small labels
+    // Used for smaller text such as footnotes or extra info
     bodySmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -46,7 +46,7 @@ val Typography = Typography(
         letterSpacing = 0.4.sp
     ),
 
-    // Medium headline – app title, page titles
+    // Used for page titles or large headings
     headlineMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
@@ -55,7 +55,7 @@ val Typography = Typography(
         letterSpacing = 0.sp
     ),
 
-    // Small headline – card titles, section headers
+    // Used for section headers or card titles
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,
@@ -64,7 +64,7 @@ val Typography = Typography(
         letterSpacing = 0.sp
     ),
 
-    // Medium title – used for dialog titles, navigation drawer items, etc.
+    // Used for dialog titles or navigation items
     titleMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
@@ -73,7 +73,7 @@ val Typography = Typography(
         letterSpacing = 0.15.sp
     ),
 
-    // Small label – used in buttons, form labels, or captions
+    // Used for buttons, captions, labels
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
@@ -82,7 +82,7 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     ),
 
-    // Large display – used for large numeric values like step count, calories, etc.
+    // Used for prominent numeric displays like steps/calories
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,

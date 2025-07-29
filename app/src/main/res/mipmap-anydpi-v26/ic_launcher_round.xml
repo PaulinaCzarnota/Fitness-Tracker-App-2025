@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Adaptive Round Icon Definition for Fitness Tracker App.
+    This icon is used by devices/launchers that prefer round icons.
+    The structure mirrors the standard adaptive icon to ensure consistent branding.
 
-    Used by Android launchers that specifically request round icons.
-    Defined using the same layers as the standard adaptive icon, ensuring visual consistency.
-
-    Icon Layers:
-    - Background: solid green grid background vector
-    - Foreground: white fitness-related vector icon with shadow gradient
-
-    Monochrome icon included for Android 13+ themed icon compatibility.
+    Layers:
+    - Background: Green grid vector graphic.
+    - Foreground: White fitness icon with optional gradient shadow.
+    - Monochrome: Used on Android 13+ when system uses themed icons.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Background layer: Solid green with grid pattern -->
+    <!-- Green grid background for round variant -->
     <background android:drawable="@drawable/ic_launcher_background" />
 
-    <!-- Foreground layer: White icon with gradient shadow effect -->
+    <!-- White fitness vector foreground -->
     <foreground android:drawable="@drawable/ic_launcher_foreground" />
 
-    <!-- Monochrome icon layer: Used for themed icons on Android 13+ -->
+    <!-- Themed icon layer for Android 13+ -->
     <monochrome android:drawable="@drawable/ic_launcher_foreground" />
 
 </adaptive-icon>

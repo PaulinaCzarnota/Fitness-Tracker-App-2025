@@ -11,28 +11,28 @@ import kotlinx.coroutines.launch
 /**
  * WorkoutViewModel
  *
- * A lifecycle-aware ViewModel responsible for managing workout data
- * by communicating with the WorkoutDao (Room).
+ * ViewModel responsible for managing workout data.
+ * Acts as a bridge between the UI layer and [WorkoutDao].
  *
- * Provides functions to:
- * - Observe all workouts
- * - Add, delete, and clear workouts
- * - Query workouts between specific dates
+ * Exposes flows for reactive updates and uses coroutines for database operations.
+ *
+ * @param workoutDao DAO interface for workout-related Room database operations.
  */
 class WorkoutViewModel(
     private val workoutDao: WorkoutDao
 ) : ViewModel() {
 
     /**
-     * A Flow that emits the list of all workouts in the database.
-     * Use with collectAsStateWithLifecycle() in Composables for reactivity.
+     * Emits a live list of all workouts from the database.
+     * Use collectAsStateWithLifecycle() in Composables for observing changes.
      */
     val allWorkouts: Flow<List<Workout>> = workoutDao.getAllWorkouts()
 
     /**
-     * Inserts a new workout into the Room database.
+     * Inserts a new workout into the database.
+     * Can be triggered when the user logs a new session.
      *
-     * @param workout The Workout object to be inserted.
+     * @param workout The workout entry to save.
      */
     fun insertWorkout(workout: Workout) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -41,10 +41,10 @@ class WorkoutViewModel(
     }
 
     /**
-     * Deletes a single workout entry from the database.
-     * Trigger this from UI (e.g., button click) to remove a log.
+     * Deletes a specific workout from the database.
+     * Called when user removes an entry (e.g., via swipe/delete button).
      *
-     * @param workout The Workout to delete.
+     * @param workout The workout to be removed.
      */
     fun deleteWorkout(workout: Workout) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -53,8 +53,8 @@ class WorkoutViewModel(
     }
 
     /**
-     * Clears all workout records.
-     * Useful for reset or clear all functionality in UI.
+     * Clears all workouts from the database.
+     * Use this when the user chooses to reset workout logs.
      */
     fun clearAllWorkouts() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -63,11 +63,12 @@ class WorkoutViewModel(
     }
 
     /**
-     * Fetches workouts between two timestamps for reporting or filtering.
+     * Queries workouts between two dates (start and end timestamps).
+     * Ideal for displaying filtered reports or weekly activity.
      *
-     * @param start Start timestamp in milliseconds.
-     * @param end End timestamp in milliseconds.
-     * @return Flow emitting filtered workouts.
+     * @param start Start timestamp (in millis).
+     * @param end End timestamp (in millis).
+     * @return A Flow of filtered workouts between the dates.
      */
     fun getWorkoutsBetween(start: Long, end: Long): Flow<List<Workout>> {
         return workoutDao.getWorkoutsBetween(start, end)
