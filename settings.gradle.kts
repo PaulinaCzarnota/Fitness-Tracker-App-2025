@@ -1,15 +1,12 @@
-@file:Suppress("UnstableApiUsage")
-
-// ============================================================
-// Root Gradle Settings
-// ============================================================
-//
-// Purpose:
-// - Set up secure and optimized plugin & dependency resolution
-// - Avoid duplicate repository definitions
-// - Enforce repository mode and clean module structure
-// - Prevent issues related to version catalog multiple-from() calls
-// ============================================================
+/**
+ * Root Gradle Settings (Kotlin DSL)
+ *
+ * Purpose:
+ * - Set up secure and optimized plugin & dependency resolution
+ * - Avoid duplicate repository definitions
+ * - Enforce repository mode and clean module structure
+ * - Prevent issues related to version catalog multiple-from() calls
+ */
 
 pluginManagement {
     repositories {
@@ -39,9 +36,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
-
-    // NOTE: Intentionally no versionCatalogs block here to avoid from() duplication error
-    // If you’re using a libs.versions.toml, make sure it’s configured only in one location
 }
 
 // Project name (as displayed in Android Studio)
