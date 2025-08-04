@@ -1,24 +1,46 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--
+    /**
+     * Main manifest file for the Fitness Tracker App.
+     *
+     * Responsibilities:
+     * - Declares permissions, application class, activities, services, and receivers.
+     * - Ensures all required features and background tasks are registered.
+     * - Follows consistent Javadoc-style comment structure.
+     *
+     * Core Features Supported:
+     * - User authentication (Firebase, Internet)
+     * - Workout logging (sensors, background service)
+     * - Progress tracking (background tasks)
+     * - Goal setting and notifications (alarms, notifications)
+     * - Diet and nutrition tracking (local database)
+     *
+     * Coding Standards:
+     * - Consistent header and inline comments.
+     * - All components and permissions documented.
+     * - Follows Google and project-specific style guidelines.
+     */
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- Removed package attribute as per Android Gradle Plugin requirements -->
 
-    <!-- ================= PERMISSIONS ================= -->
-
-    <!-- Required for detecting step count using sensors -->
+    <!--
+        /**
+         * Permissions
+         *
+         * - ACTIVITY_RECOGNITION: For step counting and activity sensors.
+         * - BODY_SENSORS: For accessing health-related sensors.
+         * - INTERNET: For Firebase authentication and remote APIs.
+         * - POST_NOTIFICATIONS: For sending notifications (Android 13+).
+         * - RECEIVE_BOOT_COMPLETED: For re-registering alarms after device reboot.
+         */
+    -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
-
-    <!-- Required for accessing the internet (e.g., Firebase or remote APIs) -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Required to show notifications from Android 13+ -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <!-- Required to auto-start app components like alarms after phone reboot -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-
-    <!-- ================= APPLICATION ================= -->
 
     <application
         android:name=".FitnessTrackerApplication"
@@ -30,7 +52,14 @@
         android:theme="@style/Theme.FitnessTrackerApp"
         tools:targetApi="33">
 
-        <!-- Main launcher activity -->
+        <!--
+            /**
+             * MainActivity
+             *
+             * - Entry point for the app.
+             * - Hosts the main Compose navigation and UI.
+             */
+        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -41,21 +70,59 @@
             </intent-filter>
         </activity>
 
-        <!-- Foreground service for live step tracking (with TYPE: health) -->
+        <!--
+            /**
+             * StepCounterService
+             *
+             * - Foreground service for live step tracking.
+             * - Used for health/fitness sensor data collection.
+             */
+        -->
         <service
             android:name=".sensors.StepCounterService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="health" />
 
-        <!-- Broadcast receiver for daily notifications -->
+        <!--
+            /**
+             * WorkManager Initialization Provider
+             *
+             * - Disables default WorkManager initializer to use Hilt's.
+             */
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.impl.WorkManagerInitializer"
+                android:value="@string/workmanager_init_disable"
+                tools:node="remove" />
+        </provider>
+
+        <!--
+            /**
+             * NotificationReceiver
+             *
+             * - Broadcast receiver for daily notifications.
+             * - Handles alarm/notification triggers.
+             */
+        -->
         <receiver
             android:name=".notifications.NotificationReceiver"
             android:enabled="true"
             android:exported="true"
             tools:ignore="ExportedReceiver" />
 
-        <!-- Broadcast receiver to re-register alarms when device reboots -->
+        <!--
+            /**
+             * BootReceiver
+             *
+             * - Broadcast receiver to re-register alarms when device reboots.
+             */
+        -->
         <receiver
             android:name=".notifications.BootReceiver"
             android:enabled="true"
@@ -64,6 +131,5 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
     </application>
 </manifest>
