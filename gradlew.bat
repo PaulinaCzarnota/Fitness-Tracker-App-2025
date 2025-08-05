@@ -3,9 +3,6 @@
 @rem
 @rem Responsibilities:
 @rem - Bootstraps Gradle builds on Windows environments.
-@rem - Ensures correct Java version is used (JDK 17).
-@rem - Provides robust error handling and clear user messages.
-@rem - Follows consistent comment and formatting standards.
 @rem
 @rem License: Apache License, Version 2.0
 @rem See: https://www.apache.org/licenses/LICENSE-2.0
@@ -19,12 +16,6 @@
 @rem Set local scope for the variables with Windows NT shell
 if "%OS%"=="Windows_NT" setlocal
 
-@rem -----------------------------------------------------------------------------
-@rem Force the use of JDK 17 to prevent pathing issues (custom for FitnessTrackerApp)
-@rem Update this path if your JDK is installed elsewhere.
-@rem -----------------------------------------------------------------------------
-set "JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.16.8-hotspot"
-
 set DIRNAME=%~dp0
 if "%DIRNAME%"=="" set DIRNAME=.
 set APP_BASE_NAME=%~n0
@@ -36,7 +27,8 @@ for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 @rem -----------------------------------------------------------------------------
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 @rem -----------------------------------------------------------------------------
-set DEFAULT_JVM_OPTS=-Xmx64m -Xms64m
+set DEFAULT_JVM_OPTS=-Xmx512m -Xms256m
+set JAVA_OPTS=-Dorg.gradle.daemon=false
 
 @rem -----------------------------------------------------------------------------
 @rem Find java.exe
