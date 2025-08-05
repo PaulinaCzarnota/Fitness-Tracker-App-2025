@@ -27,13 +27,13 @@ for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 @rem -----------------------------------------------------------------------------
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 @rem -----------------------------------------------------------------------------
-set DEFAULT_JVM_OPTS=-Xmx512m -Xms256m
-set JAVA_OPTS=-Dorg.gradle.daemon=false
+set DEFAULT_JVM_OPTS=-Xmx2048m -Xms256m
 
 @rem -----------------------------------------------------------------------------
 @rem Find java.exe
 @rem -----------------------------------------------------------------------------
-if defined JAVA_HOME goto findJavaFromJavaHome
+@rem Force use of java from PATH to bypass potentially invalid JAVA_HOME
+rem if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
 %JAVA_EXE% -version >NUL 2>&1
