@@ -6,24 +6,11 @@
      * - Declares permissions, application class, activities, services, and receivers.
      * - Ensures all required features and background tasks are registered.
      * - Follows consistent Javadoc-style comment structure.
-     *
-     * Core Features Supported:
-     * - User authentication (Firebase, Internet)
-     * - Workout logging (sensors, background service)
-     * - Progress tracking (background tasks)
-     * - Goal setting and notifications (alarms, notifications)
-     * - Diet and nutrition tracking (local database)
-     *
-     * Coding Standards:
-     * - Consistent header and inline comments.
-     * - All components and permissions documented.
-     * - Follows Google and project-specific style guidelines.
      */
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- Removed package attribute as per Android Gradle Plugin requirements -->
 
     <!--
         /**
@@ -41,6 +28,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
 
     <application
         android:name=".FitnessTrackerApplication"
@@ -63,7 +52,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.FitnessTrackerApp">
+            android:theme="@style/Theme.FitnessTrackerApp"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -74,8 +64,8 @@
             /**
              * StepCounterService
              *
-             * - Foreground service for live step tracking.
-             * - Used for health/fitness sensor data collection.
+             * - Background service for continuous step counting.
+             * - Runs as foreground service for persistent tracking.
              */
         -->
         <service
@@ -83,24 +73,6 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="health" />
-
-        <!--
-            /**
-             * WorkManager Initialization Provider
-             *
-             * - Disables default WorkManager initializer to use Hilt's.
-             */
-        -->
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="androidx.work.impl.WorkManagerInitializer"
-                android:value="@string/workmanager_init_disable"
-                tools:node="remove" />
-        </provider>
 
         <!--
             /**
@@ -113,14 +85,13 @@
         <receiver
             android:name=".notifications.NotificationReceiver"
             android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedReceiver" />
+            android:exported="false" />
 
         <!--
             /**
-             * BootReceiver
+             * Boot Receiver
              *
-             * - Broadcast receiver to re-register alarms when device reboots.
+             * - Re-registers alarms and notifications after device reboot.
              */
         -->
         <receiver
@@ -131,5 +102,25 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!--
+            /**
+             * WorkManager initialization provider
+             *
+             * - Removes default initialization to use custom configuration.
+             */
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
     </application>
+
 </manifest>
