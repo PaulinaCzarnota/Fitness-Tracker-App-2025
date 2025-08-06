@@ -1,54 +1,57 @@
-/**
- * Color definitions for the Fitness Tracker App theme.
- *
- * Defines the color palette used throughout the application, following Material Design 3
- * guidelines for consistent theming and accessibility. Includes both light and dark theme
- * color variations.
- *
- * @since 1.0
- */
 package com.example.fitnesstrackerapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * Primary color palette for the fitness theme.
- * 
- * Uses energetic and motivational colors that represent fitness and health.
- */
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Light theme colors
+val md_theme_light_primary = Color(0xFF6750A4)
+val md_theme_light_onPrimary = Color(0xFFFFFFFF)
+val md_theme_light_primaryContainer = Color(0xFFEADDFF)
+val md_theme_light_onPrimaryContainer = Color(0xFF21005D)
+val md_theme_light_secondary = Color(0xFF625B71)
+val md_theme_light_onSecondary = Color(0xFFFFFFFF)
+val md_theme_light_secondaryContainer = Color(0xFFE8DEF8)
+val md_theme_light_onSecondaryContainer = Color(0xFF1D192B)
+val md_theme_light_tertiary = Color(0xFF7D5260)
+val md_theme_light_onTertiary = Color(0xFFFFFFFF)
+val md_theme_light_tertiaryContainer = Color(0xFFFFD8E4)
+val md_theme_light_onTertiaryContainer = Color(0xFF31111D)
+val md_theme_light_error = Color(0xFFBA1A1A)
+val md_theme_light_onError = Color(0xFFFFFFFF)
+val md_theme_light_errorContainer = Color(0xFFFFDAD6)
+val md_theme_light_onErrorContainer = Color(0xFF410002)
+val md_theme_light_background = Color(0xFFFFFBFE)
+val md_theme_light_onBackground = Color(0xFF1C1B1F)
+val md_theme_light_surface = Color(0xFFFFFBFE)
+val md_theme_light_onSurface = Color(0xFF1C1B1F)
+val md_theme_light_surfaceVariant = Color(0xFFE7E0EC)
+val md_theme_light_onSurfaceVariant = Color(0xFF49454F)
+val md_theme_light_outline = Color(0xFF79747E)
+val md_theme_light_outlineVariant = Color(0xFFCAC4D0)
+val md_theme_light_scrim = Color(0xFF000000)
 
-val Purple40 = Color(0xFF6650A4)
-val PurpleGrey40 = Color(0xFF625B71)
-val Pink40 = Color(0xFF7D5260)
-
-/**
- * Fitness-specific color palette.
- * 
- * Custom colors that align with fitness and health themes.
- */
-// Primary fitness colors
-val FitnessGreen = Color(0xFF4CAF50)      // Success, achievements
-val FitnessBlue = Color(0xFF2196F3)       // Progress, water
-val FitnessOrange = Color(0xFFFF9800)     // Energy, calories
-val FitnessRed = Color(0xFFF44336)        // Heart rate, intensity
-
-// Secondary colors
-val LightGreen = Color(0xFF8BC34A)        // Light success
-val LightBlue = Color(0xFF03DAC6)         // Light accent
-val LightOrange = Color(0xFFFFB74D)       // Light energy
-val LightRed = Color(0xFFE57373)          // Light intensity
-
-// Neutral colors
-val DarkGray = Color(0xFF424242)          // Text, icons
-val MediumGray = Color(0xFF757575)        // Secondary text
-val LightGray = Color(0xFFE0E0E0)         // Dividers, borders
-val BackgroundGray = Color(0xFFFAFAFA)    // Background
-
-// Status colors
-val SuccessGreen = Color(0xFF4CAF50)      // Success states
-val WarningOrange = Color(0xFFFF9800)     // Warning states
-val ErrorRed = Color(0xFFF44336)          // Error states
-val InfoBlue = Color(0xFF2196F3)          // Information states
+// Dark theme colors
+val md_theme_dark_primary = Color(0xFFD0BCFF)
+val md_theme_dark_onPrimary = Color(0xFF381E72)
+val md_theme_dark_primaryContainer = Color(0xFF4F378B)
+val md_theme_dark_onPrimaryContainer = Color(0xFFEADDFF)
+val md_theme_dark_secondary = Color(0xFFCCC2DC)
+val md_theme_dark_onSecondary = Color(0xFF332D41)
+val md_theme_dark_secondaryContainer = Color(0xFF4A4458)
+val md_theme_dark_onSecondaryContainer = Color(0xFFE8DEF8)
+val md_theme_dark_tertiary = Color(0xFFEFB8C8)
+val md_theme_dark_onTertiary = Color(0xFF492532)
+val md_theme_dark_tertiaryContainer = Color(0xFF633B48)
+val md_theme_dark_onTertiaryContainer = Color(0xFFFFD8E4)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_errorContainer = Color(0xFF93000A)
+val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
+val md_theme_dark_background = Color(0xFF1C1B1F)
+val md_theme_dark_onBackground = Color(0xFFE6E1E5)
+val md_theme_dark_surface = Color(0xFF1C1B1F)
+val md_theme_dark_onSurface = Color(0xFFE6E1E5)
+val md_theme_dark_surfaceVariant = Color(0xFF49454F)
+val md_theme_dark_onSurfaceVariant = Color(0xFFCAC4D0)
+val md_theme_dark_outline = Color(0xFF938F99)
+val md_theme_dark_outlineVariant = Color(0xFF49454F)
+val md_theme_dark_scrim = Color(0xFF000000)
