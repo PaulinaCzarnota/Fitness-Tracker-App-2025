@@ -309,4 +309,48 @@ interface WorkoutDao {
      */
     @Query("SELECT SUM(distance) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
     suspend fun getTotalDistanceByType(userId: Long, workoutType: WorkoutType): Float?
+
+    /**
+     * Gets total duration for workouts in a date range
+     */
+    @Query("SELECT COALESCE(SUM(duration), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getTotalDurationInDateRange(userId: Long, startDate: Long, endDate: Long): Long
+
+    /**
+     * Gets total calories burned in a date range
+     */
+    @Query("SELECT COALESCE(SUM(caloriesBurned), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getTotalCaloriesInDateRange(userId: Long, startDate: Long, endDate: Long): Double
+
+    /**
+     * Gets total distance covered in a date range
+     */
+    @Query("SELECT COALESCE(SUM(distance), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getTotalDistanceInDateRange(userId: Long, startDate: Long, endDate: Long): Double
+
+    /**
+     * Gets monthly workout statistics
+     */
+    @Query("""
+        SELECT 
+            COUNT(*) as totalWorkouts,
+            SUM(duration) as totalDuration,
+            SUM(caloriesBurned) as totalCalories,
+            SUM(distance) as totalDistance,
+            AVG(duration) as avgDuration
+        FROM workouts 
+        WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate
+    """)
+    suspend fun getMonthlyStats(userId: Long, startDate: Long, endDate: Long): WorkoutStats?
 }
+
+/**
+ * Data class for workout statistics.
+ */
+data class WorkoutStats(
+    val totalWorkouts: Int,
+    val totalDuration: Long,
+    val totalCalories: Double,
+    val totalDistance: Double,
+    val avgDuration: Double
+)
