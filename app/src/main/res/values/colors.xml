@@ -1,78 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     /**
-     * Color resources for the Fitness Tracker App.
+     * Color definitions for the Fitness Tracker App.
      *
-     * Responsibilities:
-     * - Centralizes all color definitions for consistent theming and branding.
-     * - Aligned with Material Design 3 guidelines.
-     * - Structured by purpose: primary, secondary, neutrals, error, etc.
+     * Defines the color palette used throughout the application, following Material Design 3
+     * guidelines for consistent theming and accessibility. Includes both light and dark theme
+     * color variations.
      *
-     * Coding Standards:
-     * - Consistent Javadoc-style header and inline comments.
-     * - All color groups and keys are documented.
-     * - Follows Google and project-specific style guidelines.
+     * @since 1.0
      */
 -->
 
 <resources>
+    <!-- Primary fitness colors -->
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryVariant">#388E3C</color>
 
-    <!--
-        /**
-         * PRIMARY COLORS
-         *
-         * - Main brand colors used for buttons, top bars, and accents.
-         * - Includes variants for light and dark surfaces.
-         */
-    -->
-    <color name="color_primary">#6200EE</color> <!-- purple_500 -->
-    <color name="color_primary_variant">#3700B3</color> <!-- purple_700 -->
-    <color name="color_on_primary">#FFFFFF</color> <!-- Text/icons on primary -->
-    <color name="color_primary_light">#BB86FC</color> <!-- purple_200 -->
-
-    <!--
-        /**
-         * SECONDARY COLORS
-         *
-         * - Accent colors for highlights, FABs, toggles, etc.
-         */
-    -->
-    <color name="color_secondary">#03DAC5</color> <!-- teal_200 -->
-    <color name="color_secondary_variant">#018786</color> <!-- teal_700 -->
-    <color name="color_on_secondary">#000000</color> <!-- Text/icons on secondary -->
-
-    <!--
-        /**
-         * NEUTRAL COLORS
-         *
-         * - Standard black and white for text and backgrounds.
-         * - Surface and background greys for cards and UI elements.
-         * - Hint text color for placeholders.
-         */
-    -->
-    <color name="color_black">#000000</color>
-    <color name="color_white">#FFFFFF</color>
-    <color name="color_surface">#FAFAFA</color> <!-- surface_light -->
-    <color name="color_background_grey">#F0F0F0</color>
-    <color name="color_hint">#808080</color> <!-- gray -->
-
-    <!--
-        /**
-         * ERROR COLORS
-         *
-         * - Used in form validation, alerts, and error states.
-         */
-    -->
-    <color name="color_error">#B00020</color> <!-- error_red -->
-    <color name="color_on_error">#FFFFFF</color> <!-- Text/icons on error background -->
-
-    <!--
-        /**
-         * OPTIONAL STATUS UI
-         *
-         * - For disabled buttons and UI elements.
-         */
-    -->
-    <color name="color_disabled">#BDBDBD</color>
-
+    <color name="colorPrimaryContainer">#388E3C</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnPrimaryContainer">#FFFFFF</color>
+    
+    <!-- Secondary colors -->
+    <color name="colorSecondary">#2196F3</color>
+    <color name="colorSecondaryVariant">#1976D2</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+    
+    <!-- Surface colors -->
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnSurface">#000000</color>
+    
+    <!-- Background colors -->
+    <color name="colorBackground">#FAFAFA</color>
+    <color name="colorOnBackground">#000000</color>
+    
+    <!-- Error colors -->
+    <color name="colorError">#F44336</color>
+    <color name="colorOnError">#FFFFFF</color>
+    
+    <!-- Fitness-specific colors -->
+    <color name="fitnessGreen">#4CAF50</color>
+    <color name="fitnessBlue">#2196F3</color>
+    <color name="fitnessOrange">#FF9800</color>
+    <color name="fitnessRed">#F44336</color>
+    
+    <!-- Light variations -->
+    <color name="lightGreen">#8BC34A</color>
+    <color name="lightBlue">#03DAC6</color>
+    <color name="lightOrange">#FFB74D</color>
+    <color name="lightRed">#E57373</color>
+    
+    <!-- Neutral colors -->
+    <color name="darkGray">#424242</color>
+    <color name="mediumGray">#757575</color>
+    <color name="lightGray">#E0E0E0</color>
+    <color name="backgroundGray">#FAFAFA</color>
+    
+    <!-- Status colors -->
+    <color name="successGreen">#4CAF50</color>
+    <color name="warningOrange">#FF9800</color>
+    <color name="errorRed">#F44336</color>
+    <color name="infoBlue">#2196F3</color>
 </resources>

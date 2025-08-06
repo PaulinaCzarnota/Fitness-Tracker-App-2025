@@ -1,99 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    String resources for the Fitness Tracker App.
-    Organized by screen/module for clarity and easy localization.
+    /**
+     * String resources for the Fitness Tracker App.
+     *
+     * Contains all user-facing text strings used throughout the application.
+     * Organized by feature area for maintainability and localization support.
+     *
+     * @since 1.0
+     */
 -->
+
 <resources>
-
-    <!-- ========== App Identity ========== -->
+    <!-- App name and general strings -->
     <string name="app_name">Fitness Tracker</string>
-
-    <!-- ========== Bottom Navigation Tabs ========== -->
+    <string name="app_description">Track your fitness journey</string>
+    
+    <!-- WorkManager initialization -->
+    <string name="workmanager_init_disable">false</string>
+    
+    <!-- Navigation strings -->
     <string name="home">Home</string>
     <string name="workout">Workout</string>
-    <string name="diet">Diet</string>
+    <string name="nutrition">Nutrition</string>
     <string name="goals">Goals</string>
     <string name="progress">Progress</string>
     <string name="steps">Steps</string>
-
-    <!-- ========== Authentication Strings ========== -->
-
-    <!-- Login Screen -->
+    
+    <!-- Authentication strings -->
     <string name="login">Login</string>
-    <string name="logging_in">Logging in...</string>
-    <string name="login_button">Login</string>
-    <string name="already_have_account">Already have an account? Login</string>
-    <string name="dont_have_account">Don’t have an account? Register</string>
+    <string name="register">Register</string>
+    <string name="sign_up">Sign Up</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="login_failed">Incorrect email or password.</string>
-
-    <!-- Register Screen -->
-    <string name="register">Register</string>
-    <string name="registering">Registering...</string>
-    <string name="register_success">Registered successfully!</string>
-    <string name="register_failed">Registration failed. Email might already be used.</string>
-    <string name="register_button">Register</string>
-
-    <!-- Shared Auth -->
-    <string name="submit">Submit</string>
-    <string name="invalid_email">Please enter a valid email address.</string>
-    <string name="invalid_password">Password must be at least 6 characters.</string>
-    <string name="invalid_input">Invalid input. Please check your data.</string>
-    <string name="required_fields">All fields are required.</string>
-    <string name="welcome_back">Welcome back!</string>
-    <string name="registration_prompt">Create a new account</string>
-    <string name="login_prompt">Already registered? Login here</string>
-
-    <!-- ========== Home Screen ========== -->
-    <string name="welcome_title">Welcome to Fitness Tracker</string>
-    <string name="start_tracking">Start Tracking Your Fitness Journey</string>
-
-    <!-- ========== Workout Screen ========== -->
-    <string name="add_workout">Add Workout</string>
-    <string name="workout_type">Workout Type</string>
-    <string name="duration_minutes">Duration (minutes)</string>
-    <string name="distance_km">Distance (km)</string>
-    <string name="calories_burned">Calories Burned</string>
-    <string name="notes">Notes</string>
-    <string name="workout_logged">Workout Logged!</string>
-    <string name="workout_history">Workout History</string>
-    <string name="no_workouts_found">No workouts found.</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="create_account">Create Account</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    
+    <!-- Workout strings -->
     <string name="log_workout">Log Workout</string>
-    <string name="edit_workout">Edit Workout</string>
-
-    <!-- ========== Diet Screen ========== -->
-    <string name="add_diet">Add Diet</string>
-    <string name="food">Food</string>
+    <string name="workout_type">Workout Type</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
     <string name="calories">Calories</string>
-    <string name="log_diet">Log Diet</string>
-    <string name="diet_history">Diet History</string>
-    <string name="no_diets_found">No diet entries found.</string>
-    <string name="edit_diet">Edit Diet</string>
-
-    <!-- ========== Goals Screen ========== -->
+    <string name="notes">Notes</string>
+    <string name="save_workout">Save Workout</string>
+    <string name="workout_history">Workout History</string>
+    
+    <!-- Nutrition strings -->
+    <string name="track_nutrition">Track Nutrition</string>
+    <string name="add_food">Add Food</string>
+    <string name="food_name">Food Name</string>
+    <string name="quantity">Quantity</string>
+    <string name="unit">Unit</string>
+    <string name="protein">Protein</string>
+    <string name="carbs">Carbs</string>
+    <string name="fat">Fat</string>
+    <string name="meal_type">Meal Type</string>
+    <string name="daily_nutrition_summary">Daily Nutrition Summary</string>
+    
+    <!-- Goal strings -->
+    <string name="set_goals">Set Goals</string>
     <string name="add_goal">Add Goal</string>
+    <string name="goal_title">Goal Title</string>
     <string name="goal_description">Goal Description</string>
     <string name="target_value">Target Value</string>
-    <string name="create_goal">Create Goal</string>
-    <string name="goal_list">Your Goals</string>
-    <string name="no_goals_found">No goals created yet.</string>
-    <string name="goal_completed">Goal Completed!</string>
-    <string name="edit_goal">Edit Goal</string>
-
-    <!-- ========== Progress Screen ========== -->
+    <string name="deadline">Deadline</string>
+    <string name="my_goals">My Goals</string>
+    <string name="active_goals">Active Goals</string>
+    <string name="completed_goals">Completed Goals</string>
+    
+    <!-- Progress strings -->
     <string name="view_progress">View Progress</string>
     <string name="weekly_summary">Weekly Summary</string>
     <string name="monthly_summary">Monthly Summary</string>
     <string name="yearly_summary">Yearly Summary</string>
-
-    <!-- ========== Common UI Strings ========== -->
+    
+    <!-- Step tracking strings -->
+    <string name="step_tracker">Step Tracker</string>
+    <string name="steps_taken">Steps Taken</string>
+    <string name="reset_steps">Reset Steps</string>
+    <string name="daily_step_goal">Daily Step Goal</string>
+    
+    <!-- Common action strings -->
+    <string name="add">Add</string>
+    <string name="save">Save</string>
     <string name="cancel">Cancel</string>
-    <string name="confirm">Confirm</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
-    <string name="save">Save</string>
+    <string name="update">Update</string>
+    <string name="reset">Reset</string>
+    <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-
+    
+    <!-- Error and validation strings -->
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_passwords_dont_match">Passwords do not match</string>
+    <string name="error_required_field">This field is required</string>
+    <string name="error_network">Network error. Please try again.</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    
+    <!-- Success messages -->
+    <string name="success_workout_saved">Workout saved successfully</string>
+    <string name="success_food_added">Food entry added successfully</string>
+    <string name="success_goal_created">Goal created successfully</string>
+    <string name="success_account_created">Account created successfully</string>
+    
+    <!-- Notification strings -->
+    <string name="notification_workout_reminder">Time for your workout!</string>
+    <string name="notification_goal_reminder">Don\'t forget about your fitness goals</string>
+    <string name="notification_step_goal">You\'re close to your step goal!</string>
+    
+    <!-- Units and measurements -->
+    <string name="unit_minutes">minutes</string>
+    <string name="unit_kilometers">km</string>
+    <string name="unit_calories_short">kcal</string>
+    <string name="unit_grams">g</string>
+    <string name="unit_steps">steps</string>
+    
+    <!-- Meal types -->
+    <string name="breakfast">Breakfast</string>
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Dinner</string>
+    <string name="snack">Snack</string>
+    
+    <!-- Workout types -->
+    <string name="running">Running</string>
+    <string name="cycling">Cycling</string>
+    <string name="weightlifting">Weightlifting</string>
+    <string name="swimming">Swimming</string>
+    <string name="walking">Walking</string>
+    <string name="yoga">Yoga</string>
+    
+    <!-- Motivational messages -->
+    <string name="motivation_1">Every workout brings you closer to your goals!</string>
+    <string name="motivation_2">Keep pushing forward!</string>
+    <string name="motivation_3">You\'re stronger than you think!</string>
+    <string name="motivation_4">Progress, not perfection!</string>
+    <string name="motivation_5">Your only competition is who you were yesterday!</string>
 </resources>

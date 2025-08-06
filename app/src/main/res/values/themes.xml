@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Fallback XML theme for Compose-based Fitness Tracker App.
-
-    While UI theming is handled entirely via Jetpack Compose's Theme.kt,
-    this XML theme must still be defined and referenced in AndroidManifest.xml.
+    /**
+     * Theme definitions for the Fitness Tracker App.
+     *
+     * Responsibilities:
+     * - Defines Material Design 3 theme for the application.
+     * - Ensures consistent styling across all components.
+     * - Supports both light and dark themes.
+     */
 -->
-<resources>
 
-    <!-- Base app theme for legacy compatibility -->
-    <style name="Theme.FitnessTrackerApp" parent="android:Theme.Material.Light">
-
-        <!-- Set default background color -->
-        <item name="android:windowBackground">@color/color_white</item>
-
-        <!-- Optional: colors for Views (in case any non-Compose components are used) -->
-        <item name="android:textColorPrimary">@color/color_black</item>
-        <item name="android:textColorSecondary">@color/color_hint</item>
-
-        <!-- Hide ActionBar (Compose apps manage UI manually) -->
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-
-        <!-- Optional: enable edge-to-edge layout if needed -->
-        <item name="android:windowTranslucentStatus">true</item>
-
+<resources xmlns:tools="http://schemas.android.com/tools">
+    
+    <!-- Base application theme using MaterialComponents -->
+    <style name="Base.Theme.FitnessTrackerApp" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorOnBackground">@color/colorOnBackground</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="colorOnError">@color/colorOnError</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
+    <!-- Main application theme -->
+    <style name="Theme.FitnessTrackerApp" parent="Base.Theme.FitnessTrackerApp" />
+    
 </resources>
