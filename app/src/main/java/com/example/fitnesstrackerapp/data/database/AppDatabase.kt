@@ -15,6 +15,7 @@ import com.example.fitnesstrackerapp.data.entity.Nutrition
 import com.example.fitnesstrackerapp.data.entity.Step
 import com.example.fitnesstrackerapp.data.entity.User
 import com.example.fitnesstrackerapp.data.entity.Workout
+import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.Converters
 
 /**
@@ -33,7 +34,8 @@ import com.example.fitnesstrackerapp.data.Converters
         Workout::class,
         Step::class,
         Goal::class,
-        Nutrition::class
+        Nutrition::class,
+        FoodEntry::class
     ],
     version = 1,
     exportSchema = false
