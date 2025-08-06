@@ -57,7 +57,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     // Java and Kotlin compatibility
@@ -151,6 +151,14 @@ dependencies {
 
     // Material Icons Extended for complete icon set
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Koin for Dependency Injection
+    implementation("io.insert-koin:koin-android:3.5.0")
+    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
+    implementation("io.insert-koin:koin-androidx-workmanager:3.5.0")
+
+    // Biometric Authentication
+    implementation("androidx.biometric:biometric:1.1.0")
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
