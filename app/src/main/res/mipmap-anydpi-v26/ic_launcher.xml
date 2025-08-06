@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    This layout is used on Android 8.0+ for launcher icons, enabling animation, masking, and dynamic shape rendering.
-
-    - Background layer: green grid vector (static or subtle branding)
-    - Foreground layer: white icon with shadow (core app symbol)
-    - Monochrome layer: ensures compatibility with themed icons on Android 13+
+    /**
+     * Adaptive launcher icon for the Fitness Tracker App (Android 8.0+).
+     *
+     * Responsibilities:
+     * - Provides an adaptive icon for the launcher, supporting animation, masking, and dynamic shape rendering.
+     * - Ensures consistent branding across all Android devices and launchers.
+     * - Supports Android 13+ themed icons via the monochrome layer.
+     */
 -->
+
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Green grid background -->
+    <!--
+        /**
+         * Background Layer
+         * - Green grid vector for subtle branding.
+         */
+    -->
     <background android:drawable="@drawable/ic_launcher_background" />
 
-    <!-- White fitness vector foreground with shadow -->
+    <!--
+        /**
+         * Foreground Layer
+         * - White fitness vector icon with shadow (core app symbol).
+         */
+    -->
     <foreground android:drawable="@drawable/ic_launcher_foreground" />
 
-    <!-- Optional: Themed icon support for Android 13+ -->
+    <!--
+        /**
+         * Monochrome Layer (Android 13+)
+         * - Ensures compatibility with themed icons.
+         */
+    -->
     <monochrome android:drawable="@drawable/ic_launcher_foreground" />
 
 </adaptive-icon>
