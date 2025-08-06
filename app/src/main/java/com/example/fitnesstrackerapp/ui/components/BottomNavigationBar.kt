@@ -8,61 +8,46 @@
 
 package com.example.fitnesstrackerapp.ui.components
 
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.fitnesstrackerapp.R
-import com.example.fitnesstrackerapp.navigation.Screen
 
-/**
- * Represents a single navigation tab shown in the bottom navigation bar.
- */
 data class BottomNavItem(
     val route: String,
-    val labelResId: Int
+    val label: String,
+    val icon: ImageVector
 )
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
-    // Define navigation tabs to show in the bottom nav
-    val navItems = listOf(
-        BottomNavItem(Screen.Home.route, R.string.home),
-        BottomNavItem(Screen.Workout.route, R.string.workout),
-        BottomNavItem(Screen.Nutrition.route, R.string.nutrition),
-        BottomNavItem(Screen.Goal.route, R.string.goals),
-        BottomNavItem(Screen.Progress.route, R.string.progress),
-        BottomNavItem(Screen.StepTracker.route, R.string.steps)
+fun BottomNavigationBar(
+    navController: NavController
+) {
+    val items = listOf(
+        BottomNavItem("home", "Home", Icons.Default.Home),
+        BottomNavItem("workout", "Workout", Icons.Default.DirectionsRun),
+        BottomNavItem("nutrition", "Nutrition", Icons.Default.LocalDining),
+        BottomNavItem("goals", "Goals", Icons.Default.Flag),
+        BottomNavItem("progress", "Progress", Icons.Default.ShowChart)
     )
 
-    // Get the currently active screen route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // Render bottom navigation bar
     NavigationBar {
-        navItems.forEach { item ->
+        items.forEach { item ->
             NavigationBarItem(
-                icon = {
-                    // TODO: Add icons for the navigation items
-                    // Icon(imageVector = item.icon, contentDescription = stringResource(item.labelResId))
-                },
-                label = { Text(text = stringResource(item.labelResId)) },
+                icon = { Icon(item.icon, contentDescription = item.label) },
+                label = { Text(item.label) },
                 selected = currentRoute == item.route,
-                alwaysShowLabel = true,
                 onClick = {
-                    if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            launchSingleTop = true           // Avoid multiple copies
-                            restoreState = true              // Restore previous screen state
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true             // Save popped screen state
-                            }
-                        }
+                    navController.navigate(item.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
                     }
                 }
             )
