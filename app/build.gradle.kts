@@ -155,10 +155,6 @@ dependencies {
     // Security
     implementation(libs.androidx.security.crypto)
 
-    // JSON Processing
-    implementation(libs.moshi.kotlin)
-    implementation(libs.moshi.adapters)
-
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.test.core)
@@ -170,7 +166,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Additional testing utilities
-    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
