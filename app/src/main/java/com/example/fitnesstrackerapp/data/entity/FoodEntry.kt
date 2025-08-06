@@ -5,9 +5,6 @@
  * - Represents a food entry in the nutrition tracking system
  * - Stores food details like name, calories, meal type, and timestamp
  * - Used by Room database for nutrition data persistence
- *
- * @author FitnessTrackerApp Team
- * @since 1.0
  */
 
 package com.example.fitnesstrackerapp.data.entity
