@@ -30,14 +30,11 @@ datastore = "1.0.0"
 work = "2.9.0"
 # Security
 security = "1.1.0-alpha06"
-# Moshi JSON
-moshi = "1.15.0"
 # Testing
 junit = "4.13.2"
 androidxTestExt = "1.1.5"
 espressoCore = "3.5.1"
 androidxTestCore = "1.5.0"
-turbine = "0.13.0"
 androidxTestRules = "1.5.0"
 androidxTestRunner = "1.5.2"
 androidxTestOrchestrator = "1.4.2"
@@ -88,14 +85,11 @@ junit = { group = "junit", name = "junit", version.ref = "junit" } # JUnit testi
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" } # AndroidX test extensions for JUnit
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" } # Espresso core library for UI testing
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" } # Core testing library for AndroidX
-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" } # Turbine library for testing flows
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTestRules" } # Testing rules for AndroidX
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" } # Test runner for AndroidX
 androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidxTestOrchestrator" } # Test orchestrator for AndroidX
 
 # JSON Processing
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" } # Kotlin adapter for Moshi
-moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" } # Moshi adapters for JSON serialization
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" } # SplashScreen API for Android
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" } # Identity SDK for JVM
 
