@@ -17,7 +17,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
@@ -86,7 +88,12 @@ class MainActivity : ComponentActivity() {
         if (isAuthenticated) {
             MainScreen()
         } else {
-            LoginScreen(authViewModel = authViewModel)
+            LoginScreen(
+                authViewModel = authViewModel,
+                onLoginSuccess = {
+                    // Navigation will be handled by the ViewModel state change
+                }
+            )
         }
     }
 
