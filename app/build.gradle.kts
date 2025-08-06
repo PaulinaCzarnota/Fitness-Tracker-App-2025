@@ -1,9 +1,10 @@
 /**
  * App Module Gradle Build Script (Kotlin DSL)
  *
- * Purpose:
- * - Configures the Android application plugin, Kotlin, Compose, DI, Firebase, and all dependencies for the app
- * - Sets up build types, Java/Kotlin compatibility, Compose, and packaging options
+ * Responsibilities:
+ * - Configures the Android application plugin, Kotlin, Compose, DI, and all dependencies for the app.
+ * - Sets up build types, Java/Kotlin compatibility, Compose, and packaging options.
+ * - Follows consistent Javadoc-style comment structure.
  */
 
 plugins {
@@ -12,15 +13,16 @@ plugins {
     // Kotlin Android plugin
     alias(libs.plugins.kotlin.android)
     // Kotlin annotation processing (for Room, Hilt)
-    id("kotlin-kapt")
-    // Hilt for dependency injection
-    alias(libs.plugins.hilt.android)
-    // Google services (for Firebase)
-    alias(libs.plugins.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    // App namespace and SDK versions
+    /**
+     * Android configuration block
+     *
+     * - Sets namespace, SDK versions, and default config.
+     * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
+     */
     namespace = "com.example.fitnesstrackerapp"
     compileSdk = 34
 
@@ -31,9 +33,6 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
@@ -46,77 +45,132 @@ android {
             )
         }
     }
-    
-    // Java and Kotlin compatibility
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        unitTests.isReturnDefaultValues = true
     }
-    
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    
-    // Enable Jetpack Compose
+
     buildFeatures {
+        // Enable Jetpack Compose and ViewBinding
         compose = true
     }
-    
-    // Compose compiler version
+
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
-    
-    // Exclude some license files from packaging
+
+    // Java and Kotlin compatibility
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    // Explicitly set the source sets
+    sourceSets {
+        getByName("main") {
+            manifest.srcFile("src/main/AndroidManifest.xml")
+            java.srcDirs("src/main/java")
+            res.srcDirs("src/main/res")
+        }
+        getByName("test") {
+            java.srcDirs("src/test/java")
+        }
+        getByName("androidTest") {
+            java.srcDirs("src/androidTest/java")
+        }
+    }
+
+    // Handle potential packaging conflicts
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    // Configuration for Room schema
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+        arg("room.expandProjection", "true")
+    }
+
+    // Test configuration
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 dependencies {
-    // Compose BOM for version alignment
-    implementation(platform(libs.androidx.compose.bom))
-    
-    // Core Android libraries
-    implementation(libs.androidx.core.ktx) // Kotlin extensions for Android core
-    implementation(libs.androidx.lifecycle.runtime.ktx) // Lifecycle-aware components
-    implementation(libs.androidx.activity.compose) // Compose integration for activities
-    
-    // Jetpack Compose UI
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    debugImplementation(libs.androidx.compose.ui.tooling) // UI tooling for preview/debug
-    implementation(libs.androidx.compose.material3) // Material 3 design system
-    implementation(libs.androidx.navigation.compose) // Navigation for Compose
-    implementation(libs.androidx.hilt.navigation.compose) // Hilt navigation integration
-    implementation(libs.androidx.lifecycle.runtime.compose) // Compose lifecycle
-    
-    // Room Database (local storage)
+    /**
+     * Dependencies block
+     *
+     * - Declares all libraries and tools used in the app.
+     * - Groups dependencies by feature for clarity.
+     */
+
+    // AndroidX Core and Lifecycle
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+
+    // AppCompat for theme support
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
+    // Room dependencies
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
-    
-    // Hilt Dependency Injection
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.work) // Hilt integration for WorkManager
-    kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.core.splashscreen)
+    ksp(libs.room.compiler)
+    testImplementation(libs.room.testing)
 
-    // WorkManager for background tasks (reminders, step sync, etc.)
-    implementation(libs.androidx.work.runtime.ktx)
-    
-    // Kotlin Coroutines for async/background work
+    // Compose UI
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    
-    // Firebase Authentication
-    implementation(libs.firebase.auth.ktx)
-    
-    // Testing libraries
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
+    // Security
+    implementation(libs.androidx.security.crypto)
+
+    // JSON Processing
+    implementation(libs.moshi.kotlin)
+    implementation(libs.moshi.adapters)
+
+    // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Additional testing utilities
+    testImplementation(libs.turbine)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestUtil(libs.androidx.test.orchestrator)
 }
