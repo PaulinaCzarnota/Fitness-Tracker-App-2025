@@ -128,6 +128,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.identity.jvm)
     ksp(libs.room.compiler)
     testImplementation(libs.room.testing)
 
