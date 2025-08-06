@@ -1,39 +1,32 @@
+/**
+ * Fitness Tracker Application Class
+ *
+ * Responsibilities:
+ * - Initialize app-wide components
+ * - Set up database and repositories
+ * - Configure background services
+ */
+
 package com.example.fitnesstrackerapp
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import androidx.room.Room
+import com.example.fitnesstrackerapp.data.database.AppDatabase
 
 /**
- * FitnessTrackerApplication
- *
- * Custom [Application] class for the Fitness Tracker App.
- * Serves as the root of the Dagger Hilt dependency injection graph.
- *
- * The @HiltAndroidApp annotation:
- * - Triggers Hilt code generation.
- * - Automatically creates a base Application container.
- * - Enables injection into activities, fragments, ViewModels, etc.
- *
- * You can also initialize global tools here such as:
- * - Timber logging
- * - Firebase analytics/crashlytics
- * - StrictMode policies
- * - Local database or cache pre-loading
+ * Application class for initializing app-wide components
  */
-@HiltAndroidApp
 class FitnessTrackerApplication : Application() {
 
     /**
-     * Called once during app startup, before any Activity or Service is created.
-     * Ideal for initializing SDKs and global app state.
+     * Lazy initialization of the Room database
      */
-    override fun onCreate() {
-        super.onCreate()
-
-        // Optional: Initialize third-party tools here.
-        // Example:
-        // Timber.plant(Timber.DebugTree())
-        // FirebaseApp.initializeApp(this)
-        // StrictMode.setVmPolicy(...)
+    val database by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "fitness_tracker_database"
+        ).build()
     }
+
 }
