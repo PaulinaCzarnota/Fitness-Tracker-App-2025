@@ -184,7 +184,7 @@ interface WorkoutDao {
      * @param userId User ID
      * @return Total steps
      */
-    @Query("SELECT SUM(stepCount) FROM workouts WHERE userId = :userId")
+    @Query("SELECT SUM(steps) FROM workouts WHERE userId = :userId")
     suspend fun getTotalSteps(userId: Long): Int?
 
     /**
