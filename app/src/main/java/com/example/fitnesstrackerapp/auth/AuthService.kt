@@ -1,114 +1,180 @@
-/**
- * AuthService
- *
- * Purpose:
- * - Wraps Firebase Authentication operations for the FitnessTrackerApp.
- * - Provides coroutine-based suspend functions for registration, login, password reset, and session management.
- * - Designed for use with dependency injection (Hilt) in ViewModels.
- *
- * Methods:
- * - register: Register a new user with email and password.
- * - login: Login an existing user with email and password.
- * - logout: Sign out the current user.
- * - getCurrentUser: Get the currently logged-in user.
- * - sendPasswordResetEmail: Send a password reset email.
- *
- * All methods validate input and throw exceptions for invalid data.
- */
-
 package com.example.fitnesstrackerapp.auth
 
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import javax.inject.Singleton
+import android.util.Log
+import com.example.fitnesstrackerapp.data.dao.UserDao
+import com.example.fitnesstrackerapp.data.entity.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.Date
 
-@Singleton
-class AuthService @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+/**
+ * Authentication service that handles user registration, login, and session management.
+ * 
+ * This service provides methods for user authentication and session management, including:
+ * - User registration with email and password
+ * - User login with email and password verification
+ * - Session management (save, clear, retrieve)
+ * - Input validation and error handling
+ * 
+ * @property userDao Data access object for user-related database operations
+ * @property passwordManager Service for secure password hashing and verification
+ * @property sessionManager Service for managing user sessions
+ * @property biometricAuthManager Service for biometric authentication
+ */
+
+class AuthService(
+    private val userDao: UserDao,
+    private val passwordManager: PasswordManager,
+    private val sessionManager: SessionManager,
+    private val biometricAuthManager: BiometricAuthManager
 ) {
-    /**
-     * Registers a user using Firebase Authentication.
-     *
-     * @param email The user's email address (must be unique and valid).
-     * @param password The user's password (minimum 6 characters).
-     * @return FirebaseUser if successful, or null otherwise.
-     * @throws IllegalArgumentException if email or password is empty/invalid.
-     * @throws Exception if Firebase rejects the request.
-     */
-    suspend fun register(email: String, password: String): FirebaseUser? {
-        require(email.isNotBlank()) { "Email cannot be empty" }
-        require(isValidEmail(email)) { "Invalid email format" }
-        require(password.isNotBlank()) { "Password cannot be empty" }
-        require(password.length >= 6) { "Password must be at least 6 characters" }
-
-        val result: AuthResult = firebaseAuth
-            .createUserWithEmailAndPassword(email, password)
-            .await()
-        return result.user
+    companion object {
+        private const val TAG = "AuthService"
+        private val EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".toRegex()
+        private val USERNAME_PATTERN = "^[a-zA-Z0-9_]+$".toRegex()
+        private const val MIN_PASSWORD_LENGTH = 8
     }
 
     /**
-     * Logs in a user using their email and password.
-     *
-     * @param email User's registered email.
-     * @param password User's password.
-     * @return FirebaseUser if login is successful, or null.
-     * @throws IllegalArgumentException if email or password is empty/invalid.
-     * @throws Exception on invalid credentials or network error.
+     * Registers a new user with email and password.
      */
-    suspend fun login(email: String, password: String): FirebaseUser? {
-        require(email.isNotBlank()) { "Email cannot be empty" }
-        require(isValidEmail(email)) { "Invalid email format" }
-        require(password.isNotBlank()) { "Password cannot be empty" }
+    suspend fun registerUser(
+        email: String,
+        password: String,
+        username: String? = null
+    ): Result<User> = withContext(Dispatchers.IO) {
+        try {
+            validateEmail(email)
+            validatePassword(password)
+            username?.let { validateUsername(it) }
 
-        val result: AuthResult = firebaseAuth
-            .signInWithEmailAndPassword(email, password)
-            .await()
-        return result.user
+            // Check if user already exists
+            if (userDao.getUserByEmail(email) != null) {
+                return@withContext Result.failure(
+                    IllegalStateException("Email already registered")
+                )
+            }
+
+            // Create user with hashed password
+            val hashedPassword = passwordManager.hashPassword(password)
+            val user = User(
+                id = 0,
+                email = email.lowercase(),
+                username = username?.trim() ?: email.substringBefore("@"),
+                passwordHash = hashedPassword,
+                registrationDate = Date(),
+                isActive = true
+            )
+
+            val userId = userDao.insertUser(user)
+            val savedUser = user.copy(id = userId.toInt().toLong())
+
+            Log.d(TAG, "User registered successfully: ${savedUser.email}")
+            Result.success(savedUser)
+        } catch (e: Exception) {
+            Log.e(TAG, "Registration failed", e)
+            Result.failure(e)
+        }
     }
 
     /**
-     * Logs the current user out of the app.
-     *
-     * This clears the Firebase session immediately.
+     * Authenticates a user with email and password.
      */
-    fun logout() {
-        firebaseAuth.signOut()
+    suspend fun loginUser(
+        email: String,
+        password: String
+    ): Result<User> = withContext(Dispatchers.IO) {
+        try {
+            validateEmail(email)
+
+            val user = userDao.getUserByEmail(email.lowercase())
+                ?: return@withContext Result.failure(
+                    IllegalArgumentException("Invalid email or password")
+                )
+
+            if (!passwordManager.verifyPassword(password, user.passwordHash)) {
+                return@withContext Result.failure(
+                    IllegalArgumentException("Invalid email or password")
+                )
+            }
+
+            if (!user.isActive) {
+                return@withContext Result.failure(
+                    IllegalStateException("Account is deactivated")
+                )
+            }
+
+            // Save session
+            sessionManager.saveSession(user.id.toString(), user.email)
+
+            Log.d(TAG, "User logged in successfully: ${user.email}")
+            Result.success(user)
+        } catch (e: Exception) {
+            Log.e(TAG, "Login failed", e)
+            Result.failure(e)
+        }
     }
 
     /**
-     * Gets the currently logged-in user, if any.
-     *
-     * @return FirebaseUser or null if no user is logged in.
+     * Logs out the current user.
      */
-    fun getCurrentUser(): FirebaseUser? {
-        return firebaseAuth.currentUser
+    suspend fun logoutUser(): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            sessionManager.clearSession()
+            Log.d(TAG, "User logged out successfully")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Logout failed", e)
+            Result.failure(e)
+        }
     }
 
     /**
-     * Sends a password reset email to the given address.
-     *
-     * @param email The user's email address.
-     * @throws IllegalArgumentException if email is empty or invalid.
-     * @throws Exception if the email is unregistered or invalid.
+     * Gets the current authenticated user.
      */
-    suspend fun sendPasswordResetEmail(email: String) {
-        require(email.isNotBlank()) { "Email cannot be empty" }
-        require(isValidEmail(email)) { "Invalid email format" }
-        firebaseAuth.sendPasswordResetEmail(email).await()
+    suspend fun getCurrentUser(): Result<User?> = withContext(Dispatchers.IO) {
+        try {
+            val userId = sessionManager.getCurrentUserId()
+                ?: return@withContext Result.success(null)
+
+            val user = userDao.getUserById(userId.toInt())
+            Result.success(user)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get current user", e)
+            Result.failure(e)
+        }
     }
 
     /**
-     * Checks if the provided email has a valid format.
-     *
-     * @param email The email string to validate.
-     * @return True if the email format is valid, false otherwise.
+     * Validates email format.
      */
-    private fun isValidEmail(email: String): Boolean {
-        // Simple regex for email validation
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun validateEmail(email: String) {
+        if (email.isBlank()) {
+            throw IllegalArgumentException("Email cannot be empty")
+        }
+        if (!EMAIL_PATTERN.matches(email)) {
+            throw IllegalArgumentException("Invalid email format")
+        }
+    }
+
+    /**
+     * Validates password strength.
+     */
+    private fun validatePassword(password: String) {
+        if (password.length < MIN_PASSWORD_LENGTH) {
+            throw IllegalArgumentException("Password must be at least $MIN_PASSWORD_LENGTH characters")
+        }
+    }
+
+    /**
+     * Validates username format.
+     */
+    private fun validateUsername(username: String) {
+        if (username.isBlank()) {
+            throw IllegalArgumentException("Username cannot be empty")
+        }
+        if (!USERNAME_PATTERN.matches(username)) {
+            throw IllegalArgumentException("Username can only contain letters, numbers, and underscores")
+        }
     }
 }
