@@ -1,20 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Combines a semi-transparent shadow with a custom white fitness icon.
-    This file is placed under res/drawable-v24/ to support Android 7.0+.
+    /**
+     * Foreground vector for the Fitness Tracker App launcher icon.
+     *
+     * Responsibilities:
+     * - Provides the main white fitness icon (dumbbell-style) for the adaptive launcher icon.
+     * - Includes a subtle semi-transparent drop shadow for depth.
+     * - Placed under res/drawable-v24/ to support Android 7.0+ vector rendering.
+     */
 -->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Drop shadow (subtle) -->
+    <!--
+        /**
+         * Drop Shadow (subtle)
+         * - Adds depth behind the main icon.
+         */
+    -->
     <path
         android:fillColor="#22000000"
         android:pathData="M30,30 L78,30 L78,78 L30,78 Z" />
 
-    <!-- Main white fitness icon (dumbbell-style path) -->
+    <!--
+        /**
+         * Main White Fitness Icon (dumbbell-style)
+         * - Central symbol for the app's branding.
+         */
+    -->
     <path
         android:fillColor="#FFFFFFFF"
         android:pathData="M34,48 L74,48 L74,60 L34,60 Z M30,52 L34,52 L34,56 L30,56 Z M74,52 L78,52 L78,56 L74,56 Z" />

@@ -1,20 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    This vector drawable defines the background layer of the adaptive launcher icon.
-    It uses a green fill with a semi-transparent white grid for a clean, modern look.
+    /**
+     * Vector drawable for the background layer of the adaptive launcher icon
+     * in the Fitness Tracker App.
+     *
+     * Responsibilities:
+     * - Provides a green background with a semi-transparent white grid for a clean, modern look.
+     * - Ensures consistent branding and visual identity for the app's launcher icon.
+     */
 -->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Green square background -->
+    <!--
+        /**
+         * Green square background
+         * - Main background color for the icon.
+         */
+    -->
     <path
         android:fillColor="#4CAF50"
         android:pathData="M0,0h108v108h-108z" />
 
-    <!-- Lighter green grid lines -->
+    <!--
+        /**
+         * Lighter green grid lines
+         * - Adds a subtle grid overlay for a modern, active look.
+         */
+    -->
     <path
         android:strokeColor="#66BB6A"
         android:strokeWidth="1"
