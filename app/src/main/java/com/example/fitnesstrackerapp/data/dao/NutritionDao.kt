@@ -62,19 +62,19 @@ interface NutritionDao {
     /**
      * Gets all food entries for a specific user
      */
-    @Query("SELECT * FROM food_entries WHERE userId = :userId ORDER BY createdAt DESC")
+    @Query("SELECT * FROM food_entries WHERE userId = :userId ORDER BY date DESC")
     fun getFoodEntriesForUser(userId: Long): Flow<List<FoodEntry>>
 
     /**
      * Gets food entries for a user within a specific date range
      */
-    @Query("SELECT * FROM food_entries WHERE userId = :userId AND createdAt BETWEEN :startDate AND :endDate ORDER BY createdAt DESC")
+    @Query("SELECT * FROM food_entries WHERE userId = :userId AND date BETWEEN :startDate AND :endDate ORDER BY date DESC")
     fun getFoodEntriesForUserAndDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<FoodEntry>>
 
     /**
      * Gets total calories consumed by a user on a specific date
      */
-    @Query("SELECT COALESCE(SUM(calories), 0) FROM food_entries WHERE userId = :userId AND DATE(createdAt) = DATE(:date)")
+    @Query("SELECT COALESCE(SUM(calories), 0) FROM food_entries WHERE userId = :userId AND DATE(date) = DATE(:date)")
     suspend fun getTotalCaloriesForDate(userId: Long, date: Date): Int
 
     /**
