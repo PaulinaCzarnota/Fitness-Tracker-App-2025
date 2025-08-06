@@ -14,10 +14,10 @@
         <include domain="sharedpref" path="." />
 
         <!-- Include Room database (e.g. FitnessTracker DB) -->
-        <include domain="database" path="FitnessDatabase" />
+        <include domain="database" path="fitness_tracker_db" />
 
         <!-- Exclude sensitive or temporary data (if applicable) -->
-        <exclude domain="database" path="FitnessDatabase-journal" />
+        <exclude domain="database" path="fitness_tracker_db-journal" />
 
     </cloud-backup>
 
@@ -28,7 +28,7 @@
         <include domain="sharedpref" path="auth.xml" />
 
         <!-- Include Room DB (optional for device migration) -->
-        <include domain="database" path="FitnessDatabase" />
+        <include domain="database" path="fitness_tracker_db" />
 
     </device-transfer>
 
