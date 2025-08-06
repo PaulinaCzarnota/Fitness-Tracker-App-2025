@@ -5,68 +5,101 @@
 # - Ensures consistency and avoids version conflicts across modules
 
 [versions]
-kotlin = "1.9.10"
-agp = "8.1.4"
-composeBom = "2023.10.01"
+# Android Gradle Plugin
+agp = "8.3.0"
+# Kotlin language and Symbol Processing
+kotlin = "1.9.0"
+ksp = "1.9.0-1.0.13"
+# AndroidX Core and Lifecycle
 coreKtx = "1.12.0"
-lifecycle = "2.7.0"
+lifecycleRuntimeKtx = "2.6.2"
+lifecycle = "2.6.2"
 activityCompose = "1.8.2"
+# Jetpack Compose
+composeBom = "2024.02.01"
+material3 = "1.2.1"
 navigation = "2.7.7"
+# Room Database
 room = "2.6.1"
-hilt = "2.48"
-firebaseAuth = "22.3.0"
-googleServices = "4.4.0"
+# Coroutines
 coroutines = "1.7.3"
-hiltNavCompose = "1.2.0"
+coroutinesTest = "1.7.3"
+# DataStore
+datastore = "1.0.0"
+# WorkManager
 work = "2.9.0"
-androidxHilt = "1.2.0"
+# Security
+security = "1.1.0-alpha06"
+# Moshi JSON
+moshi = "1.15.0"
+# Testing
 junit = "4.13.2"
+androidxTestExt = "1.1.5"
+espressoCore = "3.5.1"
+androidxTestCore = "1.5.0"
+turbine = "0.13.0"
+androidxTestRules = "1.5.0"
+androidxTestRunner = "1.5.2"
+androidxTestOrchestrator = "1.4.2"
+# Splashscreen
+coreSplashscreen = "1.0.1"
+# Identity
+identityJvm = "202411.1"
 
 [libraries]
-# Core Android
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+# Core Android Libraries
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" } # Essential Kotlin extensions for Android core APIs
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" } # Lifecycle-aware components for Kotlin
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" } # Compose integration for activities
 
-# Compose BOM and UI
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui" }
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavCompose" }
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+# Compose
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" } # Bill of Materials for Compose libraries
+androidx-compose-ui = { module = "androidx.compose.ui:ui" } # Compose UI toolkit
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" } # Tooling support for Compose UI
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" } # Preview support for Compose UI
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" } # Material Design 3 components for Compose
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" } # JUnit 4 testing support for Compose UI
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" } # Manifest support for testing Compose UI
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" } # Navigation component for Compose
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" } # Lifecycle runtime for Compose
 
 # Room Database
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" } # Runtime for Room Database
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" } # Kotlin extensions for Room
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" } # Annotation processor for Room
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" } # Testing utilities for Room
 
 # Coroutines
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" } # Core library for Kotlin coroutines
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" } # Android-specific coroutine extensions
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" } # Testing utilities for coroutines
 
-# Firebase
-firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuth" }
-
-# Hilt
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidxHilt" }
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidxHilt" }
+# DataStore
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" } # DataStore for storing key-value pairs
 
 # WorkManager
-androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" } # WorkManager for background tasks
+
+# Security
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security" } # Cryptography library for secure data storage
 
 # Testing
-junit = { module = "junit:junit", version.ref = "junit" }
-androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
-androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+junit = { group = "junit", name = "junit", version.ref = "junit" } # JUnit testing framework
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" } # AndroidX test extensions for JUnit
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" } # Espresso core library for UI testing
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" } # Core testing library for AndroidX
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" } # Turbine library for testing flows
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTestRules" } # Testing rules for AndroidX
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" } # Test runner for AndroidX
+androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidxTestOrchestrator" } # Test orchestrator for AndroidX
+
+# JSON Processing
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" } # Kotlin adapter for Moshi
+moshi-adapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" } # Moshi adapters for JSON serialization
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" } # SplashScreen API for Android
+identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" } # Identity SDK for JVM
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
