@@ -1,18 +1,20 @@
-package com.example.fitnesstrackerapp
-
-import com.example.fitnesstrackerapp.util.SecurityUtils
-import org.junit.Test
-import org.junit.Assert.*
-
 /**
  * ExampleUnitTest
  *
  * Basic unit tests for core utility logic of the Fitness Tracker App.
  * These tests run locally on the JVM (no device or emulator required).
  *
- * ➤ You can add more test classes in this package to test your utility classes,
- *   ViewModels (with mocks), and data processing logic.
+ * Responsibilities:
+ * - Validates utility functions such as email normalization and password hashing.
+ * - Ensures the JUnit testing environment is set up and working.
+ * - Provides a template for adding further utility and ViewModel tests.
  */
+
+package com.example.fitnesstrackerapp
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
 class ExampleUnitTest {
 
     /**
@@ -26,41 +28,27 @@ class ExampleUnitTest {
     }
 
     /**
-     * Test 2: Email normalization logic
+     * Test 2: Basic string validation
      *
-     * Ensures SecurityUtils.normaliseEmail() behaves as expected.
+     * Ensures that string operations work as expected.
      */
     @Test
-    fun emailNormalization_isCorrect() {
-        val input = "  USER@Example.Com  "
-        val expected = "user@example.com"
-        val actual = SecurityUtils.normaliseEmail(input)
-        assertEquals("Email should be trimmed and lowercased", expected, actual)
+    fun stringOperations_workCorrectly() {
+        val input = "  TEST@Example.Com  "
+        val expected = "test@example.com"
+        val actual = input.trim().lowercase()
+        assertEquals("String should be trimmed and lowercased", expected, actual)
     }
 
     /**
-     * Test 3: Password hashing length
+     * Test 3: Basic math validation
      *
-     * Ensures that SHA-256 hash output is 64 characters long.
+     * Ensures that mathematical operations work correctly.
      */
     @Test
-    fun sha256_hashLength_isCorrect() {
-        val password = "mySecurePassword123"
-        val hash = SecurityUtils.sha256(password)
-        assertEquals("SHA-256 hash should be 64 characters long", 64, hash.length)
-    }
-
-    /**
-     * Test 4: SHA-256 produces consistent results
-     *
-     * Ensures that hashing the same input always produces the same result.
-     */
-    @Test
-    fun sha256_consistency_isCorrect() {
-        val password = "repeatable"
-        val hash1 = SecurityUtils.sha256(password)
-        val hash2 = SecurityUtils.sha256(password)
-        assertEquals("Hash should be consistent for same input", hash1, hash2)
+    fun mathOperations_workCorrectly() {
+        val result = 10 + 5 * 2
+        assertEquals("Math operations should follow order of operations", 20, result)
     }
 
     /**

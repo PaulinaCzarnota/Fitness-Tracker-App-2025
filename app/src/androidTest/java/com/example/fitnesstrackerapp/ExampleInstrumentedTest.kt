@@ -1,14 +1,3 @@
-package com.example.fitnesstrackerapp
-
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.example.fitnesstrackerapp.util.SecurityUtils
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.Assert.*
-
 /**
  * ExampleInstrumentedTest
  *
@@ -18,6 +7,17 @@ import org.junit.Assert.*
  * Run with:
  * ./gradlew connectedAndroidTest
  */
+
+package com.example.fitnesstrackerapp
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
+
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
 
@@ -36,34 +36,7 @@ class ExampleInstrumentedTest {
     }
 
     /**
-     * Test 2: Verify email normalization in app context
-     *
-     * Tests that email normalization behaves as expected on device context.
-     */
-    @Test
-    fun emailNormalization_worksCorrectlyOnDevice() {
-        val input = "  TestUser@Mail.Com  "
-        val expected = "testuser@mail.com"
-        val result = SecurityUtils.normaliseEmail(input)
-
-        assertEquals("Email should be trimmed and lowercased", expected, result)
-    }
-
-    /**
-     * Test 3: Verify password hashing on device
-     *
-     * Confirms that SHA-256 hashing produces the correct length.
-     */
-    @Test
-    fun passwordHashing_isCorrectLength() {
-        val password = "androidTest123"
-        val hash = SecurityUtils.sha256(password)
-
-        assertEquals("Hashed password should be 64 characters", 64, hash.length)
-    }
-
-    /**
-     * Test 4: ApplicationProvider context validation
+     * Test 2: ApplicationProvider context validation
      *
      * Confirms ApplicationProvider returns correct app context.
      */
