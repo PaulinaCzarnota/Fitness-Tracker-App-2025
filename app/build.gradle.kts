@@ -149,11 +149,7 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
-    // Koin for dependency injection
-    implementation("io.insert-koin:koin-android:3.5.0")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
-
-    // Material Icons Extended
+    // Material Icons Extended for complete icon set
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
     // WorkManager
