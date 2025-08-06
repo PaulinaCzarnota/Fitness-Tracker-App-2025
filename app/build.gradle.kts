@@ -188,5 +188,5 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // XML Parser
-    implementation("javax.xml.parsers:jaxp-api:1.4.5")
+    implementation("xerces:xercesImpl:2.12.2")
 }
