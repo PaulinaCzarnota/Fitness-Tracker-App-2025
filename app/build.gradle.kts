@@ -180,4 +180,13 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
+
+    // Compose dependencies
+    implementation("androidx.compose.material3:material3:1.2.0")
+
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // XML Parser
+    implementation("javax.xml.parsers:jaxp-api:1.4.5")
 }
