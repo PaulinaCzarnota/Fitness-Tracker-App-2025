@@ -61,7 +61,7 @@ interface UserDao {
      * @return User entity or null if not found
      */
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
-    suspend fun getUserById(userId: Int): User?
+    suspend fun getUserById(userId: Long): User?
 
     /**
      * Gets a user by their username.
@@ -237,4 +237,10 @@ interface UserDao {
      */
     @Query("SELECT COUNT(*) FROM users WHERE is_active = 1")
     suspend fun getActiveUserCount(): Int
+
+    /**
+     * Deletes a user by ID
+     */
+    @Query("DELETE FROM users WHERE id = :userId")
+    suspend fun deleteUserById(userId: Long)
 }
