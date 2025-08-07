@@ -5,18 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.fitnesstrackerapp.data.dao.GoalDao
-import com.example.fitnesstrackerapp.data.dao.NutritionDao
-import com.example.fitnesstrackerapp.data.dao.StepDao
-import com.example.fitnesstrackerapp.data.dao.UserDao
-import com.example.fitnesstrackerapp.data.dao.WorkoutDao
-import com.example.fitnesstrackerapp.data.entity.Goal
-import com.example.fitnesstrackerapp.data.entity.Nutrition
-import com.example.fitnesstrackerapp.data.entity.Step
-import com.example.fitnesstrackerapp.data.entity.User
-import com.example.fitnesstrackerapp.data.entity.Workout
-import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.Converters
+import com.example.fitnesstrackerapp.data.dao.*
+import com.example.fitnesstrackerapp.data.entity.*
 
 /**
  * Room database class for the Fitness Tracker application.
@@ -32,13 +23,12 @@ import com.example.fitnesstrackerapp.data.Converters
     entities = [
         User::class,
         Workout::class,
-        Step::class,
         Goal::class,
-        Nutrition::class,
+        Step::class,
         FoodEntry::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -66,7 +56,7 @@ abstract class AppDatabase : RoomDatabase() {
     /**
      * Provides access to Nutrition data operations.
      */
-    abstract fun nutritionDao(): NutritionDao
+    abstract fun foodEntryDao(): FoodEntryDao
 
     companion object {
 
@@ -81,18 +71,15 @@ abstract class AppDatabase : RoomDatabase() {
          * @param context Application context
          * @return AppDatabase instance
          */
-        fun getDatabase(context: Context): AppDatabase {
+        fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
+                INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
                     .fallbackToDestructiveMigration() // For development - remove in production
-                    .build()
-
-                INSTANCE = instance
-                instance
+                    .build().also { INSTANCE = it }
             }
         }
 
