@@ -1,50 +1,91 @@
 package com.example.fitnesstrackerapp.data
 
-import androidx.room.TypeConverter import java.util.Date
+import androidx.room.TypeConverter
+import com.example.fitnesstrackerapp.data.entity.*
+import java.util.Date
 
 /**
- * Room database type converters for custom data types.
+ * Type converters for Room database.
  *
- * Provides conversion between complex types and primitive types that Room can store:
- * - Date <-> Long (timestamp)
- * - List<String> <-> String (comma-separated)
- * - List<Float> <-> String (comma-separated)
+ * Handles conversion between complex types and primitive types
+ * that can be stored in SQLite database.
  */
 class Converters {
 
+    // Date converters
     @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
+    fun toDate(timestamp: Long?): Date? {
+        return timestamp?.let { Date(it) }
     }
 
     @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
+    fun fromDate(date: Date?): Long? {
         return date?.time
     }
 
+    // MealType converters
     @TypeConverter
-    fun fromStringList(value: List<String>?): String? {
-        return value?.joinToString(",")
+    fun toMealType(value: String?): MealType? {
+        return value?.let { MealType.valueOf(it) }
     }
 
     @TypeConverter
-    fun toStringList(value: String?): List<String>? {
-        return value?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
+    fun fromMealType(mealType: MealType?): String? {
+        return mealType?.name
+    }
+
+    // Gender converters
+    @TypeConverter
+    fun toGender(value: String?): Gender? {
+        return value?.let { Gender.valueOf(it) }
     }
 
     @TypeConverter
-    fun fromFloatList(value: List<Float>?): String? {
-        return value?.joinToString(",")
+    fun fromGender(gender: Gender?): String? {
+        return gender?.name
+    }
+
+    // ActivityLevel converters
+    @TypeConverter
+    fun toActivityLevel(value: String?): ActivityLevel? {
+        return value?.let { ActivityLevel.valueOf(it) }
     }
 
     @TypeConverter
-    fun toFloatList(value: String?): List<Float>? {
-        return value?.split(",")?.mapNotNull {
-            try {
-                it.trim().toFloat()
-            } catch (e: NumberFormatException) {
-                null
-            }
-        }
+    fun fromActivityLevel(activityLevel: ActivityLevel?): String? {
+        return activityLevel?.name
+    }
+
+    // GoalType converters
+    @TypeConverter
+    fun toGoalType(value: String?): GoalType? {
+        return value?.let { GoalType.valueOf(it) }
+    }
+
+    @TypeConverter
+    fun fromGoalType(goalType: GoalType?): String? {
+        return goalType?.name
+    }
+
+    // GoalStatus converters
+    @TypeConverter
+    fun toGoalStatus(value: String?): GoalStatus? {
+        return value?.let { GoalStatus.valueOf(it) }
+    }
+
+    @TypeConverter
+    fun fromGoalStatus(goalStatus: GoalStatus?): String? {
+        return goalStatus?.name
+    }
+
+    // WorkoutType converters
+    @TypeConverter
+    fun toWorkoutType(value: String?): WorkoutType? {
+        return value?.let { WorkoutType.valueOf(it) }
+    }
+
+    @TypeConverter
+    fun fromWorkoutType(workoutType: WorkoutType?): String? {
+        return workoutType?.name
     }
 }
