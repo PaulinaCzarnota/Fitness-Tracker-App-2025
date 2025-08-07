@@ -34,12 +34,33 @@ interface GoalDao {
     suspend fun insertGoal(goal: Goal): Long
 
     /**
+     * Alternative insert method for compatibility
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(goal: Goal): Long
+
+    /**
+     * Inserts multiple goals into the database.
+     *
+     * @param goals List of Goal entities to insert
+     * @return List of IDs of the inserted goals
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(goals: List<Goal>): List<Long>
+
+    /**
      * Updates an existing goal in the database.
      *
      * @param goal Goal entity with updated data
      */
     @Update
     suspend fun updateGoal(goal: Goal)
+
+    /**
+     * Alternative update method for compatibility
+     */
+    @Update
+    suspend fun update(goal: Goal)
 
     /**
      * Deletes a goal from the database.
@@ -50,12 +71,26 @@ interface GoalDao {
     suspend fun deleteGoal(goal: Goal)
 
     /**
+     * Alternative delete method for compatibility
+     */
+    @Delete
+    suspend fun delete(goal: Goal)
+
+    /**
      * Deletes a goal by its ID.
      *
      * @param goalId Goal ID to delete
      */
     @Query("DELETE FROM goals WHERE id = :goalId")
     suspend fun deleteGoalById(goalId: Long)
+
+    /**
+     * Deletes all goals by user ID.
+     *
+     * @param userId User ID
+     */
+    @Query("DELETE FROM goals WHERE userId = :userId")
+    suspend fun deleteAllByUser(userId: Long)
 
     /**
      * Gets a goal by its ID.
@@ -67,6 +102,12 @@ interface GoalDao {
     suspend fun getGoalById(goalId: Long): Goal?
 
     /**
+     * Alternative method names for compatibility with repository calls
+     */
+    @Query("SELECT * FROM goals WHERE id = :goalId")
+    suspend fun getById(goalId: Long): Goal?
+
+    /**
      * Gets all goals for a specific user.
      *
      * @param userId User ID
@@ -74,6 +115,12 @@ interface GoalDao {
      */
     @Query("SELECT * FROM goals WHERE userId = :userId ORDER BY createdAt DESC")
     fun getGoalsByUser(userId: Long): Flow<List<Goal>>
+
+    /**
+     * Gets all goals by user ID.
+     */
+    @Query("SELECT * FROM goals WHERE userId = :userId")
+    fun getAllByUser(userId: Long): Flow<List<Goal>>
 
     /**
      * Gets active goals for a specific user.
@@ -94,6 +141,18 @@ interface GoalDao {
     fun getAchievedGoals(userId: Long): Flow<List<Goal>>
 
     /**
+     * Gets completed goals for a user.
+     */
+    @Query("SELECT * FROM goals WHERE userId = :userId AND isAchieved = 1")
+    fun getCompletedGoals(userId: Long): Flow<List<Goal>>
+
+    /**
+     * Counts goals by user.
+     */
+    @Query("SELECT COUNT(*) FROM goals WHERE userId = :userId")
+    suspend fun countGoalsByUser(userId: Long): Int
+
+    /**
      * Gets goals by type for a user.
      *
      * @param userId User ID
@@ -102,6 +161,18 @@ interface GoalDao {
      */
     @Query("SELECT * FROM goals WHERE userId = :userId AND goalType = :goalType ORDER BY createdAt DESC")
     fun getGoalsByType(userId: Long, goalType: GoalType): Flow<List<Goal>>
+
+    /**
+     * Gets goals due by date.
+     */
+    @Query("SELECT * FROM goals WHERE userId = :userId AND targetDate <= :date AND isAchieved = 0")
+    fun getGoalsDueBy(userId: Long, date: Date): Flow<List<Goal>>
+
+    /**
+     * Updates goal completion status.
+     */
+    @Query("UPDATE goals SET isAchieved = :isCompleted, achievedDate = :completedAt WHERE id = :goalId")
+    suspend fun updateGoalCompletion(goalId: Long, isCompleted: Boolean, completedAt: Date?)
 
     /**
      * Updates goal progress.
@@ -121,6 +192,25 @@ interface GoalDao {
      */
     @Query("UPDATE goals SET isAchieved = 1, achievedDate = :achievedAt WHERE id = :goalId")
     suspend fun markGoalAsAchieved(goalId: Long, achievedAt: Date)
+
+    /**
+     * Updates completion status of a goal.
+     *
+     * @param goalId Goal ID
+     * @param isCompleted New completion status
+     * @param completedAt Completion date
+     */
+    @Query("UPDATE goals SET isAchieved = :isCompleted, achievedDate = :completedAt WHERE id = :goalId")
+    suspend fun updateCompletionStatus(goalId: Long, isCompleted: Boolean, completedAt: Date?)
+
+    /**
+     * Updates the progress value of a goal.
+     *
+     * @param goalId Goal ID
+     * @param progress New progress value
+     */
+    @Query("UPDATE goals SET currentValue = :progress WHERE id = :goalId")
+    suspend fun updateProgress(goalId: Long, progress: Double)
 
     /**
      * Gets goals with reminders enabled.
@@ -151,6 +241,12 @@ interface GoalDao {
      */
     @Query("SELECT * FROM goals WHERE userId = :userId AND targetDate BETWEEN :startDate AND :endDate AND isAchieved = 0 AND isActive = 1 ORDER BY targetDate ASC")
     fun getGoalsDueSoon(userId: Long, startDate: Date, endDate: Date): Flow<List<Goal>>
+
+    /**
+     * Get upcoming due goals with days parameter
+     */
+    @Query("SELECT * FROM goals WHERE userId = :userId AND targetDate BETWEEN :currentDate AND date(:currentDate, '+' || :days || ' days') AND isAchieved = 0 ORDER BY targetDate ASC")
+    fun getUpcomingDueGoals(userId: Long, days: Int, currentDate: Date): Flow<List<Goal>>
 
     /**
      * Gets goal count for a user.
