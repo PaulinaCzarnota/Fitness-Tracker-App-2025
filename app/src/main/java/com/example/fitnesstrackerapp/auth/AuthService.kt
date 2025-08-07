@@ -135,7 +135,7 @@ class AuthService(
 
             // Generate new salt and hash new password
             val newSalt = passwordManager.generateSalt()
-            val newHashedPassword = passwordManager.hashPassword(newPassword, newSalt)
+            passwordManager.hashPassword(newPassword, newSalt)
 
             // Update user password - replace with actual DAO call
             Log.d(TAG, "Password changed successfully for user: $userId")
