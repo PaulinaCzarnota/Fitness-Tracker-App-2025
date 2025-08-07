@@ -42,6 +42,7 @@ androidxTestOrchestrator = "1.4.2"
 coreSplashscreen = "1.0.1"
 # Identity
 identityJvm = "202411.1"
+xercesimpl = "2.12.2"
 
 [libraries]
 # Core Android Libraries
@@ -92,6 +93,7 @@ androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.re
 # JSON Processing
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" } # SplashScreen API for Android
 identity-jvm = { group = "com.android.identity", name = "identity-jvm", version.ref = "identityJvm" } # Identity SDK for JVM
+xercesimpl = { module = "xerces:xercesImpl", version.ref = "xercesimpl" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
