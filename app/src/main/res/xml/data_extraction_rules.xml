@@ -1,35 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Data Extraction Rules for Android Auto Backup and Device-to-Device Transfer.
-  Customize to define what app data should be included or excluded from backup.
-  Documentation:
-  https://developer.android.com/about/versions/12/backup-restore#xml-changes
--->
-<data-extraction-rules>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <files-path name="my_images" path="images/"/>
+    <files-path name="my_docs" path="docs/"/>
+</paths>
 
-    <!-- ========== CLOUD BACKUP RULES ========== -->
-    <cloud-backup>
-
-        <!-- Include all shared preferences files -->
-        <include domain="sharedpref" path="." />
-
-        <!-- Include Room database (e.g. FitnessTracker DB) -->
-        <include domain="database" path="fitness_tracker_db" />
-
-        <!-- Exclude sensitive or temporary data (if applicable) -->
-        <exclude domain="database" path="fitness_tracker_db-journal" />
-
-    </cloud-backup>
-
-    <!-- ========== DEVICE TRANSFER RULES (Optional) ========== -->
-    <device-transfer>
-
-        <!-- Include shared preferences for settings and login -->
-        <include domain="sharedpref" path="auth.xml" />
-
-        <!-- Include Room DB (optional for device migration) -->
-        <include domain="database" path="fitness_tracker_db" />
-
-    </device-transfer>
-
-</data-extraction-rules>
