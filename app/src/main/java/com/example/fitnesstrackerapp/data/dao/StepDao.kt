@@ -1,156 +1,82 @@
 package com.example.fitnesstrackerapp.data.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.example.fitnesstrackerapp.data.entity.Step
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.util.Date
 
-/**
- * Data Access Object for Step entity operations.
- *
- * Responsibilities:
- * - Insert, update, delete step records
- * - Query steps by user and date
- * - Provide step statistics and daily summaries
- * - Handle step goal tracking
- */
 @Dao
 interface StepDao {
+    @Insert
+    suspend fun insert(step: Step): Long
 
-    /**
-     * Inserts a new step record into the database.
-     *
-     * @param step Step entity to insert
-     * @return The ID of the inserted step record
-     */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertStep(step: Step): Long
+    @Insert
+    suspend fun insertAll(steps: List<Step>): List<Long>
 
-    /**
-     * Updates an existing step record in the database.
-     *
-     * @param step Step entity with updated data
-     */
     @Update
     suspend fun updateStep(step: Step)
 
-    /**
-     * Deletes a step record from the database.
-     *
-     * @param step Step entity to delete
-     */
     @Delete
     suspend fun deleteStep(step: Step)
 
-    /**
-     * Gets a step record by its ID.
-     *
-     * @param stepId Step ID to search for
-     * @return Step entity or null if not found
-     */
-    @Query("SELECT * FROM steps WHERE id = :stepId LIMIT 1")
-    suspend fun getStepById(stepId: Long): Step?
+    @Query("SELECT * FROM steps WHERE userId = :userId AND date = :date LIMIT 1")
+    fun getTodaysSteps(userId: Long, date: Date): Flow<Step?>
 
     /**
-     * Gets all step records for a specific user.
-     *
-     * @param userId User ID
-     * @return Flow of list of steps ordered by date descending
+     * Gets today's steps with current date
      */
+    @Query("SELECT * FROM steps WHERE userId = :userId AND date = date('now') LIMIT 1")
+    fun getTodaysSteps(userId: Long): Flow<Step?>
+
+    @Query("SELECT * FROM steps WHERE userId = :userId AND date BETWEEN :startDate AND :endDate")
+    fun getStepsInDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Step>>
+
     @Query("SELECT * FROM steps WHERE userId = :userId ORDER BY date DESC")
     fun getStepsByUser(userId: Long): Flow<List<Step>>
 
     /**
-     * Gets step records for a specific date.
-     *
-     * @param userId User ID
-     * @param date Date to search for
-     * @return Step record or null if not found
+     * Gets steps for a specific date
      */
-    @Query("SELECT * FROM steps WHERE userId = :userId AND DATE(date) = DATE(:date)")
-    fun getStepsByDate(userId: Long, date: Date): Flow<List<Step>>
+    @Query("SELECT * FROM steps WHERE userId = :userId AND date = :date")
+    fun getStepsForDate(userId: Long, date: Date): Flow<List<Step>>
 
     /**
-     * Gets step records within a date range.
-     *
-     * @param userId User ID
-     * @param startDate Start date (inclusive)
-     * @param endDate End date (inclusive)
-     * @return Flow of list of steps in date range
+     * Gets steps for a date range
      */
-    @Query("SELECT * FROM steps WHERE userId = :userId AND date BETWEEN :startDate AND :endDate ORDER BY date DESC")
+    @Query("SELECT * FROM steps WHERE userId = :userId AND date BETWEEN :startDate AND :endDate")
+    fun getStepsForDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Step>>
+
+    /**
+     * Gets steps by date range (alternative method name)
+     */
+    @Query("SELECT * FROM steps WHERE userId = :userId AND date BETWEEN :startDate AND :endDate")
     fun getStepsByDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Step>>
 
-    /**
-     * Gets total steps for a user on a specific date.
-     *
-     * @param userId User ID
-     * @param date Date to calculate total steps
-     * @return Total steps for the date
-     */
-    @Query("SELECT COALESCE(SUM(stepCount), 0) FROM steps WHERE userId = :userId AND DATE(date) = DATE(:date)")
+    @Query("SELECT SUM(count) FROM steps WHERE userId = :userId AND date = :date")
     suspend fun getTotalStepsForDate(userId: Long, date: Date): Int
 
-    /**
-     * Gets today's step count for a user.
-     *
-     * @param userId User ID
-     * @return Today's step count
-     */
-    @Query("SELECT COALESCE(SUM(stepCount), 0) FROM steps WHERE userId = :userId AND DATE(date) = DATE('now')")
+    @Query("SELECT SUM(count) FROM steps WHERE userId = :userId AND date = date('now')")
     suspend fun getTodayStepCount(userId: Long): Int
 
-    /**
-     * Gets recent step records with limit.
-     *
-     * @param userId User ID
-     * @param limit Maximum number of records to return
-     * @return Flow of list of recent steps
-     */
     @Query("SELECT * FROM steps WHERE userId = :userId ORDER BY date DESC LIMIT :limit")
     fun getRecentSteps(userId: Long, limit: Int): Flow<List<Step>>
 
-    /**
-     * Deletes all step records for a user.
-     *
-     * @param userId User ID
-     */
     @Query("DELETE FROM steps WHERE userId = :userId")
     suspend fun deleteAllUserSteps(userId: Long)
 
     /**
-     * Gets step records count for a user.
-     *
-     * @param userId User ID
-     * @return Number of step records
+     * Saves step data
      */
-    @Query("SELECT COUNT(*) FROM steps WHERE userId = :userId")
-    suspend fun getStepRecordCount(userId: Long): Int
+    suspend fun saveSteps(step: Step): Long = insert(step)
+
+    @Transaction
+    suspend fun upsertSteps(step: Step) {
+        val existingStep = getTodaysSteps(step.userId, step.date).first()
+        if (existingStep != null) {
+            updateStep(step.copy(id = existingStep.id))
+        } else {
+            insert(step)
+        }
+    }
 }
-
-/**
- * Data class for weekly step summary.
- */
-data class WeeklyStepSummary(
-    val totalSteps: Int,
-    val totalDistance: Float,
-    val totalCalories: Float,
-    val avgSteps: Float,
-    val activeDays: Int
-)
-
-/**
- * Data class for monthly step summary.
- */
-data class MonthlyStepSummary(
-    val totalSteps: Int,
-    val totalDistance: Float,
-    val totalCalories: Float,
-    val avgSteps: Float,
-    val activeDays: Int
-)
