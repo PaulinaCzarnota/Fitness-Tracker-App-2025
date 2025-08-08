@@ -6,8 +6,6 @@
      * Defines the color palette used throughout the application, following Material Design 3
      * guidelines for consistent theming and accessibility. Includes both light and dark theme
      * color variations.
-     *
-     * @since 1.0
      */
 -->
 
