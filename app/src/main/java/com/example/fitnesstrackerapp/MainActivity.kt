@@ -23,6 +23,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.navigation.AppNavigation
 import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
 
@@ -102,10 +103,15 @@ class MainActivity : ComponentActivity() {
             // Request necessary permissions
             requestPermissions()
             
-            // Set up the main UI content
+            // Initialize ServiceLocator and get AuthViewModel
+            val serviceLocator = ServiceLocator.get(this)
+            val authVm = ViewModelProvider(
+                this,
+                ViewModelFactoryProvider.getAuthViewModelFactory(serviceLocator)
+            )[com.example.fitnesstrackerapp.ui.auth.AuthViewModel::class.java]
+
             setContent {
                 FitnessTrackerTheme {
-                    val authVm = ViewModelFactoryProvider.getAuthViewModel(this)
                     AppNavigation(authViewModel = authVm)
                 }
             }
@@ -199,7 +205,7 @@ class MainActivity : ComponentActivity() {
      * @param functionality The functionality that will be affected
      */
     private fun showPermissionDeniedMessage(permissionName: String, functionality: String) {
-        val message = getString(R.string.permission_denied_message, permissionName, functionality)
+        val message = "$permissionName permission is required for $functionality. You can enable it in Settings."
         Toast.makeText(
             this,
             message,
