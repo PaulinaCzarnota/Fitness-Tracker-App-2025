@@ -17,7 +17,7 @@ import java.util.*
 
 /**
  * Unit tests for NotificationDao.
- * 
+ *
  * Tests all notification-related database operations including
  * CRUD operations, status updates, analytics queries, and
  * relationship management with other entities.
@@ -37,11 +37,11 @@ class NotificationDaoTest {
     fun createDb() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
-        
+
         notificationDao = database.notificationDao()
         userDao = database.userDao()
     }
@@ -63,7 +63,7 @@ class NotificationDaoTest {
             userId = userId,
             type = NotificationType.WORKOUT_REMINDER,
             title = "Workout Time",
-            message = "Time for your daily workout!"
+            message = "Time for your daily workout!",
         )
 
         val notificationId = notificationDao.insertNotification(notification)
@@ -85,7 +85,7 @@ class NotificationDaoTest {
         val notifications = listOf(
             TestHelper.createTestNotification(userId = userId, title = "Notification 1", type = NotificationType.WORKOUT_REMINDER),
             TestHelper.createTestNotification(userId = userId, title = "Notification 2", type = NotificationType.GOAL_ACHIEVEMENT),
-            TestHelper.createTestNotification(userId = userId, title = "Notification 3", type = NotificationType.DAILY_MOTIVATION)
+            TestHelper.createTestNotification(userId = userId, title = "Notification 3", type = NotificationType.DAILY_MOTIVATION),
         )
 
         notifications.forEach { notification ->
@@ -94,10 +94,11 @@ class NotificationDaoTest {
 
         val userNotifications = notificationDao.getNotificationsByUserId(userId).first()
         Assert.assertEquals("Should have 3 notifications", 3, userNotifications.size)
-        Assert.assertTrue("Should contain all notification types", 
+        Assert.assertTrue(
+            "Should contain all notification types",
             userNotifications.map { it.type }.containsAll(
-                listOf(NotificationType.WORKOUT_REMINDER, NotificationType.GOAL_ACHIEVEMENT, NotificationType.DAILY_MOTIVATION)
-            )
+                listOf(NotificationType.WORKOUT_REMINDER, NotificationType.GOAL_ACHIEVEMENT, NotificationType.DAILY_MOTIVATION),
+            ),
         )
     }
 
@@ -108,19 +109,20 @@ class NotificationDaoTest {
 
         // Insert notifications of different types
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, type = NotificationType.WORKOUT_REMINDER, title = "Workout 1")
+            TestHelper.createTestNotification(userId = userId, type = NotificationType.WORKOUT_REMINDER, title = "Workout 1"),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, type = NotificationType.WORKOUT_REMINDER, title = "Workout 2")
+            TestHelper.createTestNotification(userId = userId, type = NotificationType.WORKOUT_REMINDER, title = "Workout 2"),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, type = NotificationType.GOAL_ACHIEVEMENT, title = "Goal Achieved")
+            TestHelper.createTestNotification(userId = userId, type = NotificationType.GOAL_ACHIEVEMENT, title = "Goal Achieved"),
         )
 
         val workoutNotifications = notificationDao.getNotificationsByType(userId, NotificationType.WORKOUT_REMINDER).first()
         Assert.assertEquals("Should have 2 workout notifications", 2, workoutNotifications.size)
-        Assert.assertTrue("All should be workout reminders", 
-            workoutNotifications.all { it.type == NotificationType.WORKOUT_REMINDER }
+        Assert.assertTrue(
+            "All should be workout reminders",
+            workoutNotifications.all { it.type == NotificationType.WORKOUT_REMINDER },
         )
 
         val goalNotifications = notificationDao.getNotificationsByType(userId, NotificationType.GOAL_ACHIEVEMENT).first()
@@ -135,7 +137,7 @@ class NotificationDaoTest {
         // Insert notifications with different read states
         val unreadNotification = TestHelper.createTestNotification(userId = userId, title = "Unread")
         val readNotificationId = notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Read")
+            TestHelper.createTestNotification(userId = userId, title = "Read"),
         )
 
         notificationDao.insertNotification(unreadNotification)
@@ -158,7 +160,7 @@ class NotificationDaoTest {
         // Test marking as sent
         val sentTime = Date()
         notificationDao.markNotificationAsSent(notificationId, sentTime)
-        
+
         var updatedNotification = notificationDao.getNotificationById(notificationId)
         Assert.assertEquals("Status should be SENT", NotificationStatus.SENT, updatedNotification?.status)
         Assert.assertEquals("Sent time should match", sentTime.time, updatedNotification?.sentTime?.time ?: 0)
@@ -166,7 +168,7 @@ class NotificationDaoTest {
         // Test marking as clicked
         val clickedTime = Date(System.currentTimeMillis() + 1000)
         notificationDao.markNotificationAsClicked(notificationId, clickedTime)
-        
+
         updatedNotification = notificationDao.getNotificationById(notificationId)
         Assert.assertEquals("Status should be CLICKED", NotificationStatus.CLICKED, updatedNotification?.status)
         Assert.assertEquals("Clicked time should match", clickedTime.time, updatedNotification?.clickedTime?.time ?: 0)
@@ -184,10 +186,10 @@ class NotificationDaoTest {
 
         // Insert notifications with different scheduled times
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Due Now", scheduledTime = pastTime)
+            TestHelper.createTestNotification(userId = userId, title = "Due Now", scheduledTime = pastTime),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Future", scheduledTime = futureTime)
+            TestHelper.createTestNotification(userId = userId, title = "Future", scheduledTime = futureTime),
         )
 
         val dueNotifications = notificationDao.getPendingNotificationsDue(currentTime)
@@ -202,13 +204,13 @@ class NotificationDaoTest {
 
         // Insert notifications with different priorities
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "High Priority", priority = NotificationPriority.HIGH)
+            TestHelper.createTestNotification(userId = userId, title = "High Priority", priority = NotificationPriority.HIGH),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Low Priority", priority = NotificationPriority.LOW)
+            TestHelper.createTestNotification(userId = userId, title = "Low Priority", priority = NotificationPriority.LOW),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Default Priority", priority = NotificationPriority.DEFAULT)
+            TestHelper.createTestNotification(userId = userId, title = "Default Priority", priority = NotificationPriority.DEFAULT),
         )
 
         val highPriorityNotifications = notificationDao.getNotificationsByPriority(userId, NotificationPriority.HIGH).first()
@@ -223,13 +225,13 @@ class NotificationDaoTest {
 
         // Insert notifications with different statuses
         val sentNotificationId = notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Sent")
+            TestHelper.createTestNotification(userId = userId, title = "Sent"),
         )
         val clickedNotificationId = notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Clicked")
+            TestHelper.createTestNotification(userId = userId, title = "Clicked"),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Pending")
+            TestHelper.createTestNotification(userId = userId, title = "Pending"),
         )
 
         // Update statuses
@@ -255,14 +257,14 @@ class NotificationDaoTest {
         // Insert notifications with and without related entity
         notificationDao.insertNotification(
             TestHelper.createTestNotification(
-                userId = userId, 
-                title = "Goal Related", 
+                userId = userId,
+                title = "Goal Related",
                 relatedEntityId = relatedEntityId,
-                relatedEntityType = entityType
-            )
+                relatedEntityType = entityType,
+            ),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Not Related")
+            TestHelper.createTestNotification(userId = userId, title = "Not Related"),
         )
 
         val relatedNotifications = notificationDao.getNotificationsByRelatedEntity(userId, entityType, relatedEntityId).first()
@@ -281,10 +283,10 @@ class NotificationDaoTest {
 
         // Insert old and new notifications
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Old").copy(createdAt = oldDate)
+            TestHelper.createTestNotification(userId = userId, title = "Old").copy(createdAt = oldDate),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "New").copy(createdAt = newDate)
+            TestHelper.createTestNotification(userId = userId, title = "New").copy(createdAt = newDate),
         )
 
         // Delete old notifications
@@ -320,13 +322,13 @@ class NotificationDaoTest {
 
         // Create failed notification that can be retried
         val retryableNotificationId = notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Retryable")
+            TestHelper.createTestNotification(userId = userId, title = "Retryable"),
         )
         notificationDao.updateNotificationStatus(retryableNotificationId, NotificationStatus.FAILED, Date())
 
         // Create failed notification that has exceeded max retries
         val maxRetriedNotificationId = notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Max Retried").copy(retryCount = 3, maxRetries = 3)
+            TestHelper.createTestNotification(userId = userId, title = "Max Retried").copy(retryCount = 3, maxRetries = 3),
         )
         notificationDao.updateNotificationStatus(maxRetriedNotificationId, NotificationStatus.FAILED, Date())
 
@@ -358,8 +360,9 @@ class NotificationDaoTest {
         Assert.assertEquals("Should have 0 unread notifications", 0, unreadCount)
 
         val allNotifications = notificationDao.getNotificationsByUserId(userId).first()
-        Assert.assertTrue("All notifications should be read", 
-            allNotifications.all { it.isRead }
+        Assert.assertTrue(
+            "All notifications should be read",
+            allNotifications.all { it.isRead },
         )
     }
 
@@ -370,13 +373,13 @@ class NotificationDaoTest {
 
         // Insert notifications with different titles and messages
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Workout Reminder", message = "Time to exercise")
+            TestHelper.createTestNotification(userId = userId, title = "Workout Reminder", message = "Time to exercise"),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Goal Achievement", message = "You reached your workout goal!")
+            TestHelper.createTestNotification(userId = userId, title = "Goal Achievement", message = "You reached your workout goal!"),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Daily Tip", message = "Remember to stay hydrated")
+            TestHelper.createTestNotification(userId = userId, title = "Daily Tip", message = "Remember to stay hydrated"),
         )
 
         // Search by title
@@ -396,7 +399,7 @@ class NotificationDaoTest {
     fun testNotificationForeignKeyConstraint() = runTest {
         val notification = TestHelper.createTestNotification(
             userId = 999L, // Non-existent user
-            title = "Invalid Notification"
+            title = "Invalid Notification",
         )
 
         try {
@@ -404,9 +407,10 @@ class NotificationDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            Assert.assertTrue("Exception should be constraint related", 
-                e.message?.contains("FOREIGN KEY") == true || 
-                e.message?.contains("constraint") == true
+            Assert.assertTrue(
+                "Exception should be constraint related",
+                e.message?.contains("FOREIGN KEY") == true ||
+                    e.message?.contains("constraint") == true,
             )
         }
     }
