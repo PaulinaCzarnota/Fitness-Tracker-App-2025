@@ -388,4 +388,69 @@ interface WorkoutDao {
      */
     @Query("DELETE FROM workouts")
     suspend fun deleteAllWorkouts()
+
+    /**
+     * Gets workout count within a specific date range.
+     *
+     * @param userId User ID
+     * @param startDate Start date of range
+     * @param endDate End date of range
+     * @return Count of workouts in date range
+     */
+    @Query("SELECT COUNT(*) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getWorkoutCountInDateRange(userId: Long, startDate: Date, endDate: Date): Int
+
+    /**
+     * Gets total workout duration within a specific date range.
+     *
+     * @param userId User ID
+     * @param startDate Start date timestamp
+     * @param endDate End date timestamp
+     * @return Total duration in minutes
+     */
+    @Query("SELECT COALESCE(SUM(duration), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getTotalDurationInDateRange(userId: Long, startDate: Long, endDate: Long): Long
+
+    /**
+     * Gets total calories burned within a specific date range.
+     *
+     * @param userId User ID
+     * @param startDate Start date timestamp
+     * @param endDate End date timestamp
+     * @return Total calories burned
+     */
+    @Query("SELECT COALESCE(SUM(caloriesBurned), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getTotalCaloriesInDateRange(userId: Long, startDate: Long, endDate: Long): Long
+
+    /**
+     * Gets total distance covered within a specific date range.
+     *
+     * @param userId User ID
+     * @param startDate Start date timestamp
+     * @param endDate End date timestamp
+     * @return Total distance in kilometers
+     */
+    @Query("SELECT COALESCE(SUM(distance), 0.0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    suspend fun getTotalDistanceInDateRange(userId: Long, startDate: Long, endDate: Long): Double
+
+    /**
+     * Gets total distance for a specific workout type.
+     *
+     * @param userId User ID
+     * @param workoutType Workout type
+     * @return Total distance for the workout type
+     */
+    @Query("SELECT SUM(distance) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
+    suspend fun getTotalDistanceByType(userId: Long, workoutType: WorkoutType): Float?
+
+    /**
+     * Gets workouts within a date range (alternative signature for repository compatibility).
+     *
+     * @param userId User ID
+     * @param startDate Start date of range
+     * @param endDate End date of range
+     * @return Flow of workouts in date range
+     */
+    @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate ORDER BY startTime DESC")
+    fun getWorkoutsByDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Workout>>
 }
