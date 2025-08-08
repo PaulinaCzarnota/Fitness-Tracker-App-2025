@@ -34,36 +34,36 @@ import java.util.Date
  */
 data class WorkoutLoggingUiState(
     val isLoading: Boolean = false,
-    
+
     // Workout session state
     val activeWorkout: Workout? = null,
     val isWorkoutActive: Boolean = false,
     val workoutDuration: Long = 0L,
-    
+
     // Exercise management
     val availableExercises: List<Exercise> = emptyList(),
     val selectedExercises: List<Exercise> = emptyList(),
     val exerciseSearchQuery: String = "",
     val muscleGroupFilter: MuscleGroup? = null,
     val equipmentFilter: EquipmentType? = null,
-    
+
     // Set logging
     val currentExercise: Exercise? = null,
     val exerciseSets: List<WorkoutSet> = emptyList(),
     val recentSets: List<WorkoutSet> = emptyList(),
     val personalRecords: List<WorkoutSet> = emptyList(),
     val exerciseStats: ExerciseStats? = null,
-    
+
     // Timer and rest
     val restTimer: Int = 0,
     val isRestTimerActive: Boolean = false,
     val suggestedRestTime: Int = 60, // seconds
-    
+
     // Workout summary
     val workoutSummary: List<WorkoutSetSummary> = emptyList(),
     val totalVolume: Float = 0f,
     val totalSets: Int = 0,
-    
+
     // UI state
     val error: String? = null,
     val successMessage: String? = null,
@@ -120,13 +120,13 @@ class WorkoutLoggingViewModel(
                 exerciseRepository.getAvailableExercises(userId).collect { exercises ->
                     _uiState.value = _uiState.value.copy(
                         availableExercises = exercises,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to load exercises: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -158,9 +158,9 @@ class WorkoutLoggingViewModel(
                     userId = userId,
                     workoutType = workoutType,
                     title = title,
-                    startTime = Date()
+                    startTime = Date(),
                 )
-                
+
                 val workoutId = workoutRepository.insertWorkout(workout)
                 val activeWorkout = workout.copy(id = workoutId)
 
@@ -168,15 +168,14 @@ class WorkoutLoggingViewModel(
                     activeWorkout = activeWorkout,
                     isWorkoutActive = true,
                     selectedExercises = emptyList(),
-                    successMessage = "Workout started!"
+                    successMessage = "Workout started!",
                 )
 
                 // Start workout timer
                 startWorkoutTimer()
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to start workout: ${e.message}"
+                    error = "Failed to start workout: ${e.message}",
                 )
             }
         }
@@ -190,7 +189,7 @@ class WorkoutLoggingViewModel(
         if (!currentSelected.contains(exercise)) {
             _uiState.value = _uiState.value.copy(
                 selectedExercises = currentSelected + exercise,
-                isShowingExerciseDialog = false
+                isShowingExerciseDialog = false,
             )
         }
     }
@@ -212,19 +211,18 @@ class WorkoutLoggingViewModel(
 
                 val currentSelected = _uiState.value.selectedExercises
                 _uiState.value = _uiState.value.copy(
-                    selectedExercises = currentSelected - exercise
+                    selectedExercises = currentSelected - exercise,
                 )
 
                 if (_uiState.value.currentExercise == exercise) {
                     _uiState.value = _uiState.value.copy(
                         currentExercise = null,
-                        exerciseSets = emptyList()
+                        exerciseSets = emptyList(),
                     )
                 }
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to remove exercise: ${e.message}"
+                    error = "Failed to remove exercise: ${e.message}",
                 )
             }
         }
@@ -238,7 +236,7 @@ class WorkoutLoggingViewModel(
             try {
                 _uiState.value = _uiState.value.copy(
                     currentExercise = exercise,
-                    isLoading = true
+                    isLoading = true,
                 )
 
                 // Load sets for this exercise in the current workout
@@ -247,7 +245,7 @@ class WorkoutLoggingViewModel(
                         .collect { sets ->
                             _uiState.value = _uiState.value.copy(
                                 exerciseSets = sets,
-                                isLoading = false
+                                isLoading = false,
                             )
                         }
                 }
@@ -267,11 +265,10 @@ class WorkoutLoggingViewModel(
                 // Load exercise stats
                 val stats = workoutSetRepository.getExerciseStats(exercise.id)
                 _uiState.value = _uiState.value.copy(exerciseStats = stats)
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to load exercise data: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -288,7 +285,7 @@ class WorkoutLoggingViewModel(
 
                 if (activeWorkout == null || currentExercise == null) {
                     _uiState.value = _uiState.value.copy(
-                        error = "No active workout or exercise selected"
+                        error = "No active workout or exercise selected",
                     )
                     return@launch
                 }
@@ -301,25 +298,24 @@ class WorkoutLoggingViewModel(
                     duration = setInput.duration,
                     distance = setInput.distance,
                     setType = setInput.setType,
-                    restTime = setInput.duration.takeIf { it > 0 } 
+                    restTime = setInput.duration.takeIf { it > 0 }
                         ?: _uiState.value.suggestedRestTime,
                     rpe = setInput.rpe,
-                    notes = setInput.notes
+                    notes = setInput.notes,
                 )
 
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Set logged successfully!",
-                    isShowingSetDialog = false
+                    isShowingSetDialog = false,
                 )
 
                 // Start rest timer if applicable
                 if (setInput.setType != SetType.WARM_UP) {
                     startRestTimer(_uiState.value.suggestedRestTime)
                 }
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to log set: ${e.message}"
+                    error = "Failed to log set: ${e.message}",
                 )
             }
         }
@@ -339,18 +335,17 @@ class WorkoutLoggingViewModel(
                     setType = setInput.setType,
                     rpe = setInput.rpe,
                     notes = setInput.notes,
-                    updatedAt = Date()
+                    updatedAt = Date(),
                 )
 
                 workoutSetRepository.updateWorkoutSet(updatedSet)
-                
-                _uiState.value = _uiState.value.copy(
-                    successMessage = "Set updated successfully!"
-                )
 
+                _uiState.value = _uiState.value.copy(
+                    successMessage = "Set updated successfully!",
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to update set: ${e.message}"
+                    error = "Failed to update set: ${e.message}",
                 )
             }
         }
@@ -364,11 +359,11 @@ class WorkoutLoggingViewModel(
             try {
                 workoutSetRepository.deleteWorkoutSet(set.id)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Set deleted successfully!"
+                    successMessage = "Set deleted successfully!",
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to delete set: ${e.message}"
+                    error = "Failed to delete set: ${e.message}",
                 )
             }
         }
@@ -382,11 +377,11 @@ class WorkoutLoggingViewModel(
             try {
                 workoutSetRepository.duplicateSet(set.id)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Set duplicated successfully!"
+                    successMessage = "Set duplicated successfully!",
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to duplicate set: ${e.message}"
+                    error = "Failed to duplicate set: ${e.message}",
                 )
             }
         }
@@ -405,13 +400,13 @@ class WorkoutLoggingViewModel(
                 // Get workout summary
                 val summary = workoutSetRepository.getWorkoutSummary(activeWorkout.id)
                 val totalVolume = workoutSetRepository.getWorkoutVolume(activeWorkout.id)
-                val totalCalories = summary.sumOf { it.totalVolume * 0.5f }.toInt() // Simple calorie calculation
+                val totalCalories = summary.sumOf { (it.totalVolume * 0.5).toDouble() }.toInt() // Simple calorie calculation
 
                 val completedWorkout = activeWorkout.copy(
                     endTime = endTime,
                     duration = duration,
                     caloriesBurned = totalCalories,
-                    notes = notes
+                    notes = notes,
                 )
 
                 workoutRepository.updateWorkout(completedWorkout)
@@ -424,14 +419,13 @@ class WorkoutLoggingViewModel(
                     exerciseSets = emptyList(),
                     workoutSummary = summary,
                     totalVolume = totalVolume,
-                    successMessage = "Workout completed!"
+                    successMessage = "Workout completed!",
                 )
 
                 stopWorkoutTimer()
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to finish workout: ${e.message}"
+                    error = "Failed to finish workout: ${e.message}",
                 )
             }
         }
@@ -442,7 +436,7 @@ class WorkoutLoggingViewModel(
      */
     fun searchExercises(query: String) {
         _uiState.value = _uiState.value.copy(exerciseSearchQuery = query)
-        
+
         viewModelScope.launch {
             if (query.isBlank()) {
                 exerciseRepository.getAvailableExercises(userId).collect { exercises ->
@@ -461,7 +455,7 @@ class WorkoutLoggingViewModel(
      */
     fun filterByMuscleGroup(muscleGroup: MuscleGroup?) {
         _uiState.value = _uiState.value.copy(muscleGroupFilter = muscleGroup)
-        
+
         viewModelScope.launch {
             if (muscleGroup == null) {
                 exerciseRepository.getAvailableExercises(userId).collect { exercises ->
@@ -496,7 +490,7 @@ class WorkoutLoggingViewModel(
     private fun startRestTimer(duration: Int) {
         _uiState.value = _uiState.value.copy(
             restTimer = duration,
-            isRestTimerActive = true
+            isRestTimerActive = true,
         )
     }
 
@@ -506,7 +500,7 @@ class WorkoutLoggingViewModel(
     fun stopRestTimer() {
         _uiState.value = _uiState.value.copy(
             restTimer = 0,
-            isRestTimerActive = false
+            isRestTimerActive = false,
         )
     }
 

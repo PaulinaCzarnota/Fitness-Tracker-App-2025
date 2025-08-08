@@ -45,7 +45,7 @@ class WorkoutSetRepository(
             workoutSetDao.isPersonalRecord(
                 workoutSet.exerciseId,
                 workoutSet.weight,
-                workoutSet.repetitions
+                workoutSet.repetitions,
             )
         } else {
             false
@@ -53,7 +53,7 @@ class WorkoutSetRepository(
 
         val finalSet = workoutSet.copy(
             isPersonalRecord = isPersonalRecord,
-            completedAt = if (workoutSet.isCompleted) Date() else null
+            completedAt = if (workoutSet.isCompleted) Date() else null,
         )
 
         return workoutSetDao.insertWorkoutSet(finalSet)
@@ -186,7 +186,7 @@ class WorkoutSetRepository(
             distance = distance,
             restTime = restTime,
             rpe = rpe,
-            notes = notes
+            notes = notes,
         )
 
         return insertWorkoutSet(workoutSet)
@@ -249,7 +249,7 @@ class WorkoutSetRepository(
             maxReps = maxReps,
             maxVolume = maxVolume,
             averageWeight = averageWeight,
-            averageRPE = averageRPE
+            averageRPE = averageRPE,
         )
     }
 
@@ -323,7 +323,7 @@ class WorkoutSetRepository(
 
         val newSetNumber = workoutSetDao.getNextSetNumber(
             originalSet.workoutId,
-            originalSet.exerciseId
+            originalSet.exerciseId,
         )
 
         val duplicatedSet = originalSet.copy(
@@ -334,7 +334,7 @@ class WorkoutSetRepository(
             isCompleted = false,
             completedAt = null,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
 
         return insertWorkoutSet(duplicatedSet)

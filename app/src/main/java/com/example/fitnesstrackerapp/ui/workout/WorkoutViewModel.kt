@@ -3,10 +3,7 @@ package com.example.fitnesstrackerapp.ui.workout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesstrackerapp.data.entity.*
-import com.example.fitnesstrackerapp.repository.ExerciseRepository
-import com.example.fitnesstrackerapp.repository.ExerciseStats
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
-import com.example.fitnesstrackerapp.repository.WorkoutSetRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Date

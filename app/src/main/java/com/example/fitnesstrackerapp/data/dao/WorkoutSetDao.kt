@@ -277,8 +277,9 @@ interface WorkoutSetDao {
      * @param workoutId Workout ID
      * @return List of workout set summaries grouped by exercise
      */
-    @Query("""
-        SELECT 
+    @Query(
+        """
+        SELECT
             e.name as exerciseName,
             COUNT(*) as totalSets,
             SUM(ws.repetitions) as totalReps,
@@ -292,7 +293,8 @@ interface WorkoutSetDao {
         WHERE ws.workoutId = :workoutId
         GROUP BY ws.exerciseId, e.name
         ORDER BY MIN(ws.setNumber)
-    """)
+    """,
+    )
     suspend fun getWorkoutSummary(workoutId: Long): List<WorkoutSetSummary>
 
     /**
@@ -302,14 +304,16 @@ interface WorkoutSetDao {
      * @param limit Number of recent workouts to include
      * @return Flow of sets showing progress over time
      */
-    @Query("""
+    @Query(
+        """
         SELECT ws.*
         FROM workout_sets ws
         INNER JOIN workouts w ON ws.workoutId = w.id
         WHERE ws.exerciseId = :exerciseId
         ORDER BY w.startTime DESC, ws.setNumber ASC
         LIMIT :limit
-    """)
+    """,
+    )
     fun getExerciseProgress(exerciseId: Long, limit: Int): Flow<List<WorkoutSet>>
 
     /**
@@ -370,12 +374,14 @@ interface WorkoutSetDao {
      * @param repetitions Repetitions performed
      * @return True if this is a personal record for the exercise
      */
-    @Query("""
+    @Query(
+        """
         SELECT NOT EXISTS(
-            SELECT 1 FROM workout_sets 
-            WHERE exerciseId = :exerciseId 
+            SELECT 1 FROM workout_sets
+            WHERE exerciseId = :exerciseId
             AND (weight > :weight OR (weight = :weight AND repetitions >= :repetitions))
         )
-    """)
+    """,
+    )
     suspend fun isPersonalRecord(exerciseId: Long, weight: Float, repetitions: Int): Boolean
 }
