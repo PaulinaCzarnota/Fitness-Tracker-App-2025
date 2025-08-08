@@ -204,16 +204,16 @@ data class WorkoutSet(
  * Enumeration of different types of sets.
  */
 enum class SetType {
-    NORMAL,         // Regular working set
-    WARM_UP,        // Warm-up set with lighter weight
-    DROP_SET,       // Drop set (reducing weight mid-set)
-    SUPER_SET,      // Part of a superset
-    REST_PAUSE,     // Rest-pause set
-    CLUSTER,        // Cluster set with mini-rests
-    AMRAP,          // As Many Reps As Possible
-    FAILURE,        // Set taken to muscular failure
-    BACK_OFF,       // Lighter set after heavy work
-    BURNOUT,        // High-rep burnout set
+    NORMAL, // Regular working set
+    WARM_UP, // Warm-up set with lighter weight
+    DROP_SET, // Drop set (reducing weight mid-set)
+    SUPER_SET, // Part of a superset
+    REST_PAUSE, // Rest-pause set
+    CLUSTER, // Cluster set with mini-rests
+    AMRAP, // As Many Reps As Possible
+    FAILURE, // Set taken to muscular failure
+    BACK_OFF, // Lighter set after heavy work
+    BURNOUT, // High-rep burnout set
 }
 
 /**

@@ -41,7 +41,7 @@ enum class NotificationType {
     REST_DAY_REMINDER,
     ACHIEVEMENT_UNLOCKED,
     WORKOUT_STREAK,
-    INACTIVE_USER_ENGAGEMENT
+    INACTIVE_USER_ENGAGEMENT,
 }
 
 /**
@@ -51,10 +51,10 @@ enum class NotificationType {
  * interrupt the user's current activity.
  */
 enum class NotificationPriority {
-    LOW,      // Background notifications, tips
-    DEFAULT,  // Standard reminders
-    HIGH,     // Important deadlines, achievements
-    URGENT    // Critical health or safety notifications
+    LOW, // Background notifications, tips
+    DEFAULT, // Standard reminders
+    HIGH, // Important deadlines, achievements
+    URGENT, // Critical health or safety notifications
 }
 
 /**
@@ -63,13 +63,13 @@ enum class NotificationPriority {
  * Tracks the lifecycle of notifications from creation to user interaction.
  */
 enum class NotificationStatus {
-    PENDING,    // Scheduled but not yet sent
-    SENT,       // Delivered to the system
-    READ,       // User has seen the notification
-    DISMISSED,  // User has dismissed the notification
-    CLICKED,    // User has clicked on the notification
-    FAILED,     // Failed to deliver
-    CANCELLED   // Cancelled before delivery
+    PENDING, // Scheduled but not yet sent
+    SENT, // Delivered to the system
+    READ, // User has seen the notification
+    DISMISSED, // User has dismissed the notification
+    CLICKED, // User has clicked on the notification
+    FAILED, // Failed to deliver
+    CANCELLED, // Cancelled before delivery
 }
 
 /**
@@ -91,8 +91,8 @@ enum class NotificationStatus {
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index(value = ["user_id"]),
@@ -102,8 +102,8 @@ enum class NotificationStatus {
         Index(value = ["is_read"]),
         Index(value = ["user_id", "type"]),
         Index(value = ["user_id", "status"]),
-        Index(value = ["user_id", "scheduled_time"])
-    ]
+        Index(value = ["user_id", "scheduled_time"]),
+    ],
 )
 data class Notification(
     @PrimaryKey(autoGenerate = true)
@@ -176,7 +176,7 @@ data class Notification(
     val createdAt: Date = Date(),
 
     @ColumnInfo(name = "updated_at")
-    val updatedAt: Date = Date()
+    val updatedAt: Date = Date(),
 ) {
 
     /**
@@ -218,7 +218,9 @@ data class Notification(
     fun getResponseTime(): Long? {
         return if (sentTime != null && clickedTime != null) {
             clickedTime.time - sentTime.time
-        } else null
+        } else {
+            null
+        }
     }
 
     /**
@@ -253,9 +255,9 @@ data class Notification(
     fun isScheduledForToday(): Boolean {
         val today = java.util.Calendar.getInstance()
         val scheduled = java.util.Calendar.getInstance().apply { time = scheduledTime }
-        
+
         return today.get(java.util.Calendar.YEAR) == scheduled.get(java.util.Calendar.YEAR) &&
-               today.get(java.util.Calendar.DAY_OF_YEAR) == scheduled.get(java.util.Calendar.DAY_OF_YEAR)
+            today.get(java.util.Calendar.DAY_OF_YEAR) == scheduled.get(java.util.Calendar.DAY_OF_YEAR)
     }
 
     /**
@@ -264,7 +266,7 @@ data class Notification(
      */
     fun getUrgencyLevel(): String {
         val hoursUntilDelivery = getTimeUntilDelivery() / (1000 * 60 * 60)
-        
+
         return when {
             priority == NotificationPriority.URGENT -> "Critical"
             priority == NotificationPriority.HIGH && hoursUntilDelivery <= 1 -> "Urgent"
@@ -281,11 +283,11 @@ data class Notification(
      */
     fun isValid(): Boolean {
         return title.isNotBlank() &&
-               message.isNotBlank() &&
-               channelId.isNotBlank() &&
-               retryCount in 0..maxRetries &&
-               (relatedEntityType == null || relatedEntityId != null) &&
-               scheduledTime.after(Date(0)) // Not epoch time
+            message.isNotBlank() &&
+            channelId.isNotBlank() &&
+            retryCount in 0..maxRetries &&
+            (relatedEntityType == null || relatedEntityId != null) &&
+            scheduledTime.after(Date(0)) // Not epoch time
     }
 
     companion object {
