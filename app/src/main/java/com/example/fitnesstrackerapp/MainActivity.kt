@@ -199,9 +199,10 @@ class MainActivity : ComponentActivity() {
      * @param functionality The functionality that will be affected
      */
     private fun showPermissionDeniedMessage(permissionName: String, functionality: String) {
+        val message = getString(R.string.permission_denied_message, permissionName, functionality)
         Toast.makeText(
             this,
-            "$permissionName permission is required for $functionality. You can enable it in Settings.",
+            message,
             Toast.LENGTH_LONG
         ).show()
     }
