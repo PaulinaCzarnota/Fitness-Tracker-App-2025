@@ -3,7 +3,7 @@
  *
  * This Compose screen provides:
  * - User login functionality with email and password
- * - User registration with name, email, and password  
+ * - User registration with name, email, and password
  * - Real-time validation and error handling
  * - Loading states during authentication operations
  * - Seamless navigation between login and registration modes
@@ -28,12 +28,14 @@ import androidx.compose.ui.unit.dp
  * @param modifier Modifier for styling the screen.
  * @param authViewModel The ViewModel for handling authentication logic.
  * @param onLoginSuccess A callback to be invoked when login is successful.
+ * @param onNavigateToSignUp A callback to navigate to the sign-up screen (optional).
  */
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToSignUp: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
