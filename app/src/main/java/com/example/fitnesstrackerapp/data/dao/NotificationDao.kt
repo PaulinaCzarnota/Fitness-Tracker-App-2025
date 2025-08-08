@@ -303,14 +303,16 @@ interface NotificationDao {
      * @param userId User ID
      * @return Percentage of successfully delivered notifications
      */
-    @Query("""
-        SELECT 
-        CASE 
+    @Query(
+        """
+        SELECT
+        CASE
             WHEN COUNT(*) = 0 THEN 0.0
             ELSE (CAST(SUM(CASE WHEN status IN ('SENT', 'read', 'DISMISSED', 'CLICKED') THEN 1 ELSE 0 END) AS REAL) / COUNT(*)) * 100
         END
         FROM notifications WHERE user_id = :userId
-    """)
+    """,
+    )
     suspend fun getNotificationDeliverySuccessRate(userId: Long): Double
 
     /**
@@ -319,11 +321,13 @@ interface NotificationDao {
      * @param userId User ID
      * @return Average time from sent to clicked in milliseconds
      */
-    @Query("""
+    @Query(
+        """
         SELECT AVG(clicked_time - sent_time)
-        FROM notifications 
+        FROM notifications
         WHERE user_id = :userId AND clicked_time IS NOT NULL AND sent_time IS NOT NULL
-    """)
+    """,
+    )
     suspend fun getAverageResponseTime(userId: Long): Long?
 
     /**
@@ -359,12 +363,14 @@ interface NotificationDao {
      * @param searchQuery Search query for title or message
      * @return Flow of matching notifications
      */
-    @Query("""
-        SELECT * FROM notifications 
-        WHERE user_id = :userId 
+    @Query(
+        """
+        SELECT * FROM notifications
+        WHERE user_id = :userId
         AND (title LIKE '%' || :searchQuery || '%' OR message LIKE '%' || :searchQuery || '%')
         ORDER BY scheduled_time DESC
-    """)
+    """,
+    )
     fun searchNotifications(userId: Long, searchQuery: String): Flow<List<Notification>>
 
     /**
@@ -400,22 +406,24 @@ interface NotificationDao {
         val pendingCount: Int,
         val sentCount: Int,
         val clickedCount: Int,
-        val deliverySuccessRate: Double
+        val deliverySuccessRate: Double,
     )
 
-    @Query("""
-        SELECT 
+    @Query(
+        """
+        SELECT
         COUNT(*) as totalNotifications,
         SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) as unreadCount,
         SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END) as pendingCount,
         SUM(CASE WHEN status = 'SENT' THEN 1 ELSE 0 END) as sentCount,
         SUM(CASE WHEN status = 'CLICKED' THEN 1 ELSE 0 END) as clickedCount,
-        CASE 
+        CASE
             WHEN COUNT(*) = 0 THEN 0.0
             ELSE (CAST(SUM(CASE WHEN status IN ('SENT', 'read', 'DISMISSED', 'CLICKED') THEN 1 ELSE 0 END) AS REAL) / COUNT(*)) * 100
         END as deliverySuccessRate
         FROM notifications WHERE user_id = :userId
-    """)
+    """,
+    )
     suspend fun getNotificationStats(userId: Long): NotificationStats
 
     /**
