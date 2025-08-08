@@ -1,3 +1,13 @@
+/**
+ * Navigation controller and routing configuration for the Fitness Tracker application.
+ *
+ * This file manages the main navigation flow between:
+ * - Authentication screens (login, signup)
+ * - Main application screens (home, workouts, goals, etc.)
+ *
+ * Uses Jetpack Compose Navigation for modern declarative navigation.
+ */
+
 package com.example.fitnesstrackerapp.navigation
 
 import androidx.compose.runtime.Composable
