@@ -306,7 +306,7 @@ interface ExerciseDao {
      */
     @Query(
         """
-        SELECT * FROM exercises 
+        SELECT * FROM exercises
         WHERE (:query IS NULL OR name LIKE '%' || :query || '%')
         AND (:muscleGroup IS NULL OR muscleGroup = :muscleGroup)
         AND (:equipmentType IS NULL OR equipmentType = :equipmentType)

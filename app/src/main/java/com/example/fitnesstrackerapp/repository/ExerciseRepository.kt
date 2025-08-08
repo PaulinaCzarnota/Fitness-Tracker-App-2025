@@ -145,7 +145,7 @@ class ExerciseRepository(
             muscleGroup = muscleGroup,
             equipmentType = equipmentType,
             difficulty = difficulty,
-            exerciseType = exerciseType
+            exerciseType = exerciseType,
         )
     }
 
@@ -223,7 +223,7 @@ class ExerciseRepository(
             difficulty = difficulty,
             instructions = instructions,
             isCustom = true,
-            createdBy = userId
+            createdBy = userId,
         )
 
         return exerciseDao.insertExercise(exercise)
@@ -283,7 +283,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Start in plank position, lower body to ground, push back up"
+                instructions = "Start in plank position, lower body to ground, push back up",
             ),
             Exercise(
                 name = "Bench Press",
@@ -292,7 +292,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BARBELL,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Lie on bench, lower barbell to chest, press up"
+                instructions = "Lie on bench, lower barbell to chest, press up",
             ),
             Exercise(
                 name = "Dumbbell Flyes",
@@ -301,7 +301,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.DUMBBELLS,
                 exerciseType = ExerciseType.ISOLATION,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Lie on bench, arc dumbbells from chest to sides and back"
+                instructions = "Lie on bench, arc dumbbells from chest to sides and back",
             ),
 
             // Back exercises
@@ -312,7 +312,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.PULL_UP_BAR,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Hang from bar, pull body up until chin over bar"
+                instructions = "Hang from bar, pull body up until chin over bar",
             ),
             Exercise(
                 name = "Deadlift",
@@ -321,7 +321,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BARBELL,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.ADVANCED,
-                instructions = "Hip hinge movement, lift barbell from ground to standing"
+                instructions = "Hip hinge movement, lift barbell from ground to standing",
             ),
             Exercise(
                 name = "Bent-over Rows",
@@ -330,7 +330,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BARBELL,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Bend over, row barbell to lower chest"
+                instructions = "Bend over, row barbell to lower chest",
             ),
 
             // Leg exercises
@@ -341,7 +341,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Lower body as if sitting back into chair, return to standing"
+                instructions = "Lower body as if sitting back into chair, return to standing",
             ),
             Exercise(
                 name = "Barbell Back Squat",
@@ -350,7 +350,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BARBELL,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Barbell on upper back, squat down and drive up"
+                instructions = "Barbell on upper back, squat down and drive up",
             ),
             Exercise(
                 name = "Lunges",
@@ -359,7 +359,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Step forward into lunge position, alternate legs"
+                instructions = "Step forward into lunge position, alternate legs",
             ),
 
             // Shoulder exercises
@@ -370,7 +370,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BARBELL,
                 exerciseType = ExerciseType.COMPOUND,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Press barbell from shoulder height to overhead"
+                instructions = "Press barbell from shoulder height to overhead",
             ),
             Exercise(
                 name = "Lateral Raises",
@@ -379,7 +379,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.DUMBBELLS,
                 exerciseType = ExerciseType.ISOLATION,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Raise dumbbells to sides until parallel to floor"
+                instructions = "Raise dumbbells to sides until parallel to floor",
             ),
 
             // Arm exercises
@@ -390,7 +390,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.DUMBBELLS,
                 exerciseType = ExerciseType.ISOLATION,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Curl weights up to shoulders, control down"
+                instructions = "Curl weights up to shoulders, control down",
             ),
             Exercise(
                 name = "Tricep Dips",
@@ -399,7 +399,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.ISOLATION,
                 difficulty = DifficultyLevel.INTERMEDIATE,
-                instructions = "Lower body by bending arms, push back up"
+                instructions = "Lower body by bending arms, push back up",
             ),
 
             // Core exercises
@@ -410,7 +410,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.ISOMETRIC,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Hold straight body position on forearms"
+                instructions = "Hold straight body position on forearms",
             ),
             Exercise(
                 name = "Crunches",
@@ -419,7 +419,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.ISOLATION,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Curl upper body towards knees, focus on abs"
+                instructions = "Curl upper body towards knees, focus on abs",
             ),
 
             // Cardio exercises
@@ -430,7 +430,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.TREADMILL,
                 exerciseType = ExerciseType.CARDIO,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Maintain steady pace, focus on breathing"
+                instructions = "Maintain steady pace, focus on breathing",
             ),
             Exercise(
                 name = "Cycling",
@@ -439,7 +439,7 @@ class ExerciseRepository(
                 equipmentType = EquipmentType.STATIONARY_BIKE,
                 exerciseType = ExerciseType.CARDIO,
                 difficulty = DifficultyLevel.BEGINNER,
-                instructions = "Maintain consistent pedaling rhythm"
+                instructions = "Maintain consistent pedaling rhythm",
             ),
         )
     }
