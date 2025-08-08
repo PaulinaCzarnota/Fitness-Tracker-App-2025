@@ -23,17 +23,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstrackerapp.data.entity.Workout
+import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutScreen(
     modifier: Modifier = Modifier,
-    workoutViewModel: WorkoutViewModel = viewModel()
+    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
+    activity: androidx.activity.ComponentActivity
 ) {
+    // Get the current user ID for the ViewModel (fallback to 1L for demo purposes)
+    val authState by authViewModel.uiState.collectAsStateWithLifecycle()
+    val userId = authState.user?.id ?: 1L
+    
+    // Initialize WorkoutViewModel with user ID
+    val workoutViewModel: WorkoutViewModel = remember(userId) {
+        ViewModelFactoryProvider.getWorkoutViewModel(activity, userId)
+    }
     val uiState by workoutViewModel.uiState.collectAsStateWithLifecycle()
     var showNewWorkoutDialog by remember { mutableStateOf(false) }
 
@@ -90,7 +100,7 @@ fun WorkoutScreen(
                 items(uiState.workouts, key = { it.id }) { workout ->
                     WorkoutHistoryItem(
                         workout = workout,
-                        onDelete = { workoutViewModel.deleteWorkout(workout.id) }
+                        onDelete = { workoutViewModel.deleteWorkout(workout) }
                     )
                 }
             }
@@ -102,7 +112,14 @@ fun WorkoutScreen(
         NewWorkoutDialog(
             onDismiss = { showNewWorkoutDialog = false },
             onConfirm = { type, duration, distance, notes ->
-                workoutViewModel.startWorkout(type, duration, distance, notes)
+                // Convert String to WorkoutType enum and match WorkoutViewModel.startWorkout(type: WorkoutType, title: String)
+                val workoutType = try {
+                    WorkoutType.valueOf(type)
+                } catch (e: IllegalArgumentException) {
+                    WorkoutType.OTHER
+                }
+                val workoutTitle = "${workoutType.name} - ${duration}min"
+                workoutViewModel.startWorkout(workoutType, workoutTitle)
                 showNewWorkoutDialog = false
             }
         )

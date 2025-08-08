@@ -1,9 +1,7 @@
 package com.example.fitnesstrackerapp.ui.workout
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnesstrackerapp.FitnessTrackerApplication
 import com.example.fitnesstrackerapp.data.entity.Workout
 import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
@@ -38,36 +36,31 @@ data class WorkoutUiState(
  * - Handles workout data persistence
  * - Provides UI state for workout screens
  */
-class WorkoutViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val app = application as FitnessTrackerApplication
-    private val workoutRepository = app.workoutRepository
-    private val authRepository = app.authRepository
+class WorkoutViewModel(
+    private val workoutRepository: WorkoutRepository,
+    private val userId: Long
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutUiState())
     val uiState: StateFlow<WorkoutUiState> = _uiState.asStateFlow()
 
     init {
         loadWorkouts()
-        loadWeeklyStats()
     }
 
     /**
-     * Loads all workouts for the current user
+     * Loads user workouts from repository
      */
     private fun loadWorkouts() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                _uiState.value = _uiState.value.copy(isLoading = true)
-                val currentUserId = authRepository.getCurrentUserId()
-                if (currentUserId != null) {
-                    workoutRepository.getWorkoutsByUserId(currentUserId).collect { workouts ->
-                        _uiState.value = _uiState.value.copy(
-                            workouts = workouts,
-                            recentWorkouts = workouts.take(5),
-                            isLoading = false
-                        )
-                    }
+                workoutRepository.getWorkoutsByUserId(userId).collect { workouts ->
+                    _uiState.value = _uiState.value.copy(
+                        workouts = workouts,
+                        recentWorkouts = workouts.take(5),
+                        isLoading = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -79,52 +72,25 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Loads weekly workout statistics
-     */
-    private fun loadWeeklyStats() {
-        viewModelScope.launch {
-            try {
-                val currentUserId = authRepository.getCurrentUserId()
-                if (currentUserId != null) {
-                    val weeklyStats = workoutRepository.getWeeklyStats(currentUserId)
-                    _uiState.value = _uiState.value.copy(
-                        weeklyWorkouts = weeklyStats.workoutCount,
-                        weeklyDuration = weeklyStats.totalDuration,
-                        weeklyCalories = weeklyStats.totalCalories
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    error = "Failed to load weekly stats: ${e.message}"
-                )
-            }
-        }
-    }
-
-    /**
      * Starts a new workout session
      */
-    fun startWorkout(type: String, duration: Int, distance: Int, notes: String) {
+    fun startWorkout(type: WorkoutType, title: String) {
         viewModelScope.launch {
             try {
-                val currentUserId = authRepository.getCurrentUserId()
-                if (currentUserId != null) {
-                    val workout = Workout(
-                        userId = currentUserId,
-                        workoutType = WorkoutType.valueOf(type),
-                        title = "Workout Session",
-                        startTime = System.currentTimeMillis(),
-                        duration = duration,
-                        distance = distance.toFloat(),
-                        notes = notes
-                    )
+                val workout = Workout(
+                    userId = userId,
+                    workoutType = type,
+                    title = title,
+                    startTime = Date()
+                )
+                val workoutId = workoutRepository.insertWorkout(workout)
+                val activeWorkout = workout.copy(id = workoutId)
 
-                    _uiState.value = _uiState.value.copy(
-                        isWorkoutActive = true,
-                        activeWorkout = workout,
-                        successMessage = "Workout started successfully!"
-                    )
-                }
+                _uiState.value = _uiState.value.copy(
+                    isWorkoutActive = true,
+                    activeWorkout = activeWorkout,
+                    successMessage = "Workout started!"
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to start workout: ${e.message}"
@@ -136,38 +102,48 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     /**
      * Stops the current workout session
      */
-    fun stopWorkout() {
+    fun stopWorkout(caloriesBurned: Int = 0, distance: Float = 0f, notes: String = "") {
         viewModelScope.launch {
             try {
                 val activeWorkout = _uiState.value.activeWorkout
                 if (activeWorkout != null) {
-                    workoutRepository.insertWorkout(activeWorkout)
+                    val endTime = Date()
+                    val duration = ((endTime.time - activeWorkout.startTime.time) / 1000 / 60).toInt() // minutes
+
+                    val completedWorkout = activeWorkout.copy(
+                        endTime = endTime,
+                        duration = duration,
+                        caloriesBurned = caloriesBurned,
+                        distance = distance,
+                        notes = notes
+                    )
+
+                    workoutRepository.updateWorkout(completedWorkout)
+
                     _uiState.value = _uiState.value.copy(
                         isWorkoutActive = false,
                         activeWorkout = null,
-                        successMessage = "Workout completed and saved!"
+                        successMessage = "Workout completed!"
                     )
-                    loadWorkouts() // Refresh the workout list
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to save workout: ${e.message}"
+                    error = "Failed to stop workout: ${e.message}"
                 )
             }
         }
     }
 
     /**
-     * Deletes a workout by ID
+     * Deletes a workout
      */
-    fun deleteWorkout(workoutId: Long) {
+    fun deleteWorkout(workout: Workout) {
         viewModelScope.launch {
             try {
-                workoutRepository.deleteWorkout(workoutId)
+                workoutRepository.deleteWorkout(workout.id)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Workout deleted successfully!"
+                    successMessage = "Workout deleted!"
                 )
-                loadWorkouts() // Refresh the workout list
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to delete workout: ${e.message}"
@@ -177,12 +153,16 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Clears any error or success messages
+     * Clears error messages
      */
-    fun clearMessages() {
-        _uiState.value = _uiState.value.copy(
-            error = null,
-            successMessage = null
-        )
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
+    }
+
+    /**
+     * Clears success messages
+     */
+    fun clearSuccessMessage() {
+        _uiState.value = _uiState.value.copy(successMessage = null)
     }
 }
