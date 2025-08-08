@@ -8,14 +8,22 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.fitnesstrackerapp.data.entity.User
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 /**
- * Data Access Object for User entity operations.
+ * User Data Access Object for the Fitness Tracker application.
  *
- * Responsibilities:
- * - Insert, update, delete users
- * - Query users by email, ID, and status
- * - Handle user authentication data
+ * This DAO provides comprehensive database operations for User entities including
+ * authentication, profile management, security features, and account status tracking.
+ * All operations are coroutine-based for optimal performance and UI responsiveness.
+ *
+ * Key Features:
+ * - User authentication and credential management
+ * - Profile information updates and retrieval
+ * - Account security (locking, failed attempts tracking)
+ * - User status management (active/inactive)
+ * - Email and username uniqueness validation
+ * - Batch operations for administrative functions
  */
 @Dao
 interface UserDao {
@@ -25,6 +33,7 @@ interface UserDao {
      *
      * @param user User entity to insert
      * @return The ID of the inserted user
+     * @throws SQLException if email or username already exists
      */
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUser(user: User): Long
@@ -38,28 +47,53 @@ interface UserDao {
     suspend fun updateUser(user: User)
 
     /**
-     * Update user height
+     * Updates user height and timestamp.
+     *
+     * @param userId User ID
+     * @param height New height in centimeters
+     * @param updatedAt Update timestamp
      */
     @Query("UPDATE users SET height_cm = :height, updated_at = :updatedAt WHERE id = :userId")
-    suspend fun updateHeight(userId: Long, height: Float, updatedAt: java.util.Date)
+    suspend fun updateHeight(userId: Long, height: Float, updatedAt: Date)
 
     /**
-     * Update user weight
+     * Updates user weight and timestamp.
+     *
+     * @param userId User ID
+     * @param weight New weight in kilograms
+     * @param updatedAt Update timestamp
      */
     @Query("UPDATE users SET weight_kg = :weight, updated_at = :updatedAt WHERE id = :userId")
-    suspend fun updateWeight(userId: Long, weight: Float, updatedAt: java.util.Date)
+    suspend fun updateWeight(userId: Long, weight: Float, updatedAt: Date)
 
     /**
-     * Update daily step goal
+     * Updates daily step goal and timestamp.
+     *
+     * @param userId User ID
+     * @param stepGoal New daily step goal
+     * @param updatedAt Update timestamp
      */
     @Query("UPDATE users SET daily_step_goal = :stepGoal, updated_at = :updatedAt WHERE id = :userId")
-    suspend fun updateStepGoal(userId: Long, stepGoal: Int, updatedAt: java.util.Date)
+    suspend fun updateStepGoal(userId: Long, stepGoal: Int, updatedAt: Date)
 
     /**
-     * Update metric units preference
+     * Updates metric units preference and timestamp.
+     *
+     * @param updatedAt Update timestamp
      */
     @Query("UPDATE users SET use_metric_units = :useMetric, updated_at = :updatedAt WHERE id = :userId")
-    suspend fun updateMetricUnits(userId: Long, useMetric: Boolean, updatedAt: java.util.Date)
+    suspend fun updateMetricUnits(userId: Long, useMetric: Boolean, updatedAt: Date)
+
+    /**
+     * Updates user password hash and salt.
+     *
+     * @param userId User ID
+     * @param passwordHash New password hash
+     * @param passwordSalt New password salt
+     * @param updatedAt Update timestamp
+     */
+    @Query("UPDATE users SET password_hash = :passwordHash, password_salt = :passwordSalt, last_password_change = :updatedAt, updated_at = :updatedAt WHERE id = :userId")
+    suspend fun updatePassword(userId: Long, passwordHash: String, passwordSalt: String, updatedAt: Date)
 
     /**
      * Deletes a user from the database.
@@ -97,17 +131,17 @@ interface UserDao {
     suspend fun getUserByUsername(username: String): User?
 
     /**
-     * Gets all active users.
+     * Gets all active users as a Flow for reactive updates.
      *
-     * @return Flow of list of active users
+     * @return Flow of list of active users ordered by creation date
      */
     @Query("SELECT * FROM users WHERE is_active = 1 ORDER BY created_at DESC")
     fun getAllActiveUsers(): Flow<List<User>>
 
     /**
-     * Gets all users (including inactive).
+     * Gets all users (including inactive) as a Flow.
      *
-     * @return Flow of list of all users
+     * @return Flow of list of all users ordered by creation date
      */
     @Query("SELECT * FROM users ORDER BY created_at DESC")
     fun getAllUsers(): Flow<List<User>>
@@ -145,44 +179,49 @@ interface UserDao {
      * @param lastLogin Last login timestamp
      */
     @Query("UPDATE users SET last_login = :lastLogin, updated_at = :lastLogin WHERE id = :userId")
-    suspend fun updateLastLogin(userId: Long, lastLogin: Long)
+    suspend fun updateLastLogin(userId: Long, lastLogin: Date)
 
     /**
      * Increments failed login attempts for a user.
      *
      * @param email User's email
+     * @param currentTime Current timestamp
      */
     @Query("UPDATE users SET failed_login_attempts = failed_login_attempts + 1, updated_at = :currentTime WHERE email = :email")
-    suspend fun incrementFailedLoginAttempts(email: String, currentTime: Long)
+    suspend fun incrementFailedLoginAttempts(email: String, currentTime: Date)
 
     /**
      * Resets failed login attempts for a user.
      *
      * @param userId User ID
+     * @param currentTime Current timestamp
      */
     @Query("UPDATE users SET failed_login_attempts = 0, is_account_locked = 0, updated_at = :currentTime WHERE id = :userId")
-    suspend fun resetFailedLoginAttempts(userId: Long, currentTime: Long)
+    suspend fun resetFailedLoginAttempts(userId: Long, currentTime: Date)
 
     /**
-     * Locks a user account.
+     * Locks a user account due to security violations.
      *
      * @param userId User ID
+     * @param currentTime Current timestamp
      */
     @Query("UPDATE users SET is_account_locked = 1, updated_at = :currentTime WHERE id = :userId")
-    suspend fun lockAccount(userId: Long, currentTime: Long)
+    suspend fun lockAccount(userId: Long, currentTime: Date)
 
     /**
-     * Unlocks a user account.
+     * Unlocks a user account and resets failed attempts.
      *
      * @param userId User ID
+     * @param currentTime Current timestamp
      */
     @Query("UPDATE users SET is_account_locked = 0, failed_login_attempts = 0, updated_at = :currentTime WHERE id = :userId")
-    suspend fun unlockAccount(userId: Long, currentTime: Long)
+    suspend fun unlockAccount(userId: Long, currentTime: Date)
 
     /**
-     * Deactivates a user account.
+     * Deactivates a user account (soft delete).
      *
      * @param userId User ID
+     * @param currentTime Current timestamp
      */
     @Query("UPDATE users SET is_active = 0, updated_at = :currentTime WHERE id = :userId")
     suspend fun deactivateUser(userId: Long, currentTime: Long)

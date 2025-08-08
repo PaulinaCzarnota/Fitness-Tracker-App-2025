@@ -1,3 +1,19 @@
+/**
+ * Workout Data Access Object for the Fitness Tracker application.
+ *
+ * This DAO provides comprehensive database operations for Workout entities including
+ * workout session management, performance tracking, analytics, and historical data.
+ * All operations are coroutine-based for optimal performance and UI responsiveness.
+ *
+ * Key Features:
+ * - Workout session creation, updates, and deletion
+ * - Performance metrics and statistics calculation
+ * - Date range queries for progress tracking
+ * - Workout type filtering and categorization
+ * - Analytics queries for charts and reports
+ * - Batch operations for data management
+ */
+
 package com.example.fitnesstrackerapp.data.dao
 
 import androidx.room.Dao
@@ -14,11 +30,9 @@ import java.util.Date
 /**
  * Data Access Object for Workout entity operations.
  *
- * Responsibilities:
- * - Insert, update, delete workouts
- * - Query workouts by user, type, and date range
- * - Provide workout statistics and analytics
- * - Handle workout session management
+ * Provides comprehensive database operations for workout management including
+ * session tracking, performance analysis, and historical data queries.
+ * All operations are suspend functions for coroutine compatibility.
  */
 @Dao
 interface WorkoutDao {
@@ -54,7 +68,7 @@ interface WorkoutDao {
      * @param workoutId Workout ID to delete
      */
     @Query("DELETE FROM workouts WHERE id = :workoutId")
-    suspend fun deleteWorkout(workoutId: Long)
+    suspend fun deleteWorkoutById(workoutId: Long)
 
     /**
      * Gets a workout by its ID.
@@ -66,7 +80,7 @@ interface WorkoutDao {
     suspend fun getWorkoutById(workoutId: Long): Workout?
 
     /**
-     * Gets all workouts for a specific user.
+     * Gets all workouts for a specific user as a Flow.
      *
      * @param userId User ID
      * @return Flow of list of workouts ordered by start time descending
@@ -75,7 +89,7 @@ interface WorkoutDao {
     fun getWorkoutsByUserId(userId: Long): Flow<List<Workout>>
 
     /**
-     * Gets all workouts (admin function).
+     * Gets all workouts (admin function) as a Flow.
      *
      * @return Flow of list of all workouts ordered by start time descending
      */
@@ -103,44 +117,25 @@ interface WorkoutDao {
     fun getWorkoutsByType(userId: Long, workoutType: WorkoutType): Flow<List<Workout>>
 
     /**
-     * Gets workouts within a date range.
+     * Gets workouts within a date range for a user.
      *
      * @param userId User ID
-     * @param startDate Start date (inclusive)
-     * @param endDate End date (inclusive)
-     * @return Flow of list of workouts
+     * @param startDate Start date of range
+     * @param endDate End date of range
+     * @return Flow of list of workouts in date range
      */
     @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate ORDER BY startTime DESC")
-    fun getWorkoutsByDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Workout>>
+    fun getWorkoutsInDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Workout>>
 
     /**
-     * Gets the count of workouts in a date range.
+     * Gets workouts for a specific date.
      *
      * @param userId User ID
-     * @param startDate Start date (inclusive)
-     * @param endDate End date (inclusive)
-     * @return Number of workouts in the range
+     * @param date Specific date
+     * @return Flow of list of workouts for the date
      */
-    @Query("SELECT COUNT(*) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
-    suspend fun getWorkoutCountInDateRange(userId: Long, startDate: Date, endDate: Date): Int
-
-    /**
-     * Gets the longest workout by duration for a user.
-     *
-     * @param userId User ID
-     * @return Longest workout or null if no workouts exist
-     */
-    @Query("SELECT * FROM workouts WHERE userId = :userId ORDER BY duration DESC LIMIT 1")
-    suspend fun getLongestWorkout(userId: Long): Workout?
-
-    /**
-     * Gets the most recent workout for a user.
-     *
-     * @param userId User ID
-     * @return Most recent workout or null if no workouts exist
-     */
-    @Query("SELECT * FROM workouts WHERE userId = :userId ORDER BY startTime DESC LIMIT 1")
-    suspend fun getMostRecentWorkout(userId: Long): Workout?
+    @Query("SELECT * FROM workouts WHERE userId = :userId AND DATE(startTime/1000, 'unixepoch') = DATE(:date/1000, 'unixepoch') ORDER BY startTime DESC")
+    fun getWorkoutsForDate(userId: Long, date: Date): Flow<List<Workout>>
 
     /**
      * Gets total workout count for a user.
@@ -152,10 +147,19 @@ interface WorkoutDao {
     suspend fun getTotalWorkoutCount(userId: Long): Int
 
     /**
-     * Gets total workout duration for a user.
+     * Gets total calories burned for a user.
      *
      * @param userId User ID
-     * @return Total duration in minutes
+     * @return Total calories burned across all workouts
+     */
+    @Query("SELECT SUM(caloriesBurned) FROM workouts WHERE userId = :userId")
+    suspend fun getTotalCaloriesBurned(userId: Long): Int?
+
+    /**
+     * Gets total workout duration for a user in minutes.
+     *
+     * @param userId User ID
+     * @return Total workout duration in minutes
      */
     @Query("SELECT SUM(duration) FROM workouts WHERE userId = :userId")
     suspend fun getTotalWorkoutDuration(userId: Long): Int?
@@ -170,187 +174,218 @@ interface WorkoutDao {
     suspend fun getTotalDistance(userId: Long): Float?
 
     /**
-     * Gets total calories burned for a user.
+     * Gets workout count for a specific type.
      *
      * @param userId User ID
-     * @return Total calories burned
-     */
-    @Query("SELECT SUM(caloriesBurned) FROM workouts WHERE userId = :userId")
-    suspend fun getTotalCaloriesBurned(userId: Long): Int?
-
-    /**
-     * Gets total steps for a user.
-     *
-     * @param userId User ID
-     * @return Total steps
-     */
-    @Query("SELECT SUM(steps) FROM workouts WHERE userId = :userId")
-    suspend fun getTotalSteps(userId: Long): Int?
-
-    /**
-     * Gets workout count by type for a user.
-     *
-     * @param userId User ID
-     * @param workoutType Type of workout
-     * @return Number of workouts of the specified type
+     * @param workoutType Workout type
+     * @return Count of workouts for the type
      */
     @Query("SELECT COUNT(*) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
     suspend fun getWorkoutCountByType(userId: Long, workoutType: WorkoutType): Int
 
     /**
-     * Gets workouts for today for a user.
+     * Gets total calories for a specific workout type.
      *
      * @param userId User ID
-     * @param dayStart Start of the day
-     * @param dayEnd End of the day
-     * @return Flow of list of today's workouts
-     */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :dayStart AND :dayEnd ORDER BY startTime DESC")
-    fun getTodaysWorkouts(userId: Long, dayStart: Date, dayEnd: Date): Flow<List<Workout>>
-
-    /**
-     * Gets workouts for this week for a user.
-     *
-     * @param userId User ID
-     * @param weekStart Start of the week
-     * @param weekEnd End of the week
-     * @return Flow of list of this week's workouts
-     */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :weekStart AND :weekEnd ORDER BY startTime DESC")
-    fun getThisWeeksWorkouts(userId: Long, weekStart: Date, weekEnd: Date): Flow<List<Workout>>
-
-    /**
-     * Gets workouts for this month for a user.
-     *
-     * @param userId User ID
-     * @param monthStart Start of the month
-     * @param monthEnd End of the month
-     * @return Flow of list of this month's workouts
-     */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :monthStart AND :monthEnd ORDER BY startTime DESC")
-    fun getThisMonthsWorkouts(userId: Long, monthStart: Date, monthEnd: Date): Flow<List<Workout>>
-
-    /**
-     * Gets average workout duration for a user.
-     *
-     * @param userId User ID
-     * @return Average duration in minutes
-     */
-    @Query("SELECT AVG(duration) FROM workouts WHERE userId = :userId")
-    suspend fun getAverageWorkoutDuration(userId: Long): Float?
-
-    /**
-     * Gets average distance per workout for a user.
-     *
-     * @param userId User ID
-     * @return Average distance in kilometers
-     */
-    @Query("SELECT AVG(distance) FROM workouts WHERE userId = :userId")
-    suspend fun getAverageDistance(userId: Long): Float?
-
-    /**
-     * Gets average calories burned per workout for a user.
-     *
-     * @param userId User ID
-     * @return Average calories burned
-     */
-    @Query("SELECT AVG(caloriesBurned) FROM workouts WHERE userId = :userId")
-    suspend fun getAverageCaloriesBurned(userId: Long): Float?
-
-    /**
-     * Deletes all workouts for a user.
-     *
-     * @param userId User ID
-     */
-    @Query("DELETE FROM workouts WHERE userId = :userId")
-    suspend fun deleteAllUserWorkouts(userId: Long)
-
-    /**
-     * Gets workouts that are currently in progress (no end time).
-     *
-     * @param userId User ID
-     * @return Flow of list of active workouts
-     */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND endTime IS NULL ORDER BY startTime DESC")
-    fun getActiveWorkouts(userId: Long): Flow<List<Workout>>
-
-    /**
-     * Updates workout end time.
-     *
-     * @param workoutId Workout ID
-     * @param endTime End time to set
-     */
-    @Query("UPDATE workouts SET endTime = :endTime WHERE id = :workoutId")
-    suspend fun updateWorkoutEndTime(workoutId: Long, endTime: Date)
-
-    /**
-     * Updates workout notes.
-     *
-     * @param workoutId Workout ID
-     * @param notes Notes to set
-     */
-    @Query("UPDATE workouts SET notes = :notes WHERE id = :workoutId")
-    suspend fun updateWorkoutNotes(workoutId: Long, notes: String?)
-
-    /**
-     * Gets total duration by type
-     */
-    @Query("SELECT SUM(duration) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
-    suspend fun getTotalDurationByType(userId: Long, workoutType: WorkoutType): Int?
-
-    /**
-     * Gets total calories by type
+     * @param workoutType Workout type
+     * @return Total calories for the workout type
      */
     @Query("SELECT SUM(caloriesBurned) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
     suspend fun getTotalCaloriesByType(userId: Long, workoutType: WorkoutType): Int?
 
     /**
-     * Gets total distance by type
+     * Gets total duration for a specific workout type.
+     *
+     * @param userId User ID
+     * @param workoutType Workout type
+     * @return Total duration for the workout type
      */
-    @Query("SELECT SUM(distance) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
-    suspend fun getTotalDistanceByType(userId: Long, workoutType: WorkoutType): Float?
+    @Query("SELECT SUM(duration) FROM workouts WHERE userId = :userId AND workoutType = :workoutType")
+    suspend fun getTotalDurationByType(userId: Long, workoutType: WorkoutType): Int?
 
     /**
-     * Gets total duration for workouts in a date range
+     * Gets average workout duration for a user.
+     *
+     * @param userId User ID
+     * @return Average workout duration in minutes
      */
-    @Query("SELECT COALESCE(SUM(duration), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
-    suspend fun getTotalDurationInDateRange(userId: Long, startDate: Long, endDate: Long): Long
+    @Query("SELECT AVG(duration) FROM workouts WHERE userId = :userId AND duration > 0")
+    suspend fun getAverageWorkoutDuration(userId: Long): Float?
 
     /**
-     * Gets total calories burned in a date range
+     * Gets average calories burned per workout.
+     *
+     * @param userId User ID
+     * @return Average calories burned per workout
      */
-    @Query("SELECT COALESCE(SUM(caloriesBurned), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
-    suspend fun getTotalCaloriesInDateRange(userId: Long, startDate: Long, endDate: Long): Double
+    @Query("SELECT AVG(caloriesBurned) FROM workouts WHERE userId = :userId AND caloriesBurned > 0")
+    suspend fun getAverageCaloriesBurned(userId: Long): Float?
 
     /**
-     * Gets total distance covered in a date range
+     * Gets total workout count for analytics.
+     *
+     * @param userId User ID
+     * @return Total workout count
      */
-    @Query("SELECT COALESCE(SUM(distance), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
-    suspend fun getTotalDistanceInDateRange(userId: Long, startDate: Long, endDate: Long): Double
+    @Query("SELECT COUNT(*) FROM workouts WHERE userId = :userId")
+    suspend fun getWorkoutCountForAnalytics(userId: Long): Int
 
     /**
-     * Gets monthly workout statistics
+     * Gets monthly workout count.
+     *
+     * @param userId User ID
+     * @param year Year
+     * @param month Month (1-12)
+     * @return Count of workouts in the month
      */
     @Query("""
-        SELECT 
-            COUNT(*) as totalWorkouts,
-            SUM(duration) as totalDuration,
-            SUM(caloriesBurned) as totalCalories,
-            SUM(distance) as totalDistance,
-            AVG(duration) as avgDuration
+        SELECT COUNT(*) 
         FROM workouts 
-        WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate
+        WHERE userId = :userId 
+        AND strftime('%Y', startTime/1000, 'unixepoch') = :year 
+        AND strftime('%m', startTime/1000, 'unixepoch') = :month
     """)
-    suspend fun getMonthlyStats(userId: Long, startDate: Long, endDate: Long): WorkoutStats?
-}
+    suspend fun getMonthlyWorkoutCount(userId: Long, year: String, month: String): Int
 
-/**
- * Data class for workout statistics.
- */
-data class WorkoutStats(
-    val totalWorkouts: Int,
-    val totalDuration: Long,
-    val totalCalories: Double,
-    val totalDistance: Double,
-    val avgDuration: Double
-)
+    /**
+     * Gets monthly calories burned.
+     *
+     * @param userId User ID
+     * @param year Year
+     * @param month Month (1-12)
+     * @return Total calories burned in the month
+     */
+    @Query("""
+        SELECT SUM(caloriesBurned) 
+        FROM workouts 
+        WHERE userId = :userId 
+        AND strftime('%Y', startTime/1000, 'unixepoch') = :year 
+        AND strftime('%m', startTime/1000, 'unixepoch') = :month
+    """)
+    suspend fun getMonthlyCaloriesBurned(userId: Long, year: String, month: String): Int?
+
+    /**
+     * Gets monthly workout duration.
+     *
+     * @param userId User ID
+     * @param year Year
+     * @param month Month (1-12)
+     * @return Total duration in the month
+     */
+    @Query("""
+        SELECT SUM(duration) 
+        FROM workouts 
+        WHERE userId = :userId 
+        AND strftime('%Y', startTime/1000, 'unixepoch') = :year 
+        AND strftime('%m', startTime/1000, 'unixepoch') = :month
+    """)
+    suspend fun getMonthlyWorkoutDuration(userId: Long, year: String, month: String): Int?
+
+    /**
+     * Gets weekly workout count.
+     *
+     * @param userId User ID
+     * @param weekStart Start of the week
+     * @param weekEnd End of the week
+     * @return Count of workouts in the week
+     */
+    @Query("""
+        SELECT COUNT(*) 
+        FROM workouts 
+        WHERE userId = :userId 
+        AND startTime BETWEEN :weekStart AND :weekEnd
+    """)
+    suspend fun getWeeklyWorkoutCount(userId: Long, weekStart: Date, weekEnd: Date): Int
+
+    /**
+     * Gets weekly calories burned.
+     *
+     * @param userId User ID
+     * @param weekStart Start of the week
+     * @param weekEnd End of the week
+     * @return Total calories burned in the week
+     */
+    @Query("""
+        SELECT SUM(caloriesBurned) 
+        FROM workouts 
+        WHERE userId = :userId 
+        AND startTime BETWEEN :weekStart AND :weekEnd
+    """)
+    suspend fun getWeeklyCaloriesBurned(userId: Long, weekStart: Date, weekEnd: Date): Int?
+
+    /**
+     * Gets weekly workout duration.
+     *
+     * @param userId User ID
+     * @param weekStart Start of the week
+     * @param weekEnd End of the week
+     * @return Total duration in the week
+     */
+    @Query("""
+        SELECT SUM(duration) 
+        FROM workouts 
+        WHERE userId = :userId 
+        AND startTime BETWEEN :weekStart AND :weekEnd
+    """)
+    suspend fun getWeeklyWorkoutDuration(userId: Long, weekStart: Date, weekEnd: Date): Int?
+
+    /**
+     * Gets the user's best workout by calories burned.
+     *
+     * @param userId User ID
+     * @return Workout with highest calories burned
+     */
+    @Query("SELECT * FROM workouts WHERE userId = :userId ORDER BY caloriesBurned DESC LIMIT 1")
+    suspend fun getBestWorkoutByCalories(userId: Long): Workout?
+
+    /**
+     * Gets the user's longest workout by duration.
+     *
+     * @param userId User ID
+     * @return Workout with longest duration
+     */
+    @Query("SELECT * FROM workouts WHERE userId = :userId ORDER BY duration DESC LIMIT 1")
+    suspend fun getLongestWorkout(userId: Long): Workout?
+
+    /**
+     * Gets workouts that are currently in progress (no end time).
+     *
+     * @param userId User ID
+     * @return List of ongoing workouts
+     */
+    @Query("SELECT * FROM workouts WHERE userId = :userId AND endTime IS NULL ORDER BY startTime DESC")
+    suspend fun getOngoingWorkouts(userId: Long): List<Workout>
+
+    /**
+     * Gets completed workouts (have end time).
+     *
+     * @param userId User ID
+     * @return Flow of completed workouts
+     */
+    @Query("SELECT * FROM workouts WHERE userId = :userId AND endTime IS NOT NULL ORDER BY startTime DESC")
+    fun getCompletedWorkouts(userId: Long): Flow<List<Workout>>
+
+    /**
+     * Updates workout end time and recalculates duration.
+     *
+     * @param workoutId Workout ID
+     * @param endTime End time
+     * @param duration Duration in minutes
+     */
+    @Query("UPDATE workouts SET endTime = :endTime, duration = :duration, updatedAt = :endTime WHERE id = :workoutId")
+    suspend fun updateWorkoutEndTime(workoutId: Long, endTime: Date, duration: Int)
+
+    /**
+     * Deletes all workouts for a user (for account deletion).
+     *
+     * @param userId User ID
+     */
+    @Query("DELETE FROM workouts WHERE userId = :userId")
+    suspend fun deleteAllWorkoutsForUser(userId: Long)
+
+    /**
+     * Deletes all workouts (for testing purposes only).
+     */
+    @Query("DELETE FROM workouts")
+    suspend fun deleteAllWorkouts()
+}

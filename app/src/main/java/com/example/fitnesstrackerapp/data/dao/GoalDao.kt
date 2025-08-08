@@ -318,5 +318,3 @@ interface GoalDao {
     @Query("SELECT * FROM goals WHERE user_id = :userId AND reminder_enabled = 1 AND status = 'ACTIVE'")
     fun getGoalsWithReminders(userId: Long): Flow<List<Goal>>
 }
-
-
