@@ -1,7 +1,6 @@
 package com.example.fitnesstrackerapp.util
 
-import android.content.Context
-import android.view.View
+import android.annotation.SuppressLint
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import kotlin.math.pow
@@ -53,6 +52,7 @@ object AccessibilityHelper {
     /**
      * Generates content descriptions for workout items.
      */
+    @SuppressLint("DefaultLocale")
     fun getWorkoutDescription(
         type: String,
         duration: Int,
