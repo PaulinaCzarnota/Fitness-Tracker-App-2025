@@ -124,7 +124,7 @@ class ServiceLocator private constructor(appContext: Context) {
     val cryptoManager by lazy { CryptoManager(appContext) }
 
     // Repositories with proper initialization
-    val authRepository by lazy { AuthRepository(userDao, cryptoManager) }
+    val authRepository by lazy { AuthRepository(userDao, cryptoManager, appContext) }
     val workoutRepository by lazy { WorkoutRepository(workoutDao) }
     val goalRepository by lazy { GoalRepository(goalDao) }
     val stepRepository by lazy { StepRepository(stepDao) }
