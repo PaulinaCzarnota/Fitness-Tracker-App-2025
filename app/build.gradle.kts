@@ -24,7 +24,7 @@ android {
      * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
      */
     namespace = "com.example.fitnesstrackerapp"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
@@ -89,6 +89,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 
@@ -128,7 +129,6 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.identity.jvm)
     ksp(libs.room.compiler)
     testImplementation(libs.room.testing)
 
@@ -152,10 +152,6 @@ dependencies {
     // Material Icons Extended for complete icon set
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
-    // Koin for Dependency Injection
-    implementation("io.insert-koin:koin-android:3.5.0")
-    implementation("io.insert-koin:koin-androidx-compose:3.5.0")
-    implementation("io.insert-koin:koin-androidx-workmanager:3.5.0")
 
     // Biometric Authentication
     implementation("androidx.biometric:biometric:1.1.0")
@@ -169,6 +165,10 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.test.core)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -186,7 +186,4 @@ dependencies {
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
-
-    // XML Parser
-    implementation("xerces:xercesImpl:2.12.2")
 }
