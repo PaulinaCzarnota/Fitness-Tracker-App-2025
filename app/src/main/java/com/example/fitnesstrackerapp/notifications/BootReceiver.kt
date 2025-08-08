@@ -43,7 +43,7 @@ class BootReceiver : BroadcastReceiver() {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             try {
                 Log.d(TAG, "Device boot completed, re-scheduling notifications")
-                
+
                 // Check if the app can schedule exact alarms (Android 12+)
                 val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                 val canScheduleExactAlarms = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -65,7 +65,6 @@ class BootReceiver : BroadcastReceiver() {
                 } else {
                     Log.w(TAG, "Cannot schedule exact alarms - permission not granted")
                 }
-
             } catch (e: SecurityException) {
                 Log.e(TAG, "SecurityException when scheduling alarms after boot", e)
             } catch (e: Exception) {
