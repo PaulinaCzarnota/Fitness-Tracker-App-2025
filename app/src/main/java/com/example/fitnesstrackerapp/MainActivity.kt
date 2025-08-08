@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.fitnesstrackerapp.navigation.AppNavigation
 import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
-import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 
 /**
  * Main Activity class that serves as the entry point for the application.
