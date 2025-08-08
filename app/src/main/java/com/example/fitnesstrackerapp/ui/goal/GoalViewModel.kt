@@ -59,8 +59,7 @@ class GoalViewModel(
         targetValue: Float,
         unit: String,
         targetDate: Date,
-        reminderEnabled: Boolean = true,
-        reminderTime: String? = null
+        reminderEnabled: Boolean = true
     ) {
         val userId = currentUserId ?: return
 
@@ -71,14 +70,13 @@ class GoalViewModel(
                     title = title,
                     description = description,
                     goalType = goalType,
-                    targetValue = targetValue,
+                    targetValue = targetValue.toDouble(),
                     unit = unit,
                     targetDate = targetDate,
-                    reminderEnabled = reminderEnabled,
-                    reminderTime = reminderTime
+                    reminderEnabled = reminderEnabled
                 )
 
-                goalRepository.insertGoal(goal)
+                goalRepository.insert(goal)
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Goal created successfully!"
                 )
@@ -98,12 +96,12 @@ class GoalViewModel(
     fun updateGoalProgress(goalId: Long, currentValue: Float) {
         viewModelScope.launch {
             try {
-                goalRepository.updateGoalProgress(goalId, currentValue, Date())
+                goalRepository.updateProgress(goalId, currentValue.toDouble(), autoComplete = true)
 
                 // Check if goal is achieved
-                val goal = goalRepository.getGoalById(goalId)
-                if (goal != null && currentValue >= goal.targetValue && !goal.isAchieved) {
-                    goalRepository.markGoalAsAchieved(goalId, Date())
+                val goal = goalRepository.getById(goalId)
+                if (goal != null && currentValue.toDouble() >= goal.targetValue) {
+                    goalRepository.markGoalAsCompleted(goalId, true)
                     _uiState.value = _uiState.value.copy(
                         successMessage = "Congratulations! Goal '${goal.title}' achieved!"
                     )
@@ -125,7 +123,7 @@ class GoalViewModel(
     fun achieveGoal(goalId: Long) {
         viewModelScope.launch {
             try {
-                goalRepository.markGoalAsAchieved(goalId, Date())
+                goalRepository.markGoalAsAchieved(goalId, Date().time)
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Goal marked as achieved!"
                 )
@@ -145,7 +143,10 @@ class GoalViewModel(
     fun deleteGoal(goalId: Long) {
         viewModelScope.launch {
             try {
-                goalRepository.deleteGoalById(goalId)
+                val goal = goalRepository.getById(goalId)
+                if (goal != null) {
+                    goalRepository.delete(goal)
+                }
                 _uiState.value = _uiState.value.copy(
                     successMessage = "Goal deleted"
                 )
@@ -168,13 +169,13 @@ class GoalViewModel(
         viewModelScope.launch {
             try {
                 // Update the goal's reminder setting
-                val goal = goalRepository.getGoalById(goalId)
+                val goal = goalRepository.getById(goalId)
                 if (goal != null) {
                     val updatedGoal = goal.copy(
                         reminderEnabled = enabled,
                         updatedAt = Date()
                     )
-                    goalRepository.updateGoal(updatedGoal)
+                    goalRepository.update(updatedGoal)
                     loadGoals()
                 }
 
@@ -204,14 +205,9 @@ class GoalViewModel(
                 _uiState.value = _uiState.value.copy(isLoading = true)
 
                 // Load all goals
-                goalRepository.getGoalsByUser(userId).collect { goals ->
-                    val activeGoals = goals.filter { it.isActive && !it.isAchieved }
-                    val achievedGoals = goals.filter { it.isAchieved }
-
+                goalRepository.getAllByUser(userId.toString()).collect { goals ->
                     _uiState.value = _uiState.value.copy(
                         goals = goals,
-                        activeGoals = activeGoals,
-                        achievedGoals = achievedGoals,
                         isLoading = false
                     )
                 }
@@ -220,6 +216,39 @@ class GoalViewModel(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     error = "Failed to load goals: ${e.message}"
+                )
+            }
+        }
+    }
+
+    // Add missing properties that ViewModels reference
+    fun addGoal(goal: Goal) {
+        viewModelScope.launch {
+            try {
+                goalRepository.insert(goal)
+                loadGoals()
+                _uiState.value = _uiState.value.copy(
+                    successMessage = "Goal added successfully"
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to add goal: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun updateGoal(goal: Goal) {
+        viewModelScope.launch {
+            try {
+                goalRepository.updateGoal(goal)
+                loadGoals()
+                _uiState.value = _uiState.value.copy(
+                    successMessage = "Goal updated successfully"
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to update goal: ${e.message}"
                 )
             }
         }
