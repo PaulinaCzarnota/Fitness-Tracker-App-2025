@@ -62,7 +62,7 @@ data class Exercise(
     val exerciseType: ExerciseType,
 
     @ColumnInfo(name = "difficulty")
-    val difficulty: String = DifficultyLevel.INTERMEDIATE,
+    val difficulty: DifficultyLevel = DifficultyLevel.INTERMEDIATE,
 
     @ColumnInfo(name = "instructions")
     val instructions: String? = null,

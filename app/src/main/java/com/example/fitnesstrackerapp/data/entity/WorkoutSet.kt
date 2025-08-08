@@ -81,7 +81,7 @@ data class WorkoutSet(
     val targetReps: Int? = null, // Planned number of reps
 
     @ColumnInfo(name = "weight")
-    val weight: Double = 0f, // Weight used in kg
+    val weight: Double = 0.0, // Weight used in kg
 
     @ColumnInfo(name = "duration")
     val duration: Int = 0, // Duration in seconds (for time-based exercises)
@@ -118,7 +118,7 @@ data class WorkoutSet(
      *
      * @return Volume in kg×reps, or 0 if weight or reps is zero
      */
-    fun getVolume(): Float = weight * repetitions
+    fun getVolume(): Double = weight * repetitions
 
     /**
      * Calculates the intensity as percentage of 1RM (if known).
@@ -127,8 +127,8 @@ data class WorkoutSet(
      * @param oneRepMax The user's one rep max for this exercise
      * @return Intensity as percentage (0-100)
      */
-    fun getIntensity(oneRepMax: Float): Float {
-        return if (oneRepMax > 0) (weight / oneRepMax) * 100f else 0f
+    fun getIntensity(oneRepMax: Double): Double {
+        return if (oneRepMax > 0) (weight / oneRepMax) * 100.0 else 0.0
     }
 
     /**
