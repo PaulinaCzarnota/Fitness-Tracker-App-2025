@@ -20,14 +20,14 @@ data class GoalUiState(
     val achievedGoals: List<Goal> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 )
 
 /**
  * ViewModel for managing fitness goals.
  */
 class GoalViewModel(
-    private val goalRepository: GoalRepository
+    private val goalRepository: GoalRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GoalUiState())
@@ -36,8 +36,9 @@ class GoalViewModel(
     private var currentUserId: Long? = null
 
     init {
-        // Note: In a real implementation, you'd get the current user ID
-        // For now, we'll assume it's set when the user logs in
+        // Initialize with default user ID if available
+        // This will be properly set when the user logs in
+        currentUserId = 1L // Default fallback
         loadGoals()
     }
 
@@ -59,7 +60,7 @@ class GoalViewModel(
         targetValue: Float,
         unit: String,
         targetDate: Date,
-        reminderEnabled: Boolean = true
+        reminderEnabled: Boolean = true,
     ) {
         val userId = currentUserId ?: return
 
@@ -73,18 +74,17 @@ class GoalViewModel(
                     targetValue = targetValue.toDouble(),
                     unit = unit,
                     targetDate = targetDate,
-                    reminderEnabled = reminderEnabled
+                    reminderEnabled = reminderEnabled,
                 )
 
                 goalRepository.insert(goal)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Goal created successfully!"
+                    successMessage = "Goal created successfully!",
                 )
                 loadGoals()
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to create goal: ${e.message}"
+                    error = "Failed to create goal: ${e.message}",
                 )
             }
         }
@@ -103,15 +103,14 @@ class GoalViewModel(
                 if (goal != null && currentValue.toDouble() >= goal.targetValue) {
                     goalRepository.markGoalAsCompleted(goalId, true)
                     _uiState.value = _uiState.value.copy(
-                        successMessage = "Congratulations! Goal '${goal.title}' achieved!"
+                        successMessage = "Congratulations! Goal '${goal.title}' achieved!",
                     )
                 }
 
                 loadGoals()
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to update goal progress: ${e.message}"
+                    error = "Failed to update goal progress: ${e.message}",
                 )
             }
         }
@@ -125,13 +124,12 @@ class GoalViewModel(
             try {
                 goalRepository.markGoalAsAchieved(goalId, Date().time)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Goal marked as achieved!"
+                    successMessage = "Goal marked as achieved!",
                 )
                 loadGoals()
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to mark goal as achieved: ${e.message}"
+                    error = "Failed to mark goal as achieved: ${e.message}",
                 )
             }
         }
@@ -148,13 +146,12 @@ class GoalViewModel(
                     goalRepository.delete(goal)
                 }
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Goal deleted"
+                    successMessage = "Goal deleted",
                 )
                 loadGoals()
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to delete goal: ${e.message}"
+                    error = "Failed to delete goal: ${e.message}",
                 )
             }
         }
@@ -173,15 +170,14 @@ class GoalViewModel(
                 if (goal != null) {
                     val updatedGoal = goal.copy(
                         reminderEnabled = enabled,
-                        updatedAt = Date()
+                        updatedAt = Date(),
                     )
                     goalRepository.update(updatedGoal)
                     loadGoals()
                 }
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to update reminder: ${e.message}"
+                    error = "Failed to update reminder: ${e.message}",
                 )
             }
         }
@@ -208,14 +204,13 @@ class GoalViewModel(
                 goalRepository.getAllByUser(userId.toString()).collect { goals ->
                     _uiState.value = _uiState.value.copy(
                         goals = goals,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Failed to load goals: ${e.message}"
+                    error = "Failed to load goals: ${e.message}",
                 )
             }
         }
@@ -228,11 +223,11 @@ class GoalViewModel(
                 goalRepository.insert(goal)
                 loadGoals()
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Goal added successfully"
+                    successMessage = "Goal added successfully",
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to add goal: ${e.message}"
+                    error = "Failed to add goal: ${e.message}",
                 )
             }
         }
@@ -244,11 +239,11 @@ class GoalViewModel(
                 goalRepository.updateGoal(goal)
                 loadGoals()
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Goal updated successfully"
+                    successMessage = "Goal updated successfully",
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to update goal: ${e.message}"
+                    error = "Failed to update goal: ${e.message}",
                 )
             }
         }

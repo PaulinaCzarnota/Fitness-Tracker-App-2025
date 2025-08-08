@@ -1,58 +1,141 @@
 /**
- * Worker for showing goal reminder notifications in the Fitness Tracker App.
+ * Simple Goal Reminder Worker for goal deadline notifications.
  *
- * Handles background work for showing goal reminder notifications using WorkManager and integrates with NotificationHelper for notification display.
+ * This worker sends notifications to remind users about their fitness goals.
+ * It uses only standard Android SDK components and the SimpleNotificationManager.
+ *
+ * Key Features:
+ * - Sends goal reminder notifications
+ * - Supports custom goal messages
+ * - Uses standard WorkManager framework
+ * - Error handling and logging
  */
- 
 package com.example.fitnesstrackerapp.worker
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.fitnesstrackerapp.util.NotificationHelper
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import androidx.work.workDataOf
+import com.example.fitnesstrackerapp.notification.SimpleNotificationManager
 
 /**
- * Worker class for executing background goal reminder notifications.
+ * Worker for handling goal reminder notifications.
  *
- * Executes in the background to show goal reminders, handles notification display logic, and ensures reliable delivery of reminders.
+ * This worker is responsible for sending periodic goal reminder notifications
+ * to help users stay on track with their fitness objectives.
+ *
+ * @param context The application context
+ * @param params Worker parameters from WorkManager
  */
-@HiltWorker
-class GoalReminderWorker @AssistedInject constructor(
-    @Assisted private val context: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val notificationHelper: NotificationHelper
-) : CoroutineWorker(context, workerParams) {
+class GoalReminderWorker(
+    context: Context,
+    params: WorkerParameters,
+) : CoroutineWorker(context, params) {
 
-    /**
-     * Performs the background work of showing the goal reminder notification.
-     *
-     * Retrieves goal details from input data, shows the notification using NotificationHelper, and returns the result status.
-     *
-     * @return Result indicating success or failure of the operation.
-     */
-    override suspend fun doWork(): Result {
-        // Extract required data from input parameters
-        val goalTitle = inputData.getString(KEY_GOAL_TITLE) ?: return Result.failure()
-        val goalId = inputData.getString(KEY_GOAL_ID) ?: return Result.failure()
-
-        // Show the notification
-        notificationHelper.showGoalReminderNotification(goalTitle, goalId)
-
-        return Result.success()
-    }
+    private val notificationManager = SimpleNotificationManager(applicationContext)
 
     companion object {
-        /**
-         * Key for retrieving goal title from input data
-         */
-        const val KEY_GOAL_TITLE = "KEY_GOAL_TITLE"
-        
-        /**
-         * Key for retrieving goal ID from input data
-         */
-        const val KEY_GOAL_ID = "KEY_GOAL_ID"
+        private const val TAG = "GoalReminderWorker"
+
+        // Input data keys
+        const val KEY_GOAL_TITLE = "goal_title"
+        const val KEY_GOAL_MESSAGE = "goal_message"
+        const val KEY_GOAL_ID = "goal_id"
+        const val KEY_PROGRESS_PERCENTAGE = "progress_percentage"
+    }
+
+    /**
+     * Performs the work of sending a goal reminder notification.
+     *
+     * This method extracts goal information from the input data and
+     * sends an appropriate notification to remind the user about their goal.
+     *
+     * @return Result indicating success or failure of the work
+     */
+    override suspend fun doWork(): Result {
+        return try {
+            // Extract goal information from input data
+            val goalTitle = inputData.getString(KEY_GOAL_TITLE) ?: "Daily Fitness Goal"
+            val goalMessage = inputData.getString(KEY_GOAL_MESSAGE)
+                ?: "Don't forget to work towards your fitness goal today!"
+            val goalId = inputData.getLong(KEY_GOAL_ID, -1L)
+            val progressPercentage = inputData.getInt(KEY_PROGRESS_PERCENTAGE, 0)
+
+            // Create appropriate notification title and message based on progress
+            val (title, message) = createNotificationContent(goalTitle, goalMessage, progressPercentage)
+
+            // Send goal reminder notification
+            notificationManager.showGoalReminder(
+                title = title,
+                message = message,
+                goalId = if (goalId != -1L) goalId else null,
+            )
+
+            Log.d(TAG, "Goal reminder notification sent successfully for: $goalTitle")
+            Result.success(
+                workDataOf(
+                    "notification_sent" to true,
+                    "goal_title" to goalTitle,
+                    "progress_percentage" to progressPercentage,
+                    "timestamp" to System.currentTimeMillis(),
+                ),
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to send goal reminder notification", e)
+            Result.failure(
+                workDataOf(
+                    "error" to (e.message ?: "Unknown error occurred"),
+                    "timestamp" to System.currentTimeMillis(),
+                ),
+            )
+        }
+    }
+
+    /**
+     * Creates appropriate notification content based on goal progress.
+     *
+     * @param goalTitle The title of the goal
+     * @param defaultMessage Default message if no custom message is provided
+     * @param progressPercentage Current progress percentage (0-100)
+     * @return Pair of (title, message) for the notification
+     */
+    private fun createNotificationContent(
+        goalTitle: String,
+        defaultMessage: String,
+        progressPercentage: Int,
+    ): Pair<String, String> {
+        return when {
+            progressPercentage >= 90 -> {
+                Pair(
+                    "🎯 Almost There!",
+                    "You're $progressPercentage% of the way to completing '$goalTitle'. Just a little more!",
+                )
+            }
+            progressPercentage >= 75 -> {
+                Pair(
+                    "🔥 Great Progress!",
+                    "You've made it $progressPercentage% of the way to '$goalTitle'. Keep it up!",
+                )
+            }
+            progressPercentage >= 50 -> {
+                Pair(
+                    "💪 Halfway There!",
+                    "You're $progressPercentage% done with '$goalTitle'. Don't stop now!",
+                )
+            }
+            progressPercentage > 0 -> {
+                Pair(
+                    "🚀 Keep Going!",
+                    "You've started '$goalTitle' and are $progressPercentage% complete. Every step counts!",
+                )
+            }
+            else -> {
+                Pair(
+                    "⏰ Goal Reminder",
+                    "Time to work on '$goalTitle'. $defaultMessage",
+                )
+            }
+        }
     }
 }
