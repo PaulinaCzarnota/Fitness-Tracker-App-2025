@@ -35,6 +35,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // ksp configuration moved outside defaultConfig
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
     buildTypes {
         release {
             // Disable code shrinking for release builds
@@ -46,65 +51,38 @@ android {
         }
     }
 
-    testOptions {
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        unitTests.isReturnDefaultValues = true
-    }
-
     buildFeatures {
         // Enable Jetpack Compose and ViewBinding
         compose = true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
-
-    // Java and Kotlin compatibility
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     kotlinOptions {
         jvmTarget = "17"
     }
 
-    // Explicitly set the source sets
-    sourceSets {
-        getByName("main") {
-            manifest.srcFile("src/main/AndroidManifest.xml")
-            java.srcDirs("src/main/java")
-            res.srcDirs("src/main/res")
-        }
-        getByName("test") {
-            java.srcDirs("src/test/java")
-        }
-        getByName("androidTest") {
-            java.srcDirs("src/androidTest/java")
-        }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Handle potential packaging conflicts
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
-        }
-    }
-
-    // Configuration for Room schema
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-        arg("room.incremental", "true")
-        arg("room.expandProjection", "true")
-    }
-
-    // Test configuration
+    // Suppress incubating warning for DSL testOptions
+    @Suppress("UnstableApiUsage")
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
+        }
+        animationsDisabled = true
+    }
+
+    packaging {
+        // Handle potential packaging conflicts
+        resources {
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
 }
@@ -123,7 +101,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     // AppCompat for theme support
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(libs.androidx.appcompat)
 
     // Room dependencies
     implementation(libs.room.runtime)
@@ -150,11 +128,11 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // Material Icons Extended for complete icon set
-    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation(libs.androidx.compose.material.icons.extended)
 
 
     // Biometric Authentication
-    implementation("androidx.biometric:biometric:1.1.0")
+    implementation(libs.androidx.biometric)
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
@@ -163,12 +141,10 @@ dependencies {
     implementation(libs.androidx.security.crypto)
 
     // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.androidx.test.core)
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("org.mockito:mockito-core:5.11.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -182,8 +158,8 @@ dependencies {
     androidTestUtil(libs.androidx.test.orchestrator)
 
     // Compose dependencies
-    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation(libs.androidx.compose.material3)
 
     // WorkManager
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation(libs.androidx.work.runtime.ktx)
 }
