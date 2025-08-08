@@ -26,6 +26,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.navigation.AppNavigation
 import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
+import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 
 /**
  * Main Activity class that serves as the entry point for the application.
@@ -103,12 +104,16 @@ class MainActivity : ComponentActivity() {
             // Request necessary permissions
             requestPermissions()
             
-            // Initialize ServiceLocator and get AuthViewModel
-            val serviceLocator = ServiceLocator.get(this)
-            val authVm = ViewModelProvider(
-                this,
-                ViewModelFactoryProvider.getAuthViewModelFactory(serviceLocator)
-            )[com.example.fitnesstrackerapp.ui.auth.AuthViewModel::class.java]
+            // Initialize ViewModel with proper error handling
+            val authVm = try {
+                ViewModelProvider(
+                    this,
+                    ServiceLocator.viewModelFactory
+                )[AuthViewModel::class.java]
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to create AuthViewModel", e)
+                throw e
+            }
 
             setContent {
                 FitnessTrackerTheme {
