@@ -139,7 +139,7 @@
     <string name="welcome_back">Welcome Back</string>
     <string name="create_account_subtitle">Start your fitness journey today</string>
     <string name="invalid_email_format">Invalid email format</string>
-    <string name="password_min_length">Password must be at least 8 characters</string>
+    <string name="password_min_length">Password must be at least %d characters</string>
     <string name="hide_password">Hide password</string>
     <string name="show_password">Show password</string>
     <string name="terms_and_privacy_policy">By signing up, you agree to our Terms and Privacy Policy</string>
