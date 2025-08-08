@@ -1,11 +1,15 @@
 /**
- * Main Screen Composable for Fitness Tracker Application
+ * Main screen container for the authenticated user interface in the Fitness Tracker application.
  *
- * Responsibilities:
- * - Provides the main navigation structure with bottom navigation
- * - Manages navigation between core app features
- * - Handles authentication state and user session
- * - Implements Material 3 design with proper navigation
+ * This Compose screen provides the core navigation structure with:
+ * - Bottom navigation bar with five main sections (Home, Workout, Goals, Nutrition, Profile)
+ * - Material 3 NavigationBar implementation for modern UI design
+ * - State preservation during navigation transitions
+ * - Proper back stack management and navigation handling
+ * - Integration with authentication system for user session management
+ *
+ * The screen uses Jetpack Navigation Compose for declarative navigation
+ * and implements proper navigation patterns for a smooth user experience.
  */
 
 package com.example.fitnesstrackerapp.ui.main
@@ -20,11 +24,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.fitnesstrackerapp.ui.goal.GoalsScreen
+import com.example.fitnesstrackerapp.screens.GoalScreen
+import com.example.fitnesstrackerapp.screens.HomeScreen
 import com.example.fitnesstrackerapp.ui.nutrition.NutritionScreen
 import com.example.fitnesstrackerapp.ui.profile.ProfileScreen
 import com.example.fitnesstrackerapp.ui.workout.WorkoutScreen
-import com.example.fitnesstrackerapp.screens.HomeScreen
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.ComponentActivity
 
 /**
  * Navigation destinations for the main app flow.
@@ -39,11 +45,15 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
 
 /**
  * Main screen composable that provides the core navigation structure.
+ *
+ * @param modifier Modifier for styling the screen.
+ * @param authViewModel The ViewModel for handling authentication logic.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 ) {
     val navController = rememberNavController()
     val items = listOf(
@@ -97,19 +107,24 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen(navController = navController)
+                HomeScreen(navController = navController, authViewModel = authViewModel)
             }
             composable(Screen.Workout.route) {
-                WorkoutScreen(navController = navController)
+                val activity = LocalContext.current as ComponentActivity
+                WorkoutScreen(authViewModel = authViewModel, activity = activity)
             }
             composable(Screen.Goals.route) {
-                GoalsScreen(navController = navController)
+                val activity = LocalContext.current as ComponentActivity
+                GoalScreen(activity = activity)
             }
             composable(Screen.Nutrition.route) {
-                NutritionScreen(navController = navController)
+                NutritionScreen(authViewModel = authViewModel)
             }
             composable(Screen.Profile.route) {
-                ProfileScreen(navController = navController)
+                ProfileScreen(
+                    navController = navController,
+                    authViewModel = authViewModel
+                )
             }
         }
     }
