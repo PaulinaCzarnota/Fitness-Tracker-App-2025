@@ -58,15 +58,15 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
-    
+
     val uiState by authViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    
+
     // Biometric authentication setup
     val biometricAuthManager = remember { BiometricAuthManager(context) }
     val isBiometricAvailable = biometricAuthManager.isBiometricAvailable()
-    
+
     // Try to restore session on first load
     LaunchedEffect(Unit) {
         authViewModel.restoreSession()
@@ -92,7 +92,7 @@ fun LoginScreen(
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary,
         )
-        
+
         Text(
             text = "Welcome Back",
             style = MaterialTheme.typography.headlineSmall,
@@ -109,18 +109,18 @@ fun LoginScreen(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = "Email"
+                    contentDescription = "Email",
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Next,
             ),
             singleLine = true,
-            isError = email.isNotBlank() && !authViewModel.isValidEmail(email)
+            isError = email.isNotBlank() && !authViewModel.isValidEmail(email),
         )
-        
+
         if (email.isNotBlank() && !authViewModel.isValidEmail(email)) {
             Text(
                 text = "Please enter a valid email address",
@@ -128,7 +128,7 @@ fun LoginScreen(
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, top = 4.dp)
+                    .padding(start = 16.dp, top = 4.dp),
             )
         }
 
@@ -142,14 +142,14 @@ fun LoginScreen(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Password"
+                    contentDescription = "Password",
                 )
             },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         imageVector = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password",
                     )
                 }
             },
@@ -157,7 +157,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -166,34 +166,34 @@ fun LoginScreen(
                     if (validation.isValid) {
                         authViewModel.login(email, password)
                     }
-                }
+                },
             ),
-            singleLine = true
+            singleLine = true,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // Remember Me & Forgot Password Row
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Checkbox(
                     checked = rememberMe,
-                    onCheckedChange = { rememberMe = it }
+                    onCheckedChange = { rememberMe = it },
                 )
                 Text(
                     text = "Remember me",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            
+
             TextButton(
-                onClick = onNavigateToForgotPassword
+                onClick = onNavigateToForgotPassword,
             ) {
                 Text("Forgot Password?")
             }
@@ -219,20 +219,20 @@ fun LoginScreen(
             if (uiState.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
             } else {
                 Text(
                     text = "Login",
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
         }
-        
+
         // Biometric Authentication Button
         if (isBiometricAvailable && biometricAuthManager.isBiometricEnabled()) {
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             OutlinedButton(
                 onClick = {
                     val activity = context as? FragmentActivity
@@ -246,18 +246,18 @@ fun LoginScreen(
                             },
                             onError = { error ->
                                 // Handle biometric error - could show a snackbar
-                            }
+                            },
                         )
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .height(56.dp),
             ) {
                 Icon(
                     imageVector = Icons.Default.Fingerprint,
                     contentDescription = "Biometric Login",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Use Biometric")
@@ -268,20 +268,20 @@ fun LoginScreen(
 
         // Divider
         HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-        
+
         // Sign Up Link
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "Don't have an account?",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             TextButton(onClick = onNavigateToSignUp) {
                 Text(
                     text = "Sign Up",
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
         }
@@ -290,32 +290,32 @@ fun LoginScreen(
         uiState.error?.let { error ->
             Spacer(modifier = Modifier.height(16.dp))
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
             ) {
                 Text(
                     text = error,
                     color = MaterialTheme.colorScheme.onErrorContainer,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 )
             }
-            
+
             LaunchedEffect(error) {
                 kotlinx.coroutines.delay(5000) // Auto-clear error after 5 seconds
                 authViewModel.clearError()
             }
         }
-        
+
         uiState.successMessage?.let { success ->
             Spacer(modifier = Modifier.height(16.dp))
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             ) {
                 Text(
                     text = success,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 )
             }
         }
