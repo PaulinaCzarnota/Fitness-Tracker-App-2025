@@ -42,15 +42,15 @@ import java.util.Date
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index(value = ["userId"]),
         Index(value = ["workoutType"]),
         Index(value = ["startTime"]),
-        Index(value = ["userId", "startTime"])
-    ]
+        Index(value = ["userId", "startTime"]),
+    ],
 )
 data class Workout(
     @PrimaryKey(autoGenerate = true)
@@ -105,7 +105,7 @@ data class Workout(
     val createdAt: Date = Date(),
 
     @ColumnInfo(name = "updatedAt")
-    val updatedAt: Date = Date()
+    val updatedAt: Date = Date(),
 ) {
     /**
      * Get type as alias for compatibility
@@ -185,6 +185,61 @@ data class Workout(
      */
     fun getDurationInMillis(): Long {
         return if (endTime != null) endTime.time - startTime.time else 0L
+    }
+
+    /**
+     * Gets formatted pace string for display.
+     *
+     * @return Formatted pace string (e.g., "5:30 min/km") or null if cannot calculate
+     */
+    fun getFormattedPace(): String? {
+        return getAveragePace()?.let { pace ->
+            val minutes = pace.toInt()
+            val seconds = ((pace - minutes) * 60).toInt()
+            "$minutes:${seconds.toString().padStart(2, '0')} min/km"
+        }
+    }
+
+    /**
+     * Gets formatted speed string for display.
+     *
+     * @return Formatted speed string (e.g., "12.5 km/h") or null if cannot calculate
+     */
+    fun getFormattedSpeed(): String? {
+        return getAverageSpeed()?.let { speed ->
+            "%.1f km/h".format(speed)
+        }
+    }
+
+    /**
+     * Validates if the workout data is consistent and valid.
+     *
+     * @return true if workout data is valid, false otherwise
+     */
+    fun isValid(): Boolean {
+        return duration >= 0 &&
+            distance >= 0 &&
+            caloriesBurned >= 0 &&
+            steps >= 0 &&
+            (rating == null || rating in MIN_RATING..MAX_RATING) &&
+            (avgHeartRate == null || avgHeartRate in 30..220) &&
+            (maxHeartRate == null || maxHeartRate in 30..220) &&
+            (avgHeartRate == null || maxHeartRate == null || avgHeartRate <= maxHeartRate)
+    }
+
+    /**
+     * Gets workout intensity based on duration and calories.
+     *
+     * @return Intensity level as string
+     */
+    fun getIntensity(): String {
+        val caloriesPerMinute = getCaloriesPerMinute()
+        return when {
+            caloriesPerMinute >= 15 -> "High"
+            caloriesPerMinute >= 8 -> "Moderate"
+            caloriesPerMinute >= 4 -> "Light"
+            else -> "Very Light"
+        }
     }
 
     companion object {

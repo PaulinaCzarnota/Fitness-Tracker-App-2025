@@ -23,15 +23,15 @@ import java.util.Date
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index(value = ["userId"]),
         Index(value = ["date"]),
         Index(value = ["mealType"]),
-        Index(value = ["userId", "date"])
-    ]
+        Index(value = ["userId", "date"]),
+    ],
 )
 data class Nutrition(
     @PrimaryKey(autoGenerate = true)
@@ -80,7 +80,7 @@ data class Nutrition(
     val notes: String? = null,
 
     @ColumnInfo(name = "createdAt")
-    val createdAt: Date = Date()
+    val createdAt: Date = Date(),
 ) {
     /**
      * Calculates calories per 100g for comparison purposes.
@@ -144,7 +144,7 @@ data class Nutrition(
         val carbsPct = getCarbsPercentage().toInt()
         val fatPct = getFatPercentage().toInt()
 
-        return "P: ${proteinPct}% | C: ${carbsPct}% | F: ${fatPct}%"
+        return "P: $proteinPct% | C: $carbsPct% | F: $fatPct%"
     }
 
     /**

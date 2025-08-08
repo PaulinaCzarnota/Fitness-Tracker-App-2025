@@ -23,19 +23,19 @@ package com.example.fitnesstrackerapp.data.entity
  * to specialized goals, with OTHER as a catch-all for custom objectives.
  */
 enum class GoalType {
-    WEIGHT_LOSS,        // Target weight reduction goals
-    WEIGHT_GAIN,        // Target weight increase goals (muscle building)
-    DISTANCE_RUNNING,   // Running/walking distance targets
-    WORKOUT_FREQUENCY,  // Number of workouts per week/month
-    CALORIE_BURN,       // Daily/weekly calorie burn targets
-    STEP_COUNT,         // Daily step count goals
-    DURATION_EXERCISE,  // Total exercise time goals
-    STRENGTH_TRAINING,  // Strength/resistance training goals
-    MUSCLE_BUILDING,    // Muscle mass increase goals
-    ENDURANCE,          // Cardiovascular endurance goals
-    FLEXIBILITY,        // Flexibility and mobility goals
-    BODY_FAT,           // Body fat percentage goals
-    HYDRATION,          // Daily water intake goals
-    SLEEP,              // Sleep quality and duration goals
-    OTHER               // Custom or unlisted goal types
+    WEIGHT_LOSS, // Target weight reduction goals
+    WEIGHT_GAIN, // Target weight increase goals (muscle building)
+    DISTANCE_RUNNING, // Running/walking distance targets
+    WORKOUT_FREQUENCY, // Number of workouts per week/month
+    CALORIE_BURN, // Daily/weekly calorie burn targets
+    STEP_COUNT, // Daily step count goals
+    DURATION_EXERCISE, // Total exercise time goals
+    STRENGTH_TRAINING, // Strength/resistance training goals
+    MUSCLE_BUILDING, // Muscle mass increase goals
+    ENDURANCE, // Cardiovascular endurance goals
+    FLEXIBILITY, // Flexibility and mobility goals
+    BODY_FAT, // Body fat percentage goals
+    HYDRATION, // Daily water intake goals
+    SLEEP, // Sleep quality and duration goals
+    OTHER, // Custom or unlisted goal types
 }

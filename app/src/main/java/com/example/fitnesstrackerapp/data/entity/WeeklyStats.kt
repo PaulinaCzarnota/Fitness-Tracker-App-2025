@@ -17,5 +17,5 @@ data class WeeklyStats(
     val workoutCount: Int = 0,
     val totalDuration: Int = 0,
     val totalCalories: Int = 0,
-    val totalDistance: Float = 0f
+    val totalDistance: Float = 0f,
 )

@@ -1,8 +1,17 @@
 /**
- * Entity representing a food entry for nutrition tracking.
+ * Food Entry entity and related classes for the Fitness Tracker application.
  *
- * Tracks daily food intake including nutritional information
- * for comprehensive diet and health monitoring.
+ * This file contains the FoodEntry entity which stores comprehensive nutrition tracking data
+ * including food information, nutritional values, serving sizes, and meal categorization.
+ * The entity uses Room database annotations for optimal storage and retrieval performance.
+ *
+ * Key Features:
+ * - Detailed nutritional information tracking (calories, macros, micronutrients)
+ * - Meal type categorization for comprehensive daily tracking
+ * - Serving size management with flexible units
+ * - Brand and food name tracking for accurate identification
+ * - Date and time logging for historical analysis
+ * - Foreign key relationship with User entity for data integrity
  */
 
 package com.example.fitnesstrackerapp.data.entity
@@ -12,10 +21,20 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.Calendar
 import java.util.Date
 
 /**
- * Food entry entity for tracking nutrition intake.
+ * Entity representing a food entry for nutrition tracking in the Fitness Tracker application.
+ *
+ * This entity stores comprehensive nutrition information including food details,
+ * nutritional values, serving information, and meal categorization. All food entries
+ * are associated with a specific user through foreign key relationship.
+ *
+ * Database Features:
+ * - Indexed for efficient querying by user, meal type, date, and food name
+ * - Foreign key constraint ensures data integrity with User entity
+ * - Cascading delete removes food entries when user is deleted
  */
 @Entity(
     tableName = "food_entries",
@@ -24,15 +43,16 @@ import java.util.Date
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
     indices = [
         Index(value = ["user_id"]),
         Index(value = ["meal_type"]),
         Index(value = ["date_consumed"]),
-        Index(value = ["food_name"])
-    ]
+        Index(value = ["food_name"]),
+        Index(value = ["user_id", "date_consumed"]),
+    ],
 )
 data class FoodEntry(
     @PrimaryKey(autoGenerate = true)
@@ -87,123 +107,162 @@ data class FoodEntry(
     val createdAt: Date = Date(),
 
     @ColumnInfo(name = "logged_at")
-    val loggedAt: Date = Date()
+    val loggedAt: Date = Date(),
 ) {
     /**
-     * Calculate total calories for this entry.
+     * Calculates total calories for this food entry.
+     * @return Total calories based on serving size
      */
     fun getTotalCalories(): Double {
         return caloriesPerServing * servingSize
     }
 
     /**
-     * Get calories as alias for compatibility
+     * Gets calories as alias for compatibility.
      */
     val calories: Double
         get() = getTotalCalories()
 
     /**
-     * Get protein as alias for compatibility
+     * Calculates total protein for this food entry.
+     * @return Total protein in grams based on serving size
      */
-    val protein: Double
-        get() = proteinGrams * servingSize
-
-    /**
-     * Get carbs as alias for compatibility
-     */
-    val carbs: Double
-        get() = carbsGrams * servingSize
-
-    /**
-     * Get fat as alias for compatibility
-     */
-    val fat: Double
-        get() = fatGrams * servingSize
-
-    /**
-     * Get name as alias for compatibility
-     */
-    val name: String
-        get() = foodName
-
-    /**
-     * Get date as alias for compatibility
-     */
-    val date: Date
-        get() = dateConsumed
-
-    /**
-     * Calculates calories per 100g for comparison purposes.
-     *
-     * @return Calories per 100g or null if calculation not possible
-     */
-    fun getCaloriesPer100g(): Double? {
-        return if (servingSize > 0 && servingUnit == "grams") {
-            (caloriesPerServing / servingSize) * 100.0
-        } else {
-            null
-        }
+    fun getTotalProtein(): Double {
+        return proteinGrams * servingSize
     }
 
     /**
-     * Calculates protein percentage of total calories.
-     *
-     * @return Protein percentage (0-100)
+     * Calculates total carbohydrates for this food entry.
+     * @return Total carbs in grams based on serving size
      */
-    fun getProteinPercentage(): Double {
-        return if (getTotalCalories() > 0) {
-            ((proteinGrams * 4.0) / getTotalCalories()) * 100.0
-        } else {
-            0.0
-        }
+    fun getTotalCarbs(): Double {
+        return carbsGrams * servingSize
     }
 
     /**
-     * Calculates carbohydrate percentage of total calories.
-     *
-     * @return Carbohydrate percentage (0-100)
+     * Calculates total fat for this food entry.
+     * @return Total fat in grams based on serving size
      */
-    fun getCarbsPercentage(): Double {
-        return if (getTotalCalories() > 0) {
-            ((carbsGrams * 4.0) / getTotalCalories()) * 100.0
-        } else {
-            0.0
-        }
+    fun getTotalFat(): Double {
+        return fatGrams * servingSize
     }
 
     /**
-     * Calculates fat percentage of total calories.
-     *
-     * @return Fat percentage (0-100)
+     * Calculates total fiber for this food entry.
+     * @return Total fiber in grams based on serving size
      */
-    fun getFatPercentage(): Double {
-        return if (getTotalCalories() > 0) {
-            ((fatGrams * 9.0) / getTotalCalories()) * 100.0
-        } else {
-            0.0
-        }
+    fun getTotalFiber(): Double {
+        return fiberGrams * servingSize
     }
 
     /**
-     * Gets macronutrient breakdown as a formatted string.
-     *
-     * @return Formatted macronutrient string
+     * Calculates total sugar for this food entry.
+     * @return Total sugar in grams based on serving size
      */
-    fun getMacroBreakdown(): String {
-        val proteinPct = getProteinPercentage().toInt()
-        val carbsPct = getCarbsPercentage().toInt()
-        val fatPct = getFatPercentage().toInt()
-
-        return "P: ${proteinPct}% | C: ${carbsPct}% | F: ${fatPct}%"
+    fun getTotalSugar(): Double {
+        return sugarGrams * servingSize
     }
 
     /**
-     * Checks if this food item is high in protein (>20% of calories).
-     *
-     * @return true if high protein food
+     * Calculates total sodium for this food entry.
+     * @return Total sodium in mg based on serving size
+     */
+    fun getTotalSodium(): Double {
+        return sodiumMg * servingSize
+    }
+
+    /**
+     * Gets formatted date string for display.
+     * @return Formatted date string (DD/MM/YYYY)
+     */
+    fun getFormattedDate(): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = dateConsumed
+        return "${calendar.get(
+            Calendar.DAY_OF_MONTH,
+        )}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+    }
+
+    /**
+     * Gets formatted serving size string for display.
+     * @return Formatted serving size with unit
+     */
+    fun getFormattedServingSize(): String {
+        return "%.1f %s".format(servingSize, servingUnit)
+    }
+
+    /**
+     * Gets formatted nutritional summary for display.
+     * @return Nutritional summary string
+     */
+    fun getNutritionalSummary(): String {
+        return "Calories: %.0f | Protein: %.1fg | Carbs: %.1fg | Fat: %.1fg".format(
+            getTotalCalories(),
+            getTotalProtein(),
+            getTotalCarbs(),
+            getTotalFat(),
+        )
+    }
+
+    /**
+     * Calculates macronutrient distribution percentages.
+     * @return Triple of (protein%, carbs%, fat%) percentages
+     */
+    fun getMacroDistribution(): Triple<Double, Double, Double> {
+        val totalCalories = getTotalCalories()
+        if (totalCalories <= 0) return Triple(0.0, 0.0, 0.0)
+
+        val proteinCalories = getTotalProtein() * 4 // 4 calories per gram
+        val carbCalories = getTotalCarbs() * 4 // 4 calories per gram
+        val fatCalories = getTotalFat() * 9 // 9 calories per gram
+
+        val proteinPercent = (proteinCalories / totalCalories) * 100
+        val carbPercent = (carbCalories / totalCalories) * 100
+        val fatPercent = (fatCalories / totalCalories) * 100
+
+        return Triple(proteinPercent, carbPercent, fatPercent)
+    }
+
+    /**
+     * Gets full food display name including brand if available.
+     * @return Full food name with brand information
+     */
+    fun getFullFoodName(): String {
+        return if (brandName != null) "$brandName $foodName" else foodName
+    }
+
+    /**
+     * Validates if the food entry data is consistent and valid.
+     * @return true if food entry data is valid, false otherwise
+     */
+    fun isValid(): Boolean {
+        return foodName.isNotBlank() &&
+            servingSize > 0 &&
+            servingUnit.isNotBlank() &&
+            caloriesPerServing >= 0 &&
+            proteinGrams >= 0 &&
+            carbsGrams >= 0 &&
+            fatGrams >= 0 &&
+            fiberGrams >= 0 &&
+            sugarGrams >= 0 &&
+            sodiumMg >= 0
+    }
+
+    /**
+     * Checks if this is a high-calorie food item.
+     * @return true if calories per serving exceed 400
+     */
+    fun isHighCalorie(): Boolean {
+        return caloriesPerServing > 400
+    }
+
+    /**
+     * Checks if this is a high-protein food item.
+     * @return true if protein content is more than 20% of calories
      */
     fun isHighProtein(): Boolean {
-        return getProteinPercentage() > 20.0
+        val (proteinPercent, _, _) = getMacroDistribution()
+        return proteinPercent > 20
     }
 
     /**
@@ -222,5 +281,14 @@ data class FoodEntry(
      */
     fun isLowSodium(): Boolean {
         return sodiumMg < 140.0
+    }
+
+    companion object {
+        const val DEFAULT_SERVING_SIZE = 1.0
+        const val HIGH_CALORIE_THRESHOLD = 400.0
+        const val HIGH_PROTEIN_THRESHOLD_PERCENT = 20.0
+        const val CALORIES_PER_GRAM_PROTEIN = 4
+        const val CALORIES_PER_GRAM_CARBS = 4
+        const val CALORIES_PER_GRAM_FAT = 9
     }
 }

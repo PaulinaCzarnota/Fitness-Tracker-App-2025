@@ -28,11 +28,11 @@ package com.example.fitnesstrackerapp.data.entity
  * - LATE_NIGHT: Evening/night snacks or meals
  */
 enum class MealType {
-    BREAKFAST,     // Morning meal to start the day
-    LUNCH,         // Midday meal for sustained energy
-    DINNER,        // Evening meal for recovery and satisfaction
-    SNACK,         // Small meals between main meals
-    PRE_WORKOUT,   // Foods consumed before exercise for energy
-    POST_WORKOUT,  // Foods consumed after exercise for recovery
-    LATE_NIGHT     // Evening/night snacks or meals
+    BREAKFAST, // Morning meal to start the day
+    LUNCH, // Midday meal for sustained energy
+    DINNER, // Evening meal for recovery and satisfaction
+    SNACK, // Small meals between main meals
+    PRE_WORKOUT, // Foods consumed before exercise for energy
+    POST_WORKOUT, // Foods consumed after exercise for recovery
+    LATE_NIGHT, // Evening/night snacks or meals
 }

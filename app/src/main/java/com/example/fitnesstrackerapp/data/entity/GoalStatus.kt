@@ -25,9 +25,9 @@ package com.example.fitnesstrackerapp.data.entity
  * - OVERDUE: Goal has passed its target date without completion
  */
 enum class GoalStatus {
-    ACTIVE,      // Goal is currently being pursued and tracked
-    COMPLETED,   // Goal has been successfully achieved
-    PAUSED,      // Goal is temporarily suspended but can be resumed
-    CANCELLED,   // Goal has been permanently abandoned by user
-    OVERDUE      // Goal has passed target date without completion
+    ACTIVE, // Goal is currently being pursued and tracked
+    COMPLETED, // Goal has been successfully achieved
+    PAUSED, // Goal is temporarily suspended but can be resumed
+    CANCELLED, // Goal has been permanently abandoned by user
+    OVERDUE, // Goal has passed target date without completion
 }

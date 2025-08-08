@@ -15,7 +15,7 @@ data class GoalWithProgress(
     @Embedded val goal: Goal,
     val progressPercentage: Float = 0f,
     val daysRemaining: Int = 0,
-    val isOnTrack: Boolean = false
+    val isOnTrack: Boolean = false,
 ) {
     /**
      * Calculate if the goal is achievable based on current progress
@@ -50,7 +50,7 @@ data class GoalWithProgress(
     fun getStatus(): GoalStatus {
         return when {
             goal.isAchieved -> GoalStatus.COMPLETED
-            daysRemaining <= 0 && !goal.isAchieved -> GoalStatus.ABANDONED
+            daysRemaining <= 0 && !goal.isAchieved -> GoalStatus.OVERDUE
             progressPercentage < 25f && daysRemaining < 7 -> GoalStatus.PAUSED
             else -> GoalStatus.ACTIVE
         }

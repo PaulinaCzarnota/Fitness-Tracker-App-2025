@@ -26,7 +26,7 @@ data class FitnessGoal(
     val isCompleted: Boolean = false,
     val createdAt: Date = Date(),
     val completedAt: Date? = null,
-    val isActive: Boolean = true
+    val isActive: Boolean = true,
 ) {
     val progress: Double
         get() = if (targetValue > 0) (currentValue / targetValue * 100).coerceAtMost(100.0) else 0.0

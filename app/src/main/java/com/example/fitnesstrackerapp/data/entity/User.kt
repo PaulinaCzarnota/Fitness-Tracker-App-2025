@@ -19,6 +19,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.Calendar
 import java.util.Date
 
 /**
@@ -31,7 +32,7 @@ enum class Gender {
     MALE,
     FEMALE,
     OTHER,
-    PREFER_NOT_TO_SAY
+    PREFER_NOT_TO_SAY,
 }
 
 /**
@@ -47,25 +48,33 @@ enum class ActivityLevel(val multiplier: Double) {
     LIGHTLY_ACTIVE(1.375),
     MODERATELY_ACTIVE(1.55),
     VERY_ACTIVE(1.725),
-    EXTREMELY_ACTIVE(1.9)
+    EXTREMELY_ACTIVE(1.9),
 }
 
 /**
  * Entity representing a user in the Fitness Tracker application.
  *
+ * This entity stores comprehensive user information including:
+ * - Authentication credentials with security features
+ * - Personal profile information for fitness calculations
+ * - Preferences and settings for app customization
+ * - Account status and security tracking
+ * - Fitness goals and activity preferences
+ *
  * Features:
- * - Secure credential storage
- * - Profile information
- * - Account status tracking
- * - Security measures (account locking, login attempts)
+ * - Secure credential storage with salt and hash
+ * - Profile information for fitness calculations
+ * - Account status tracking and security measures
+ * - Customizable goals and preferences
+ * - Privacy and notification settings
  */
 @Entity(
     tableName = "users",
     indices = [
         Index(value = ["email"], unique = true),
         Index(value = ["is_active"]),
-        Index(value = ["is_account_locked"])
-    ]
+        Index(value = ["is_account_locked"]),
+    ],
 )
 data class User(
     @PrimaryKey(autoGenerate = true)
@@ -147,7 +156,7 @@ data class User(
     val dailyCalorieGoal: Int = 2000,
 
     @ColumnInfo(name = "use_metric_units")
-    val useMetricUnits: Boolean = true
+    val useMetricUnits: Boolean = true,
 ) {
     /**
      * Calculates the user's age based on date of birth.
@@ -155,61 +164,136 @@ data class User(
      */
     fun getAge(): Int? {
         return dateOfBirth?.let { dob ->
-            val now = Date()
-            val diffInMillis = now.time - dob.time
-            val ageInYears = diffInMillis / (365.25 * 24 * 60 * 60 * 1000)
-            ageInYears.toInt()
+            val calendar = Calendar.getInstance()
+            val currentYear = calendar.get(Calendar.YEAR)
+            val currentMonth = calendar.get(Calendar.MONTH)
+            val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+            calendar.time = dob
+            val birthYear = calendar.get(Calendar.YEAR)
+            val birthMonth = calendar.get(Calendar.MONTH)
+            val birthDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+            var age = currentYear - birthYear
+            if (currentMonth < birthMonth || (currentMonth == birthMonth && currentDay < birthDay)) {
+                age--
+            }
+            age
         }
     }
 
     /**
-     * Calculates the user's BMI (Body Mass Index).
+     * Calculates the user's Body Mass Index (BMI).
      * @return BMI value, or null if height or weight is not set
      */
     fun getBMI(): Float? {
         return if (heightCm != null && weightKg != null && heightCm > 0) {
-            val heightInMeters = heightCm / 100f
-            weightKg / (heightInMeters * heightInMeters)
+            val heightM = heightCm / 100f
+            weightKg / (heightM * heightM)
         } else {
             null
         }
     }
 
     /**
+     * Gets BMI category based on calculated BMI value.
+     * @return String describing BMI category or null if BMI cannot be calculated
+     */
+    fun getBMICategory(): String? {
+        return getBMI()?.let { bmi ->
+            when {
+                bmi < 18.5f -> "Underweight"
+                bmi < 25f -> "Normal weight"
+                bmi < 30f -> "Overweight"
+                else -> "Obese"
+            }
+        }
+    }
+
+    /**
+     * Calculates Basal Metabolic Rate (BMR) using Mifflin-St Jeor Equation.
+     * @return BMR value in calories/day, or null if required data is missing
+     */
+    fun getBMR(): Float? {
+        return if (weightKg != null && heightCm != null && gender != null) {
+            val age = getAge() ?: return null
+            when (gender) {
+                Gender.MALE -> 10 * weightKg + 6.25f * heightCm - 5 * age + 5
+                Gender.FEMALE -> 10 * weightKg + 6.25f * heightCm - 5 * age - 161
+                else -> 10 * weightKg + 6.25f * heightCm - 5 * age - 78 // Average of male/female
+            }
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Calculates Total Daily Energy Expenditure (TDEE).
+     * @return TDEE value in calories/day, or null if BMR cannot be calculated
+     */
+    fun getTDEE(): Float? {
+        return getBMR()?.let { bmr ->
+            (bmr * activityLevel.multiplier).toFloat()
+        }
+    }
+
+    /**
      * Gets the user's full name.
-     * @return Full name combining first and last name, or username if names not available
+     * @return Full name or empty string if names are not set
      */
     fun getFullName(): String {
         return when {
             firstName != null && lastName != null -> "$firstName $lastName"
             firstName != null -> firstName
             lastName != null -> lastName
-            else -> username
+            else -> ""
         }
     }
 
     /**
-     * Checks if the account needs password reset (90+ days since last change).
-     * @return true if password should be reset
+     * Checks if user profile is complete for fitness calculations.
+     * @return true if essential profile data is available
      */
-    fun shouldResetPassword(): Boolean {
-        val ninetyDaysAgo = Date(System.currentTimeMillis() - (90 * 24 * 60 * 60 * 1000L))
-        return lastPasswordChange.before(ninetyDaysAgo)
+    fun isProfileComplete(): Boolean {
+        return heightCm != null && weightKg != null && dateOfBirth != null && gender != null
     }
 
     /**
-     * Checks if the account is locked due to failed login attempts.
-     * @return true if account is locked
+     * Checks if the account is in a valid state for login.
+     * @return true if account can be used for login
      */
-    fun isLocked(): Boolean {
-        return isAccountLocked || failedLoginAttempts >= MAX_FAILED_ATTEMPTS
+    fun canLogin(): Boolean {
+        return isActive && !isAccountLocked
     }
 
-    companion object {
-        const val MAX_FAILED_ATTEMPTS = 5
+    /**
+     * Gets display weight based on user's unit preference.
+     * @return Pair of (value, unit) or null if weight is not set
+     */
+    fun getDisplayWeight(): Pair<Float, String>? {
+        return weightKg?.let { weight ->
+            if (useMetricUnits) {
+                Pair(weight, "kg")
+            } else {
+                Pair(weight * 2.20462f, "lbs")
+            }
+        }
+    }
 
-        const val FITNESS_LEVEL_BEGINNER = "beginner"
-        const val FITNESS_LEVEL_INTERMEDIATE = "intermediate"
-        const val FITNESS_LEVEL_ADVANCED = "advanced"
+    /**
+     * Gets display height based on user's unit preference.
+     * @return Pair of (value, unit) or null if height is not set
+     */
+    fun getDisplayHeight(): Pair<Float, String>? {
+        return heightCm?.let { height ->
+            if (useMetricUnits) {
+                Pair(height, "cm")
+            } else {
+                val inches = height / 2.54f
+                val feet = (inches / 12).toInt()
+                val remainingInches = inches % 12
+                Pair(feet + remainingInches / 12, "ft")
+            }
+        }
     }
 }

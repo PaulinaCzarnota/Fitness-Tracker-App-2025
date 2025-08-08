@@ -22,7 +22,7 @@ data class WorkoutWithDetails(
     @Relation(
         parentColumn = "userId",
         entityColumn = "userId",
-        entity = User::class
+        entity = User::class,
     )
-    val user: User? = null
+    val user: User? = null,
 )
