@@ -81,7 +81,7 @@ data class WorkoutSet(
     val targetReps: Int? = null, // Planned number of reps
 
     @ColumnInfo(name = "weight")
-    val weight: Float = 0f, // Weight used in kg
+    val weight: Double = 0f, // Weight used in kg
 
     @ColumnInfo(name = "duration")
     val duration: Int = 0, // Duration in seconds (for time-based exercises)

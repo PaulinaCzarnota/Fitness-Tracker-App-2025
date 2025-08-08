@@ -19,6 +19,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.Date
 
 /**
  * Entity representing an exercise definition in the Fitness Tracker application.
@@ -61,7 +62,7 @@ data class Exercise(
     val exerciseType: ExerciseType,
 
     @ColumnInfo(name = "difficulty")
-    val difficulty: DifficultyLevel = DifficultyLevel.INTERMEDIATE,
+    val difficulty: String = DifficultyLevel.INTERMEDIATE,
 
     @ColumnInfo(name = "instructions")
     val instructions: String? = null,
@@ -82,10 +83,10 @@ data class Exercise(
     val createdBy: Long? = null, // User ID who created custom exercise
 
     @ColumnInfo(name = "createdAt")
-    val createdAt: java.util.Date = java.util.Date(),
+    val createdAt: Date = Date(),
 
     @ColumnInfo(name = "updatedAt")
-    val updatedAt: java.util.Date = java.util.Date(),
+    val updatedAt: Date = Date(),
 )
 
 /**

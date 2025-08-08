@@ -70,7 +70,7 @@ data class Step(
     val date: Date,
 
     @ColumnInfo(name = "calories_burned")
-    val caloriesBurned: Float = 0f,
+    val caloriesBurned: Int = 0f,
 
     @ColumnInfo(name = "distance_meters")
     val distanceMeters: Float = 0f,
