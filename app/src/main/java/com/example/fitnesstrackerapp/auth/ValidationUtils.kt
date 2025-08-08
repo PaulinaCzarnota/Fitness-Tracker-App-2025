@@ -31,42 +31,42 @@ object ValidationUtils {
         if (password.length < MIN_PASSWORD_LENGTH) {
             return ValidationResult(
                 isValid = false,
-                message = "Password must be at least $MIN_PASSWORD_LENGTH characters long"
+                message = "Password must be at least $MIN_PASSWORD_LENGTH characters long",
             )
         }
 
         if (password.length > MAX_PASSWORD_LENGTH) {
             return ValidationResult(
                 isValid = false,
-                message = "Password must be less than $MAX_PASSWORD_LENGTH characters long"
+                message = "Password must be less than $MAX_PASSWORD_LENGTH characters long",
             )
         }
 
         if (!password.any { it.isDigit() }) {
             return ValidationResult(
                 isValid = false,
-                message = "Password must contain at least one number"
+                message = "Password must contain at least one number",
             )
         }
 
         if (!password.any { it.isUpperCase() }) {
             return ValidationResult(
                 isValid = false,
-                message = "Password must contain at least one uppercase letter"
+                message = "Password must contain at least one uppercase letter",
             )
         }
 
         if (!password.any { it.isLowerCase() }) {
             return ValidationResult(
                 isValid = false,
-                message = "Password must contain at least one lowercase letter"
+                message = "Password must contain at least one lowercase letter",
             )
         }
 
         if (!password.any { SPECIAL_CHARS.contains(it) }) {
             return ValidationResult(
                 isValid = false,
-                message = "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)"
+                message = "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)",
             )
         }
 
@@ -76,7 +76,7 @@ object ValidationUtils {
             if (lowerPassword.contains(weakPattern)) {
                 return ValidationResult(
                     isValid = false,
-                    message = "Password contains common patterns. Please choose a more secure password"
+                    message = "Password contains common patterns. Please choose a more secure password",
                 )
             }
         }
@@ -85,7 +85,7 @@ object ValidationUtils {
         if (hasRepeatingCharacters(password)) {
             return ValidationResult(
                 isValid = false,
-                message = "Password should not contain three or more consecutive identical characters"
+                message = "Password should not contain three or more consecutive identical characters",
             )
         }
 
@@ -93,7 +93,7 @@ object ValidationUtils {
         if (hasSequentialPattern(password)) {
             return ValidationResult(
                 isValid = false,
-                message = "Password should not contain sequential patterns (123, abc, etc.)"
+                message = "Password should not contain sequential patterns (123, abc, etc.)",
             )
         }
 
@@ -111,21 +111,21 @@ object ValidationUtils {
         if (username.length < MIN_USERNAME_LENGTH) {
             return ValidationResult(
                 false,
-                "Username must be at least $MIN_USERNAME_LENGTH characters long"
+                "Username must be at least $MIN_USERNAME_LENGTH characters long",
             )
         }
 
         if (username.length > MAX_USERNAME_LENGTH) {
             return ValidationResult(
                 false,
-                "Username must be less than $MAX_USERNAME_LENGTH characters long"
+                "Username must be less than $MAX_USERNAME_LENGTH characters long",
             )
         }
 
         if (!USERNAME_PATTERN.matcher(username).matches()) {
             return ValidationResult(
                 false,
-                "Username can only contain letters, numbers, and underscores"
+                "Username can only contain letters, numbers, and underscores",
             )
         }
 
@@ -148,21 +148,21 @@ object ValidationUtils {
         if (name.length < MIN_NAME_LENGTH) {
             return ValidationResult(
                 false,
-                "Name must be at least $MIN_NAME_LENGTH characters long"
+                "Name must be at least $MIN_NAME_LENGTH characters long",
             )
         }
 
         if (name.length > MAX_NAME_LENGTH) {
             return ValidationResult(
                 false,
-                "Name must be less than $MAX_NAME_LENGTH characters long"
+                "Name must be less than $MAX_NAME_LENGTH characters long",
             )
         }
 
         if (!NAME_PATTERN.matcher(name).matches()) {
             return ValidationResult(
                 false,
-                "Name can only contain letters, spaces, hyphens, and apostrophes"
+                "Name can only contain letters, spaces, hyphens, and apostrophes",
             )
         }
 
@@ -177,7 +177,7 @@ object ValidationUtils {
         username: String,
         password: String,
         confirmPassword: String,
-        fullName: String
+        fullName: String,
     ): ValidationResult {
         // Validate email
         if (!isValidEmail(email)) {
@@ -244,14 +244,14 @@ object ValidationUtils {
         if (token.length != RESET_TOKEN_LENGTH) {
             return ValidationResult(
                 false,
-                "Reset token must be exactly $RESET_TOKEN_LENGTH characters long"
+                "Reset token must be exactly $RESET_TOKEN_LENGTH characters long",
             )
         }
 
         if (!RESET_TOKEN_PATTERN.matcher(token).matches()) {
             return ValidationResult(
                 false,
-                "Reset token can only contain letters and numbers"
+                "Reset token can only contain letters and numbers",
             )
         }
 
@@ -302,13 +302,13 @@ object ValidationUtils {
      */
     private fun hasSequentialPattern(password: String): Boolean {
         val lowerPassword = password.lowercase()
-        
+
         // Check for ascending sequences
         for (i in 0..lowerPassword.length - 3) {
             val char1 = lowerPassword[i]
             val char2 = lowerPassword[i + 1]
             val char3 = lowerPassword[i + 2]
-            
+
             if ((char2.code == char1.code + 1) && (char3.code == char2.code + 1)) {
                 return true
             }
@@ -319,7 +319,7 @@ object ValidationUtils {
             val char1 = lowerPassword[i]
             val char2 = lowerPassword[i + 1]
             val char3 = lowerPassword[i + 2]
-            
+
             if ((char2.code == char1.code - 1) && (char3.code == char2.code - 1)) {
                 return true
             }
@@ -346,25 +346,25 @@ object ValidationUtils {
     private val WEAK_PATTERNS = listOf(
         "password", "12345", "qwerty", "abc", "admin", "letmein",
         "welcome", "monkey", "dragon", "master", "login", "pass",
-        "123456", "654321", "password123", "admin123"
+        "123456", "654321", "password123", "admin123",
     )
 
     private val RESERVED_USERNAMES = listOf(
         "admin", "root", "user", "guest", "test", "demo", "support",
         "help", "info", "contact", "mail", "email", "webmaster",
         "postmaster", "hostmaster", "system", "api", "www", "ftp",
-        "null", "undefined", "anonymous"
+        "null", "undefined", "anonymous",
     )
 
     private val SQL_INJECTION_PATTERNS = listOf(
         "select", "insert", "update", "delete", "drop", "union",
         "script", "javascript", "vbscript", "onload", "onerror",
-        "'", "\"", ";", "--", "/*", "*/", "xp_", "sp_"
+        "'", "\"", ";", "--", "/*", "*/", "xp_", "sp_",
     )
 
     private val SCRIPT_INJECTION_PATTERNS = listOf(
         "<script", "</script", "javascript:", "vbscript:", "onload=",
-        "onerror=", "onclick=", "onmouseover=", "onfocus=", "onblur="
+        "onerror=", "onclick=", "onmouseover=", "onfocus=", "onblur=",
     )
 }
 
@@ -373,7 +373,7 @@ object ValidationUtils {
  */
 data class ValidationResult(
     val isValid: Boolean,
-    val message: String
+    val message: String,
 )
 
 /**

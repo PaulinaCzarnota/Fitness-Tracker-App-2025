@@ -3,6 +3,7 @@ package com.example.fitnesstrackerapp.auth
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import com.example.fitnesstrackerapp.data.entity.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,7 +12,7 @@ import java.util.Date
 /**
  * Manages user session data using SharedPreferences
  */
-class SessionManager(private val context: Context) {
+class SessionManager(context: Context) {
 
     companion object {
         private const val PREF_NAME = "user_session"
@@ -56,9 +57,11 @@ class SessionManager(private val context: Context) {
                 passwordHash = "", // Don't store password hash in session
                 passwordSalt = "", // Don't store salt in session
                 registrationDate = Date(),
-                isActive = true
+                isActive = true,
             )
-        } else null
+        } else {
+            null
+        }
     }
 
     /**
@@ -73,7 +76,7 @@ class SessionManager(private val context: Context) {
      */
     suspend fun clearUserSession() = withContext(Dispatchers.IO) {
         try {
-            prefs.edit().clear().apply()
+            prefs.edit { clear() }
             Log.d(TAG, "User session cleared")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to clear user session", e)
