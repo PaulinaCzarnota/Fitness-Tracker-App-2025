@@ -1,11 +1,19 @@
 /**
- * App Theme
+ * Material 3 theme implementation for the Fitness Tracker application.
  *
- * Responsibilities:
- * - Defines app color scheme and typography
- * - Supports light/dark themes
- * - Implements Material 3 design system
+ * This theme system provides:
+ * - Material Design 3 color schemes for light and dark modes
+ * - Dynamic color support for Android 12+ devices
+ * - Consistent typography and shapes across the app
+ * - Proper status bar and navigation bar styling
+ * - Accessibility-compliant color contrasts
+ *
+ * The theme supports both static Material 3 colors and dynamic colors
+ * that adapt to the user's system wallpaper on Android 12+ devices.
  */
+
+@file:Suppress("DEPRECATION")
+
 package com.example.fitnesstrackerapp.ui.theme
 
 import android.app.Activity
