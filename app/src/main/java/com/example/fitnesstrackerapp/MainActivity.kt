@@ -25,8 +25,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.navigation.AppNavigation
-import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
 import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
+import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
 
 /**
  * Main Activity class that serves as the entry point for the application.
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
      * Provides user feedback and logs permission status for debugging.
      */
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
+        ActivityResultContracts.RequestMultiplePermissions(),
     ) { permissions ->
         permissions.forEach { (permission, isGranted) ->
             when (permission) {
@@ -76,7 +76,10 @@ class MainActivity : ComponentActivity() {
                         initializeActivityTracking()
                     } else {
                         Log.w(TAG, "Activity recognition permission denied")
-                        showPermissionDeniedMessage("Activity Recognition", "automatic step counting and activity detection")
+                        showPermissionDeniedMessage(
+                            "Activity Recognition",
+                            "automatic step counting and activity detection",
+                        )
                     }
                 }
                 else -> {
@@ -84,9 +87,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        
+
         // Log summary of permission status
-        Log.i(TAG, "Permissions summary - Notifications: $notificationPermissionGranted, Activity: $activityRecognitionGranted")
+        Log.i(
+            TAG,
+            "Permissions summary - Notifications: $notificationPermissionGranted, Activity: $activityRecognitionGranted",
+        )
     }
 
     /**
@@ -97,18 +103,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             super.onCreate(savedInstanceState)
-            
+
             // Install splash screen before any other initialization
             installSplashScreen()
-            
+
             // Request necessary permissions
             requestPermissions()
-            
+
             // Initialize ViewModel with proper error handling
             val authVm = try {
                 ViewModelProvider(
                     this,
-                    ServiceLocator.viewModelFactory
+                    ServiceLocator.viewModelFactory,
                 )[AuthViewModel::class.java]
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to create AuthViewModel", e)
@@ -120,7 +126,7 @@ class MainActivity : ComponentActivity() {
                     AppNavigation(authViewModel = authVm)
                 }
             }
-            
+
             Log.i(TAG, "MainActivity created successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Error creating MainActivity", e)
@@ -135,12 +141,12 @@ class MainActivity : ComponentActivity() {
      */
     private fun requestPermissions() {
         val permissionsToRequest = mutableListOf<String>()
-        
+
         // Check and request POST_NOTIFICATIONS permission for Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
@@ -153,12 +159,12 @@ class MainActivity : ComponentActivity() {
             notificationPermissionGranted = true
             initializeNotifications()
         }
-        
+
         // Check and request ACTIVITY_RECOGNITION permission for Android 10+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(
                     this,
-                    Manifest.permission.ACTIVITY_RECOGNITION
+                    Manifest.permission.ACTIVITY_RECOGNITION,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 permissionsToRequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
@@ -214,7 +220,7 @@ class MainActivity : ComponentActivity() {
         Toast.makeText(
             this,
             message,
-            Toast.LENGTH_LONG
+            Toast.LENGTH_LONG,
         ).show()
     }
 
