@@ -86,13 +86,13 @@ interface FoodEntryDao {
     /**
      * Gets food entries for a specific date.
      */
-    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND DATE(logged_at) = DATE(:date) ORDER BY logged_at DESC")
+    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND date(date_consumed/1000, 'unixepoch') = date(:date/1000, 'unixepoch') ORDER BY date_consumed DESC")
     fun getFoodEntriesForDate(userId: Long, date: Long): Flow<List<FoodEntry>>
 
     /**
      * Gets food entries for a date range.
      */
-    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND logged_at BETWEEN :startDate AND :endDate ORDER BY logged_at DESC")
+    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate ORDER BY date_consumed DESC")
     fun getFoodEntriesForDateRange(userId: Long, startDate: Long, endDate: Long): Flow<List<FoodEntry>>
 
     /**
