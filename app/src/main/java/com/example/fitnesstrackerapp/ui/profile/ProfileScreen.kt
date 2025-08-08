@@ -13,14 +13,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -37,7 +38,7 @@ import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showEditProfileDialog by remember { mutableStateOf(false) }
@@ -47,12 +48,12 @@ fun ProfileScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         item {
             ProfileHeader(
                 user = uiState.user,
-                onEditProfile = { showEditProfileDialog = true }
+                onEditProfile = { showEditProfileDialog = true },
             )
         }
 
@@ -62,7 +63,7 @@ fun ProfileScreen(
 
         item {
             SettingsSection(
-                onLogout = { showLogoutDialog = true }
+                onLogout = { showLogoutDialog = true },
             )
         }
     }
@@ -78,7 +79,7 @@ fun ProfileScreen(
                     onClick = {
                         authViewModel.logout()
                         showLogoutDialog = false
-                    }
+                    },
                 ) {
                     Text("Logout")
                 }
@@ -87,7 +88,7 @@ fun ProfileScreen(
                 TextButton(onClick = { showLogoutDialog = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 
@@ -99,7 +100,7 @@ fun ProfileScreen(
             onSave = { updatedUser ->
                 authViewModel.updateProfile(updatedUser)
                 showEditProfileDialog = false
-            }
+            },
         )
     }
 }
@@ -110,30 +111,30 @@ fun ProfileScreen(
 @Composable
 private fun ProfileHeader(
     user: com.example.fitnesstrackerapp.data.entity.User?,
-    onEditProfile: () -> Unit
+    onEditProfile: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Profile picture placeholder
             Surface(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             ) {
                 Box(
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         Icons.Default.Person,
                         contentDescription = "Profile Picture",
                         modifier = Modifier.size(40.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
@@ -143,19 +144,19 @@ private fun ProfileHeader(
             Text(
                 text = user?.firstName ?: user?.username ?: "User",
                 style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Text(
                 text = user?.email ?: "user@example.com",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
-                onClick = onEditProfile
+                onClick = onEditProfile,
             ) {
                 Icon(Icons.Default.Edit, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -171,37 +172,37 @@ private fun ProfileHeader(
 @Composable
 private fun FitnessStatisticsCard() {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(
                 text = "Fitness Statistics",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 StatisticItem(
                     label = "Workouts",
                     value = "0",
-                    icon = Icons.Default.FitnessCenter
+                    icon = Icons.Default.FitnessCenter,
                 )
                 StatisticItem(
                     label = "Calories",
                     value = "0",
-                    icon = Icons.Default.LocalFireDepartment
+                    icon = Icons.Default.LocalFireDepartment,
                 )
                 StatisticItem(
                     label = "Goals",
                     value = "0",
-                    icon = Icons.Default.Flag
+                    icon = Icons.Default.Flag,
                 )
             }
         }
@@ -215,26 +216,26 @@ private fun FitnessStatisticsCard() {
 private fun StatisticItem(
     label: String,
     value: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             icon,
             contentDescription = label,
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.primary,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -244,18 +245,18 @@ private fun StatisticItem(
  */
 @Composable
 private fun SettingsSection(
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(
                 text = "Settings",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -264,19 +265,19 @@ private fun SettingsSection(
             SettingItem(
                 title = "Notifications",
                 icon = Icons.Default.Notifications,
-                onClick = { /* TODO: Implement notifications settings */ }
+                onClick = { /* TODO: Implement notifications settings */ },
             )
 
             SettingItem(
                 title = "Privacy",
                 icon = Icons.Default.Security,
-                onClick = { /* TODO: Implement privacy settings */ }
+                onClick = { /* TODO: Implement privacy settings */ },
             )
 
             SettingItem(
                 title = "Help & Support",
                 icon = Icons.AutoMirrored.Filled.Help,
-                onClick = { /* TODO: Implement help & support */ }
+                onClick = { /* TODO: Implement help & support */ },
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -284,7 +285,7 @@ private fun SettingsSection(
             SettingItem(
                 title = "Logout",
                 icon = Icons.AutoMirrored.Filled.ExitToApp,
-                onClick = onLogout
+                onClick = onLogout,
             )
         }
     }
@@ -297,33 +298,33 @@ private fun SettingsSection(
 private fun SettingItem(
     title: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 icon,
                 contentDescription = title,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 Icons.Default.ChevronRight,
                 contentDescription = "Navigate",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -337,7 +338,7 @@ private fun SettingItem(
 private fun EditProfileDialog(
     user: com.example.fitnesstrackerapp.data.entity.User?,
     onDismiss: () -> Unit,
-    onSave: (com.example.fitnesstrackerapp.data.entity.User) -> Unit
+    onSave: (com.example.fitnesstrackerapp.data.entity.User) -> Unit,
 ) {
     var firstName by remember { mutableStateOf(user?.firstName ?: "") }
     var lastName by remember { mutableStateOf(user?.lastName ?: "") }
@@ -350,14 +351,14 @@ private fun EditProfileDialog(
         title = { Text("Edit Profile") },
         text = {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 OutlinedTextField(
                     value = firstName,
                     onValueChange = { firstName = it },
                     label = { Text("First Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -367,7 +368,7 @@ private fun EditProfileDialog(
                     onValueChange = { lastName = it },
                     label = { Text("Last Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -378,9 +379,9 @@ private fun EditProfileDialog(
                     label = { Text("Height (cm)") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Number,
                     ),
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -391,9 +392,9 @@ private fun EditProfileDialog(
                     label = { Text("Weight (kg)") },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
-                        keyboardType = KeyboardType.Number
+                        keyboardType = KeyboardType.Number,
                     ),
-                    singleLine = true
+                    singleLine = true,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -403,7 +404,7 @@ private fun EditProfileDialog(
                     onValueChange = { fitnessLevel = it },
                     label = { Text("Fitness Level") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
                 )
             }
         },
@@ -416,10 +417,10 @@ private fun EditProfileDialog(
                         lastName = lastName.ifBlank { null },
                         heightCm = height.toFloatOrNull(),
                         weightKg = weight.toFloatOrNull(),
-                        fitnessLevel = fitnessLevel.ifBlank { null }
+                        fitnessLevel = fitnessLevel.ifBlank { null },
                     ) ?: return@TextButton
                     onSave(updatedUser)
-                }
+                },
             ) {
                 Text("Save")
             }
@@ -428,6 +429,6 @@ private fun EditProfileDialog(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }

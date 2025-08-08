@@ -36,34 +36,34 @@ import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 fun ForgotPasswordScreen(
     navController: NavController,
     onNavigateToLogin: () -> Unit,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel,
 ) {
     var email by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = stringResource(R.string.forgot_password),
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Text(
             text = "Enter your email address and we'll send you a link to reset your password.",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -71,19 +71,19 @@ fun ForgotPasswordScreen(
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                 keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Done
+                imeAction = ImeAction.Done,
             ),
             singleLine = true,
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
-                    contentDescription = stringResource(R.string.email)
+                    contentDescription = stringResource(R.string.email),
                 )
-            }
+            },
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         Button(
             onClick = {
                 // TODO: Implement password reset logic
@@ -93,33 +93,33 @@ fun ForgotPasswordScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            enabled = email.isNotBlank() && viewModel.isValidEmail(email)
+            enabled = email.isNotBlank() && viewModel.isValidEmail(email),
         ) {
             Text("Reset Password")
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         TextButton(onClick = onNavigateToLogin) {
             Text("Back to Login")
         }
-        
+
         // Display error or success messages
         uiState.error?.let { error ->
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = error,
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
-        
+
         uiState.successMessage?.let { success ->
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = success,
                 color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }

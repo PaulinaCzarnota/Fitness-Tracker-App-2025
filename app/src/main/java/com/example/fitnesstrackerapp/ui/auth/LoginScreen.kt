@@ -35,7 +35,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
-    onNavigateToSignUp: () -> Unit = {}
+    onNavigateToSignUp: () -> Unit = {},
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -56,11 +56,11 @@ fun LoginScreen(
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = if (isRegistering) "Create Account" else "Login",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -71,7 +71,7 @@ fun LoginScreen(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text("Full Name") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -80,7 +80,7 @@ fun LoginScreen(
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -90,7 +90,7 @@ fun LoginScreen(
             onValueChange = { password = it },
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,7 +105,7 @@ fun LoginScreen(
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = !uiState.isLoading
+            enabled = !uiState.isLoading,
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
@@ -131,7 +131,7 @@ fun LoginScreen(
             Text(
                 text = error,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 8.dp),
             )
         }
     }

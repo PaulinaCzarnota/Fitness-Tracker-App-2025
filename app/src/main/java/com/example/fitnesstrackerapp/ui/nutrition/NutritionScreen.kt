@@ -1,5 +1,6 @@
 package com.example.fitnesstrackerapp.ui.nutrition
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,25 +9,24 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.platform.LocalContext
-import androidx.activity.ComponentActivity
+import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.entity.MealType
-import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NutritionScreen(
     modifier: Modifier = Modifier,
-    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel
+    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
 ) {
     val activity = LocalContext.current as ComponentActivity
     val authState by authViewModel.uiState.collectAsStateWithLifecycle()
     val userId = authState.user?.id ?: 1L
-    
+
     // Initialize NutritionViewModel with user ID
     val nutritionViewModel: NutritionViewModel = ViewModelFactoryProvider.getNutritionViewModel(activity, userId)
     val uiState by nutritionViewModel.uiState.collectAsState()
@@ -35,13 +35,13 @@ fun NutritionScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         // Header
         Text(
             text = "Nutrition",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -49,7 +49,7 @@ fun NutritionScreen(
         // Daily summary card
         DailySummaryCard(
             totalCalories = uiState.totalCalories.toInt(),
-            targetCalories = 2000
+            targetCalories = 2000,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -57,7 +57,7 @@ fun NutritionScreen(
         // Add food button
         Button(
             onClick = { showAddFoodDialog = true },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
@@ -80,7 +80,7 @@ fun NutritionScreen(
             onAddFoodEntry = { name, calories, mealType ->
                 nutritionViewModel.addFoodEntry(name, calories.toDouble(), mealType)
                 showAddFoodDialog = false
-            }
+            },
         )
     }
 }
@@ -88,25 +88,25 @@ fun NutritionScreen(
 @Composable
 private fun DailySummaryCard(
     totalCalories: Int,
-    targetCalories: Int
+    targetCalories: Int,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(
                 text = "Today's Summary",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "$totalCalories / $targetCalories kcal",
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall,
             )
         }
     }
@@ -117,10 +117,10 @@ fun FoodEntryItem(entry: FoodEntry) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(text = entry.name, style = MaterialTheme.typography.titleMedium)
             Text(text = "Meal: ${entry.mealType}", style = MaterialTheme.typography.bodySmall)
@@ -146,18 +146,18 @@ fun AddFoodEntryDialog(onDismiss: () -> Unit, onAddFoodEntry: (String, Int, Meal
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Food Name") }
+                    label = { Text("Food Name") },
                 )
                 OutlinedTextField(
                     value = calories,
                     onValueChange = { calories = it },
-                    label = { Text("Calories") }
+                    label = { Text("Calories") },
                 )
-                
+
                 // Meal Type Dropdown
                 ExposedDropdownMenuBox(
                     expanded = expandedMealType,
-                    onExpandedChange = { expandedMealType = !expandedMealType }
+                    onExpandedChange = { expandedMealType = !expandedMealType },
                 ) {
                     OutlinedTextField(
                         value = selectedMealType.name,
@@ -167,11 +167,11 @@ fun AddFoodEntryDialog(onDismiss: () -> Unit, onAddFoodEntry: (String, Int, Meal
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedMealType)
                         },
-                        modifier = Modifier.menuAnchor()
+                        modifier = Modifier.menuAnchor(),
                     )
                     ExposedDropdownMenu(
                         expanded = expandedMealType,
-                        onDismissRequest = { expandedMealType = false }
+                        onDismissRequest = { expandedMealType = false },
                     ) {
                         MealType.entries.forEach { mealType ->
                             DropdownMenuItem(
@@ -179,7 +179,7 @@ fun AddFoodEntryDialog(onDismiss: () -> Unit, onAddFoodEntry: (String, Int, Meal
                                 onClick = {
                                     selectedMealType = mealType
                                     expandedMealType = false
-                                }
+                                },
                             )
                         }
                     }
@@ -191,7 +191,7 @@ fun AddFoodEntryDialog(onDismiss: () -> Unit, onAddFoodEntry: (String, Int, Meal
                 onClick = {
                     onAddFoodEntry(name, calories.toIntOrNull() ?: 0, selectedMealType)
                 },
-                enabled = name.isNotBlank() && calories.isNotBlank()
+                enabled = name.isNotBlank() && calories.isNotBlank(),
             ) {
                 Text("Add")
             }
@@ -200,6 +200,6 @@ fun AddFoodEntryDialog(onDismiss: () -> Unit, onAddFoodEntry: (String, Int, Meal
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }

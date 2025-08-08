@@ -22,24 +22,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 import com.example.fitnesstrackerapp.data.entity.Workout
 import com.example.fitnesstrackerapp.data.entity.WorkoutType
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutScreen(
     modifier: Modifier = Modifier,
     authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
-    activity: androidx.activity.ComponentActivity
+    activity: androidx.activity.ComponentActivity,
 ) {
     // Get the current user ID for the ViewModel (fallback to 1L for demo purposes)
     val authState by authViewModel.uiState.collectAsStateWithLifecycle()
     val userId = authState.user?.id ?: 1L
-    
+
     // Initialize WorkoutViewModel with user ID
     val workoutViewModel: WorkoutViewModel = remember(userId) {
         ViewModelFactoryProvider.getWorkoutViewModel(activity, userId)
@@ -50,13 +50,13 @@ fun WorkoutScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         // Header
         Text(
             text = "Workouts",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -64,13 +64,13 @@ fun WorkoutScreen(
         // Current workout status
         if (uiState.isWorkoutActive) {
             ActiveWorkoutCard(
-                onStopWorkout = { workoutViewModel.stopWorkout() }
+                onStopWorkout = { workoutViewModel.stopWorkout() },
             )
         } else {
             // Start new workout button
             Button(
                 onClick = { showNewWorkoutDialog = true },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Icon(Icons.Default.PlayArrow, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -84,7 +84,7 @@ fun WorkoutScreen(
         Text(
             text = "Recent Workouts",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -93,14 +93,14 @@ fun WorkoutScreen(
             Text(
                 text = "No workouts yet. Start your first workout!",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(uiState.workouts, key = { it.id }) { workout ->
                     WorkoutHistoryItem(
                         workout = workout,
-                        onDelete = { workoutViewModel.deleteWorkout(workout) }
+                        onDelete = { workoutViewModel.deleteWorkout(workout) },
                     )
                 }
             }
@@ -121,35 +121,35 @@ fun WorkoutScreen(
                 val workoutTitle = "${workoutType.name} - ${duration}min"
                 workoutViewModel.startWorkout(workoutType, workoutTitle)
                 showNewWorkoutDialog = false
-            }
+            },
         )
     }
 }
 
 @Composable
 private fun ActiveWorkoutCard(
-    onStopWorkout: () -> Unit
+    onStopWorkout: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Text(
                 text = "Workout in Progress",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = "Running • 25:34",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -158,8 +158,8 @@ private fun ActiveWorkoutCard(
                 onClick = onStopWorkout,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
+                    containerColor = MaterialTheme.colorScheme.error,
+                ),
             ) {
                 Icon(Icons.Default.Square, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -173,7 +173,7 @@ private fun ActiveWorkoutCard(
 @Composable
 private fun NewWorkoutDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, Int, Int, String) -> Unit
+    onConfirm: (String, Int, Int, String) -> Unit,
 ) {
     var workoutType by remember { mutableStateOf("RUNNING") }
     var duration by remember { mutableStateOf("") }
@@ -185,19 +185,19 @@ private fun NewWorkoutDialog(
         title = { Text("New Workout") },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 // Workout type dropdown
                 ExposedDropdownMenuBox(
                     expanded = false,
-                    onExpandedChange = { }
+                    onExpandedChange = { },
                 ) {
                     OutlinedTextField(
                         value = workoutType,
                         onValueChange = { },
                         readOnly = true,
                         label = { Text("Workout Type") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
 
@@ -206,7 +206,7 @@ private fun NewWorkoutDialog(
                     onValueChange = { duration = it },
                     label = { Text("Duration (minutes)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
@@ -214,14 +214,14 @@ private fun NewWorkoutDialog(
                     onValueChange = { distance = it },
                     label = { Text("Distance (km)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 OutlinedTextField(
                     value = notes,
                     onValueChange = { notes = it },
                     label = { Text("Notes (optional)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         },
@@ -232,9 +232,9 @@ private fun NewWorkoutDialog(
                         workoutType,
                         duration.toIntOrNull() ?: 0,
                         distance.toIntOrNull() ?: 0,
-                        notes
+                        notes,
                     )
-                }
+                },
             ) {
                 Text("Start")
             }
@@ -243,46 +243,46 @@ private fun NewWorkoutDialog(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }
 
 @Composable
 private fun WorkoutHistoryItem(
     workout: Workout,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = workout.workoutType.name,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Text(
                     text = "${workout.duration} min • ${workout.distance} km",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Text(
-                    text = dateFormat.format(Date()),
+                    text = dateFormat.format(workout.startTime),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
@@ -290,7 +290,7 @@ private fun WorkoutHistoryItem(
                 Icon(
                     Icons.Default.Delete,
                     contentDescription = "Delete workout",
-                    tint = MaterialTheme.colorScheme.error
+                    tint = MaterialTheme.colorScheme.error,
                 )
             }
         }

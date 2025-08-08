@@ -1,7 +1,7 @@
 /**
  * Home screen for the Fitness Tracker App.
  *
- * Displays a welcome message, overview of features, quick stats, and provides navigation to all core app areas. 
+ * Displays a welcome message, overview of features, quick stats, and provides navigation to all core app areas.
  * Retrieves logged-in user data, triggers daily notifications, and uses Material Design 3 with modular composables.
  * Features an enhanced dashboard with fitness metrics and quick action cards.
  */
@@ -23,10 +23,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.LocalDining
 import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Card
@@ -62,7 +62,7 @@ data class QuickAction(
     val title: String,
     val description: String,
     val icon: ImageVector,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 )
 
 /**
@@ -77,13 +77,13 @@ data class FitnessStat(
     val label: String,
     val value: String,
     val unit: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 )
 
 /**
  * Top-level composable for the home screen.
  *
- * Displays a welcome message, user information, fitness stats, quick actions, and navigation to all core app features. 
+ * Displays a welcome message, user information, fitness stats, quick actions, and navigation to all core app features.
  * Schedules daily notifications and uses a ViewModel for user state management.
  *
  * @param navController NavController for navigation between screens.
@@ -93,7 +93,7 @@ data class FitnessStat(
 @Composable
 fun HomeScreen(
     navController: androidx.navigation.NavController,
-    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel
+    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
 ) {
     val context = LocalContext.current
 
@@ -104,7 +104,9 @@ fun HomeScreen(
     val userName = authState.user?.email?.substringBefore("@") ?: "User"
 
     // Schedule a daily notification when the screen is shown
-    LaunchedEffect(Unit) @androidx.annotation.RequiresPermission(android.Manifest.permission.SCHEDULE_EXACT_ALARM) {
+    LaunchedEffect(Unit)
+    @androidx.annotation.RequiresPermission(android.Manifest.permission.SCHEDULE_EXACT_ALARM)
+    {
         NotificationScheduler(context).scheduleDailyReminder()
     }
 
@@ -114,26 +116,26 @@ fun HomeScreen(
             title = "Log Workout",
             description = "Record your exercise",
             icon = Icons.Default.FitnessCenter,
-            onClick = { navController.navigate("workout") }
+            onClick = { /* Navigate to workout - handled by bottom nav */ },
         ),
         QuickAction(
             title = "Track Nutrition",
             description = "Log your meals",
             icon = Icons.Default.LocalDining,
-            onClick = { navController.navigate("nutrition") }
+            onClick = { /* Navigate to nutrition - handled by bottom nav */ },
         ),
         QuickAction(
             title = "Set Goals",
             description = "Define your targets",
             icon = Icons.Default.TrackChanges,
-            onClick = { navController.navigate("goals") }
+            onClick = { navController.navigate("goals") },
         ),
         QuickAction(
-            title = "View Progress",
-            description = "Check your stats",
-            icon = Icons.Default.Timeline,
-            onClick = { navController.navigate("profile") }
-        )
+            title = "Logout",
+            description = "Sign out of app",
+            icon = Icons.Default.ExitToApp,
+            onClick = { authViewModel.logout() },
+        ),
     )
 
     // Sample fitness stats (in a real app, these would come from ViewModels)
@@ -142,26 +144,26 @@ fun HomeScreen(
             label = "Today's Steps",
             value = "8,534",
             unit = "steps",
-            icon = Icons.AutoMirrored.Filled.DirectionsRun
+            icon = Icons.AutoMirrored.Filled.DirectionsRun,
         ),
         FitnessStat(
             label = "Calories Burned",
             value = "340",
             unit = "kcal",
-            icon = Icons.Default.LocalFireDepartment
+            icon = Icons.Default.LocalFireDepartment,
         ),
         FitnessStat(
             label = "Workouts",
             value = "2",
             unit = "today",
-            icon = Icons.Default.FitnessCenter
+            icon = Icons.Default.FitnessCenter,
         ),
         FitnessStat(
             label = "Water Intake",
             value = "1.2",
             unit = "liters",
-            icon = Icons.Default.WaterDrop
-        )
+            icon = Icons.Default.WaterDrop,
+        ),
     )
 
     Scaffold(
@@ -171,21 +173,21 @@ fun HomeScreen(
                     Column {
                         Text(
                             text = "Good ${getGreeting()}!",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
                         )
                         Text(
                             text = "Welcome back, $userName",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                ),
             )
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -193,7 +195,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Fitness Stats Section
             FitnessStatsSection(stats = fitnessStats)
@@ -222,17 +224,17 @@ private fun getGreeting(): String {
 @Composable
 private fun FitnessStatsSection(
     stats: List<FitnessStat>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
             text = "Today's Summary",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp),
         )
-        
+
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(stats) { stat ->
                 StatCard(stat = stat)
@@ -247,17 +249,17 @@ private fun FitnessStatsSection(
 @Composable
 private fun QuickActionsSection(
     actions: List<QuickAction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
             text = "Quick Actions",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(bottom = 8.dp),
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(actions) { action ->
                 ActionCard(action = action)
@@ -272,37 +274,37 @@ private fun QuickActionsSection(
 @Composable
 private fun StatCard(
     stat: FitnessStat,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.width(120.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = stat.icon,
                 contentDescription = stat.label,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stat.value,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Text(
                 text = stat.unit,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = stat.label,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -314,33 +316,33 @@ private fun StatCard(
 @Composable
 private fun ActionCard(
     action: QuickAction,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         onClick = action.onClick,
         modifier = modifier.width(140.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = action.icon,
                 contentDescription = action.title,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = action.title,
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
             Text(
                 text = action.description,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

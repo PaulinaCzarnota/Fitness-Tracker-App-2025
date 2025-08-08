@@ -14,12 +14,14 @@
 
 package com.example.fitnesstrackerapp.ui.main
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -29,8 +31,6 @@ import com.example.fitnesstrackerapp.screens.HomeScreen
 import com.example.fitnesstrackerapp.ui.nutrition.NutritionScreen
 import com.example.fitnesstrackerapp.ui.profile.ProfileScreen
 import com.example.fitnesstrackerapp.ui.workout.WorkoutScreen
-import androidx.compose.ui.platform.LocalContext
-import androidx.activity.ComponentActivity
 
 /**
  * Navigation destinations for the main app flow.
@@ -53,7 +53,7 @@ sealed class Screen(val route: String, val title: String, val icon: androidx.com
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel
+    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
 ) {
     val navController = rememberNavController()
     val items = listOf(
@@ -61,7 +61,7 @@ fun MainScreen(
         Screen.Workout,
         Screen.Goals,
         Screen.Nutrition,
-        Screen.Profile
+        Screen.Profile,
     )
 
     Scaffold(
@@ -76,7 +76,7 @@ fun MainScreen(
                         icon = {
                             Icon(
                                 imageVector = screen.icon,
-                                contentDescription = screen.title
+                                contentDescription = screen.title,
                             )
                         },
                         label = { Text(screen.title) },
@@ -95,16 +95,16 @@ fun MainScreen(
                                 // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
-                        }
+                        },
                     )
                 }
             }
-        }
+        },
     ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(navController = navController, authViewModel = authViewModel)
@@ -123,7 +123,7 @@ fun MainScreen(
             composable(Screen.Profile.route) {
                 ProfileScreen(
                     navController = navController,
-                    authViewModel = authViewModel
+                    authViewModel = authViewModel,
                 )
             }
         }

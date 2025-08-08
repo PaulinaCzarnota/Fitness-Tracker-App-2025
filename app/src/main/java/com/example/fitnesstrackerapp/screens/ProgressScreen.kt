@@ -58,8 +58,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.fitnesstrackerapp.ViewModelFactoryProvider
+import com.example.fitnesstrackerapp.ui.viewmodel.ProgressViewModel
 
 /**
  * Data classes for progress tracking
@@ -69,13 +71,13 @@ data class ProgressStatistic(
     val value: String,
     val change: String,
     val icon: ImageVector,
-    val isPositive: Boolean = true
+    val isPositive: Boolean = true,
 )
 
 data class WeeklyData(
     val day: String,
     val steps: Int,
-    val workouts: Int
+    val workouts: Int,
 )
 
 /**
@@ -95,22 +97,25 @@ data class WeeklyData(
 @Composable
 fun ProgressScreen(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-// Initialize ViewModel via factory
+    // Initialize ViewModel via factory
     val activity = LocalContext.current as ComponentActivity
-    ViewModelFactoryProvider.getProgressViewModel(activity)
-    
+    val progressViewModel: ProgressViewModel = remember {
+        ViewModelFactoryProvider.getProgressViewModel(activity)
+    }
+    val uiState by progressViewModel.uiState.collectAsStateWithLifecycle()
+
     // Sample data - in real app, this would come from ViewModel
     val weeklyStats = remember {
         listOf(
             ProgressStatistic("Steps", "52,341", "+12%", Icons.AutoMirrored.Filled.DirectionsRun),
             ProgressStatistic("Workouts", "8", "+2", Icons.Default.FitnessCenter),
             ProgressStatistic("Calories", "2,840", "+15%", Icons.Default.LocalFireDepartment),
-            ProgressStatistic("Distance", "38.2 km", "+8%", Icons.Default.Route)
+            ProgressStatistic("Distance", "38.2 km", "+8%", Icons.Default.Route),
         )
     }
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -118,43 +123,43 @@ fun ProgressScreen(
                     Text(
                         "Progress Tracking",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                ),
             )
-        }
+        },
     ) { innerPadding ->
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             item {
                 WelcomeSection()
             }
-            
+
             item {
                 WeeklyStatsSection(statistics = weeklyStats)
             }
-            
+
             item {
                 WeeklyProgressChart()
             }
-            
+
             item {
                 GoalProgressSection()
             }
-            
+
             item {
                 AchievementsSection()
             }
-            
+
             item {
                 RecentActivitySection()
             }
@@ -170,23 +175,23 @@ private fun WelcomeSection() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        ),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
                 text = "Your Fitness Journey",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Keep up the great work! Here's how you've been doing this week.",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
             )
         }
     }
@@ -197,18 +202,18 @@ private fun WelcomeSection() {
  */
 @Composable
 private fun WeeklyStatsSection(
-    statistics: List<ProgressStatistic>
+    statistics: List<ProgressStatistic>,
 ) {
     Column {
         Text(
             text = "This Week's Stats",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 12.dp),
         )
-        
+
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(statistics) { stat ->
                 StatisticCard(statistic = stat)
@@ -222,37 +227,37 @@ private fun WeeklyStatsSection(
  */
 @Composable
 private fun StatisticCard(
-    statistic: ProgressStatistic
+    statistic: ProgressStatistic,
 ) {
     Card(
         modifier = Modifier.width(140.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = statistic.icon,
                 contentDescription = statistic.label,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             Text(
                 text = statistic.value,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
-            
+
             Text(
                 text = statistic.label,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            
+
             Text(
                 text = statistic.change,
                 style = MaterialTheme.typography.labelSmall,
@@ -260,7 +265,7 @@ private fun StatisticCard(
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.error
-                }
+                },
             )
         }
     }
@@ -272,19 +277,19 @@ private fun StatisticCard(
 @Composable
 private fun WeeklyProgressChart() {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
                 text = "Weekly Activity",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Simple bar chart representation
             val weeklyData = listOf(
                 WeeklyData("Mon", 8500, 1),
@@ -293,16 +298,16 @@ private fun WeeklyProgressChart() {
                 WeeklyData("Thu", 15000, 1),
                 WeeklyData("Fri", 11200, 2),
                 WeeklyData("Sat", 9800, 1),
-                WeeklyData("Sun", 7500, 0)
+                WeeklyData("Sun", 7500, 0),
             )
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 weeklyData.forEach { data ->
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         // Simple bar representation
                         val height = (data.steps / 200).dp.coerceAtMost(80.dp)
@@ -310,31 +315,31 @@ private fun WeeklyProgressChart() {
                             modifier = Modifier
                                 .width(20.dp)
                                 .height(height.coerceAtLeast(4.dp))
-                                .clip(RoundedCornerShape(4.dp))
+                                .clip(RoundedCornerShape(4.dp)),
                         ) {
                             Card(
                                 modifier = Modifier.fillMaxSize(),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                ),
                             ) {}
                         }
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Text(
                             text = data.day,
-                            style = MaterialTheme.typography.labelSmall
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 ChartLegend("Steps", MaterialTheme.colorScheme.primary)
                 ChartLegend("Workouts", MaterialTheme.colorScheme.secondary)
@@ -349,27 +354,27 @@ private fun WeeklyProgressChart() {
 @Composable
 private fun ChartLegend(
     label: String,
-    color: androidx.compose.ui.graphics.Color
+    color: androidx.compose.ui.graphics.Color,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
                 .size(12.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(2.dp)),
         ) {
             Card(
                 modifier = Modifier.fillMaxSize(),
-                colors = CardDefaults.cardColors(containerColor = color)
+                colors = CardDefaults.cardColors(containerColor = color),
             ) {}
         }
-        
+
         Spacer(modifier = Modifier.width(8.dp))
-        
+
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium
+            style = MaterialTheme.typography.labelMedium,
         )
     }
 }
@@ -380,19 +385,19 @@ private fun ChartLegend(
 @Composable
 private fun GoalProgressSection() {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
                 text = "Goal Progress",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Sample goals with progress
             GoalProgressItem("Daily Steps", 8500, 10000)
             Spacer(modifier = Modifier.height(12.dp))
@@ -410,31 +415,31 @@ private fun GoalProgressSection() {
 private fun GoalProgressItem(
     goalName: String,
     current: Int,
-    target: Int
+    target: Int,
 ) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = goalName,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
             Text(
                 text = "$current / $target",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         LinearProgressIndicator(
             progress = { (current.toFloat() / target).coerceIn(0f, 1f) },
             modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -445,26 +450,26 @@ private fun GoalProgressItem(
 @Composable
 private fun AchievementsSection() {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
                 text = "Recent Achievements",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             val achievements = listOf(
                 "🏆 Completed 5-day workout streak!",
                 "🎯 Reached weekly step goal!",
                 "🔥 Burned 500+ calories in one workout!",
-                "📈 Personal best: 15,000 steps in a day!"
+                "📈 Personal best: 15,000 steps in a day!",
             )
-            
+
             achievements.forEach { achievement ->
                 AchievementItem(achievement)
                 if (achievement != achievements.last()) {
@@ -480,24 +485,24 @@ private fun AchievementsSection() {
  */
 @Composable
 private fun AchievementItem(
-    achievement: String
+    achievement: String,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = Icons.Default.EmojiEvents,
             contentDescription = "Achievement",
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
         )
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         Text(
             text = achievement,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
     }
 }
@@ -508,26 +513,26 @@ private fun AchievementItem(
 @Composable
 private fun RecentActivitySection() {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(20.dp),
         ) {
             Text(
                 text = "Recent Activity",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             val activities = listOf(
                 "Running - 30 min, 350 kcal" to "2 hours ago",
                 "Steps - 12,500 steps" to "Today",
                 "Strength Training - 45 min" to "Yesterday",
-                "Cycling - 1 hour, 400 kcal" to "2 days ago"
+                "Cycling - 1 hour, 400 kcal" to "2 days ago",
             )
-            
+
             activities.forEach { (activity, time) ->
                 ActivityItem(activity, time)
                 if (activity != activities.last().first) {
@@ -544,30 +549,30 @@ private fun RecentActivitySection() {
 @Composable
 private fun ActivityItem(
     activity: String,
-    time: String
+    time: String,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = activity,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
             Text(
                 text = time,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        
+
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "View details",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
