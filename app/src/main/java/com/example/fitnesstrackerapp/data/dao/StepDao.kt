@@ -39,7 +39,7 @@ interface StepDao {
      * Gets steps for a specific date
      */
     @Query("SELECT * FROM steps WHERE user_id = :userId AND date = :date")
-    fun getStepsForDate(userId: Long, date: Long): Flow<List<Step>>
+    fun getStepsForDate(userId: Long, date: Date): Flow<List<Step>>
 
     /**
      * Gets steps for a date range

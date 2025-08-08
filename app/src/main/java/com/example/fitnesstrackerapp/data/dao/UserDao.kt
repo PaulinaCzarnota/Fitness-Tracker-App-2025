@@ -38,6 +38,30 @@ interface UserDao {
     suspend fun updateUser(user: User)
 
     /**
+     * Update user height
+     */
+    @Query("UPDATE users SET height_cm = :height, updated_at = :updatedAt WHERE id = :userId")
+    suspend fun updateHeight(userId: Long, height: Float, updatedAt: java.util.Date)
+
+    /**
+     * Update user weight
+     */
+    @Query("UPDATE users SET weight_kg = :weight, updated_at = :updatedAt WHERE id = :userId")
+    suspend fun updateWeight(userId: Long, weight: Float, updatedAt: java.util.Date)
+
+    /**
+     * Update daily step goal
+     */
+    @Query("UPDATE users SET daily_step_goal = :stepGoal, updated_at = :updatedAt WHERE id = :userId")
+    suspend fun updateStepGoal(userId: Long, stepGoal: Int, updatedAt: java.util.Date)
+
+    /**
+     * Update metric units preference
+     */
+    @Query("UPDATE users SET use_metric_units = :useMetric, updated_at = :updatedAt WHERE id = :userId")
+    suspend fun updateMetricUnits(userId: Long, useMetric: Boolean, updatedAt: java.util.Date)
+
+    /**
      * Deletes a user from the database.
      *
      * @param user User entity to delete
