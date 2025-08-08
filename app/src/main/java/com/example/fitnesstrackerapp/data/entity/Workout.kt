@@ -1,3 +1,19 @@
+/**
+ * Workout entity and related classes for the Fitness Tracker application.
+ *
+ * This file contains the Workout entity which stores comprehensive workout session data
+ * including timing, performance metrics, health data, and user preferences. The entity
+ * uses Room database annotations for optimal storage and retrieval performance.
+ *
+ * Key Features:
+ * - Comprehensive workout tracking with timing and performance data
+ * - Heart rate monitoring and health metrics
+ * - Environmental condition tracking (weather, temperature)
+ * - User ratings and notes for workout sessions
+ * - Calculated fields for pace, speed, and calories per minute
+ * - Foreign key relationship with User entity for data integrity
+ */
+
 package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.ColumnInfo
@@ -5,24 +21,19 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
-
-/**
- * Enum representing different types of workouts
- */
-enum class WorkoutType {
-    RUNNING, CYCLING, WEIGHTLIFTING
-}
+import java.util.Date
 
 /**
  * Entity representing a workout session in the Fitness Tracker application.
  *
- * This entity stores detailed workout information including:
- * - Workout type and basic information
- * - Duration, distance, and calories burned
- * - Heart rate data and steps count
- * - Personal notes and ratings
- * - Environmental conditions
+ * This entity stores detailed workout information including workout type, timing data,
+ * performance metrics, health monitoring data, and environmental conditions.
+ * All workouts are associated with a specific user through foreign key relationship.
+ *
+ * Database Features:
+ * - Indexed for efficient querying by user, workout type, and date
+ * - Foreign key constraint ensures data integrity with User entity
+ * - Cascading delete removes workouts when user is deleted
  */
 @Entity(
     tableName = "workouts",
@@ -51,41 +62,136 @@ data class Workout(
     @ColumnInfo(name = "workoutType")
     val workoutType: WorkoutType,
 
+    @ColumnInfo(name = "title")
+    val title: String,
+
     @ColumnInfo(name = "startTime")
-    val startTime: LocalDateTime,
+    val startTime: Date,
 
     @ColumnInfo(name = "endTime")
-    val endTime: LocalDateTime? = null,
+    val endTime: Date? = null,
 
     @ColumnInfo(name = "duration")
-    val duration: Int = 0, // in minutes
+    val duration: Int = 0, // Duration in minutes
 
     @ColumnInfo(name = "distance")
-    val distance: Float = 0f, // in kilometers
+    val distance: Float = 0f, // Distance in kilometers
 
     @ColumnInfo(name = "caloriesBurned")
     val caloriesBurned: Int = 0,
 
-    @ColumnInfo(name = "stepCount")
-    val stepCount: Int = 0,
+    @ColumnInfo(name = "steps")
+    val steps: Int = 0,
+
+    @ColumnInfo(name = "avgHeartRate")
+    val avgHeartRate: Int? = null, // Average heart rate in BPM
+
+    @ColumnInfo(name = "maxHeartRate")
+    val maxHeartRate: Int? = null, // Maximum heart rate in BPM
 
     @ColumnInfo(name = "notes")
     val notes: String? = null,
 
+    @ColumnInfo(name = "rating")
+    val rating: Int? = null, // Rating from 1-5
+
+    @ColumnInfo(name = "weatherCondition")
+    val weatherCondition: String? = null,
+
+    @ColumnInfo(name = "temperature")
+    val temperature: Float? = null, // Temperature in Celsius
+
     @ColumnInfo(name = "createdAt")
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: Date = Date(),
 
     @ColumnInfo(name = "updatedAt")
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    val updatedAt: Date = Date()
 ) {
     /**
-     * Extension function to calculate estimated calories burned based on workout type and duration
+     * Get type as alias for compatibility
      */
-    fun getEstimatedCalories(): Int {
-        return when (workoutType) {
-            WorkoutType.RUNNING -> (duration * 10.0).toInt()
-            WorkoutType.CYCLING -> (duration * 7.0).toInt()
-            WorkoutType.WEIGHTLIFTING -> (duration * 5.0).toInt()
-        }
+    val type: WorkoutType
+        get() = workoutType
+
+    /**
+     * Get calories as alias for compatibility
+     */
+    val calories: Int
+        get() = caloriesBurned
+
+    /**
+     * Get date as alias for compatibility
+     */
+    val date: Date
+        get() = startTime
+
+    /**
+     * Checks if this workout is completed (has an end time).
+     *
+     * @return true if the workout has been completed and ended, false otherwise
+     */
+    fun isCompleted(): Boolean = endTime != null
+
+    /**
+     * Gets the workout duration in minutes.
+     *
+     * @return Duration of the workout in minutes
+     */
+    fun getDurationMinutes(): Int = duration
+
+    /**
+     * Gets formatted duration as a human-readable string.
+     *
+     * @return Formatted duration string (e.g., "1h 30m" or "45m")
+     */
+    fun getFormattedDuration(): String {
+        val hours = duration / 60
+        val minutes = duration % 60
+        return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+    }
+
+    /**
+     * Calculates calories burned per minute of workout.
+     *
+     * @return Calories burned per minute, or 0.0 if duration is zero
+     */
+    fun getCaloriesPerMinute(): Float {
+        return if (duration > 0) caloriesBurned.toFloat() / duration else 0f
+    }
+
+    /**
+     * Calculates average pace in minutes per kilometer.
+     *
+     * @return Average pace in minutes per km, or null if distance/duration is zero
+     */
+    fun getAveragePace(): Float? {
+        return if (distance > 0 && duration > 0) duration / distance else null
+    }
+
+    /**
+     * Calculates average speed in kilometers per hour.
+     *
+     * @return Average speed in km/h, or null if distance/duration is zero
+     */
+    fun getAverageSpeed(): Float? {
+        return if (distance > 0 && duration > 0) (distance / duration) * 60f else null
+    }
+
+    /**
+     * Gets workout duration in milliseconds based on start and end times.
+     * This provides more precise duration calculation than the stored duration field.
+     *
+     * @return Duration in milliseconds, or 0 if workout is not completed
+     */
+    fun getDurationInMillis(): Long {
+        return if (endTime != null) endTime.time - startTime.time else 0L
+    }
+
+    companion object {
+        const val MIN_RATING = 1
+        const val MAX_RATING = 5
+        const val DEFAULT_DURATION = 0
+        const val DEFAULT_DISTANCE = 0f
+        const val DEFAULT_CALORIES = 0
     }
 }
