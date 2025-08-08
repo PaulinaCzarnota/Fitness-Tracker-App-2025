@@ -1,58 +1,68 @@
 /**
- * Fitness Application Class
+ * Main Application class for the Fitness Tracker Android application.
  *
- * Responsibilities:
- * - Initialize Koin dependency injection
- * - Set up database and repositories
- * - Configure WorkManager with custom factory
- * - Initialize app-wide components
+ * This class serves as the entry point for application-wide initialization and configuration.
+ * It manages the lifecycle of core components and ensures proper dependency injection setup.
+ *
+ * Key Responsibilities:
+ * - Initialize ServiceLocator dependency injection
+ * - Configure Room database and repository layer
+ * - Handle application-level exceptions and crash reporting
  */
 
 package com.example.fitnesstrackerapp
 
 import android.app.Application
-import androidx.work.Configuration
-import androidx.work.WorkManager
-import com.example.fitnesstrackerapp.di.appModule
-import com.example.fitnesstrackerapp.di.workerModule
-import com.example.fitnesstrackerapp.worker.KoinWorkerFactory
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.androidx.workmanager.koin.workManagerFactory
-import org.koin.core.context.startKoin
+import android.util.Log
 
 /**
- * Main Application class that initializes all app-wide components
+ * Main Application class that initializes all app-wide components.
  */
-class FitnessApplication : Application(), Configuration.Provider {
+class FitnessApplication : Application() {
 
+    companion object {
+        private const val TAG = "FitnessApplication"
+    }
+
+    /**
+     * Called when the application is starting, before any other application objects have been created.
+     * Initializes dependency injection and critical app components.
+     */
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize Koin dependency injection
-        startKoin {
-            androidLogger()
-            androidContext(this@FitnessApplication)
-            workManagerFactory()
-            modules(appModule, workerModule)
-        }
+        try {
+            // Initialize ServiceLocator for dependency injection
+            ServiceLocator.init(this)
 
-        // Initialize WorkManager with custom configuration
-        WorkManager.initialize(
-            this,
-            getWorkManagerConfiguration()
-        )
+            Log.i(TAG, "Application initialized successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to initialize application", e)
+            throw e
+        }
     }
 
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(KoinWorkerFactory())
-            .build()
+    /**
+     * Called when the application is terminating.
+     * Cleans up resources and closes database connections.
+     */
+    override fun onTerminate() {
+        super.onTerminate()
+        try {
+            ServiceLocator.cleanup()
+            Log.i(TAG, "Application terminated successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during application termination", e)
+        }
+    }
 
     /**
-     * Get WorkManager configuration for initialization
+     * Called when the overall system is running low on memory.
+     * Performs memory cleanup operations.
      */
-    fun getWorkManagerConfiguration(): Configuration {
-        return workManagerConfiguration
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Log.w(TAG, "System low on memory - performing cleanup")
+        System.gc()
     }
 }
