@@ -47,50 +47,86 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" } # Lifecycle-aware components for Kotlin
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" } # Compose integration for activities
 
-# Compose
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" } # Bill of Materials for Compose libraries
-androidx-compose-ui = { module = "androidx.compose.ui:ui" } # Compose UI toolkit
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" } # Tooling support for Compose UI
-androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" } # Preview support for Compose UI
-androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" } # Material Design 3 components for Compose
-androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" } # JUnit 4 testing support for Compose UI
-androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" } # Manifest support for testing Compose UI
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" } # Navigation component for Compose
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" } # Lifecycle runtime for Compose
+# Compose BOM and UI components
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 
 # Room Database
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" } # Runtime for Room Database
-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" } # Kotlin extensions for Room
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" } # Annotation processor for Room
-room-testing = { module = "androidx.room:room-testing", version.ref = "room" } # Testing utilities for Room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 
 # Coroutines
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" } # Core library for Kotlin coroutines
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" } # Android-specific coroutine extensions
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesTest" } # Testing utilities for coroutines
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
 
 # DataStore
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" } # DataStore for storing key-value pairs
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 # WorkManager
-androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" } # WorkManager for background tasks
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 # Security
-androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security" } # Cryptography library for secure data storage
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security" }
 
 # Testing
-junit = { group = "junit", name = "junit", version.ref = "junit" } # JUnit testing framework
-androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" } # AndroidX test extensions for JUnit
-androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" } # Espresso core library for UI testing
-androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" } # Core testing library for AndroidX
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxTestRules" } # Testing rules for AndroidX
-androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" } # Test runner for AndroidX
-androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidxTestOrchestrator" } # Test orchestrator for AndroidX
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTestRules" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
+androidx-test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "androidxTestOrchestrator" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
-# JSON Processing
-androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" } # SplashScreen API for Android
+# Splash Screen
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+
+# AppCompat
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version = "1.7.1" }
+# Biometric
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version = "1.1.0" }
+# Material Icons Extended
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.7.8" }
+# core-testing
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version = "2.2.0" }
+# Mockito
+mockito-core = { group = "org.mockito", name = "mockito-core", version = "5.18.0" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version = "6.0.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[bundles]
+compose = [
+    "androidx-compose-ui",
+    "androidx-compose-ui-tooling",
+    "androidx-compose-ui-tooling-preview",
+    "androidx-compose-material3",
+    "androidx-navigation-compose",
+    "androidx-lifecycle-runtime-compose"
+]
+
+room = [
+    "room-runtime",
+    "room-ktx"
+]
+
+testing = [
+    "junit",
+    "androidx-test-ext-junit",
+    "androidx-test-espresso-core",
+    "androidx-test-core",
+    "androidx-test-rules",
+    "androidx-test-runner"
+]
