@@ -70,7 +70,7 @@
     <string name="goal_status_active">Status: ACTIVE</string>
     <string name="goal_status_completed">Status: COMPLETED</string>
     <string name="goal_status_paused">Status: PAUSED</string>
-    <string name="goal_progress_format">Target: %s | Current: %s</string>
+    <string name="goal_progress_format" formatted="false">Target: %s | Current: %s</string>
     <string name="invalid_goal_input">Please enter a valid title and numeric target value.</string>
 
     <!-- Home Screen strings -->
