@@ -103,21 +103,21 @@ class CryptoManager(private val context: Context) {
         return try {
             val cipher = Cipher.getInstance(TRANSFORMATION)
             val secretKey = getOrCreateSecretKey()
-            
+
             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
             val iv = cipher.iv
-            
+
             val ciphertext = cipher.doFinal(plaintext.toByteArray(StandardCharsets.UTF_8))
-            
+
             CryptoResult.Success(
                 encryptedData = ciphertext,
-                iv = iv
+                iv = iv,
             )
         } catch (e: Exception) {
             CryptoResult.Error(e)
         }
     }
-    
+
     /**
      * Decrypts the given ciphertext using AES/GCM/NoPadding.
      *
@@ -136,13 +136,13 @@ class CryptoManager(private val context: Context) {
 
             CryptoResult.Success(
                 decryptedData = plaintext.toString(StandardCharsets.UTF_8),
-                iv = iv
+                iv = iv,
             )
         } catch (e: Exception) {
             CryptoResult.Error(e)
         }
     }
-    
+
     /**
      * Gets or creates the secret key for encryption/decryption.
      *
@@ -165,7 +165,7 @@ class CryptoManager(private val context: Context) {
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
         val keyGenParameterSpec = KeyGenParameterSpec.Builder(
             KEY_ALIAS,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
         )
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)

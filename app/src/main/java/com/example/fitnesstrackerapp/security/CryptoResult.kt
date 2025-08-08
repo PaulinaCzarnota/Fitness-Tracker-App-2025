@@ -8,7 +8,7 @@ sealed class CryptoResult {
     data class Success(
         val encryptedData: ByteArray? = null,
         val decryptedData: String? = null,
-        val iv: ByteArray
+        val iv: ByteArray,
     ) : CryptoResult() {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -34,4 +34,3 @@ sealed class CryptoResult {
     /** Error result wrapping an exception. */
     data class Error(val exception: Exception) : CryptoResult()
 }
-
