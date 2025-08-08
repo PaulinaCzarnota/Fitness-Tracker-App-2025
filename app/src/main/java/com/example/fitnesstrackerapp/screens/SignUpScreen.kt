@@ -77,13 +77,13 @@ import java.util.Locale
 fun SignUpScreen(
     navController: NavController,
     onNavigateToLogin: () -> Unit,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel,
 ) {
     // Local state
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    
+
     // UI state from ViewModel
     val authState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -92,10 +92,10 @@ fun SignUpScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    
+
     // Form validation
-    val isEmailValid = email.isNotBlank() && 
-                      android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    val isEmailValid = email.isNotBlank() &&
+        android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     val isPasswordValid = password.length >= 6
     val isFormValid = isEmailValid && isPasswordValid
 
@@ -113,44 +113,44 @@ fun SignUpScreen(
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(
                     message = errorMsg,
-                    duration = SnackbarDuration.Short
+                    duration = SnackbarDuration.Short,
                 )
             }
             viewModel.clearError()
         }
     }
-    
+
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 // Header
                 Text(
                     text = stringResource(R.string.create_account),
                     style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
-                
+
                 Text(
                     text = stringResource(R.string.create_account_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 8.dp),
                 )
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 // Email field
                 OutlinedTextField(
                     value = email,
@@ -159,32 +159,32 @@ fun SignUpScreen(
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Email,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
+                        imeAction = ImeAction.Next,
                     ),
                     keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) },
                     ),
                     singleLine = true,
-                    isError = email.isNotBlank() && !isEmailValid
+                    isError = email.isNotBlank() && !isEmailValid,
                 )
-                
+
                 if (email.isNotBlank() && !isEmailValid) {
                     Text(
                         text = stringResource(R.string.invalid_email_format),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.align(Alignment.Start)
+                        modifier = Modifier.align(Alignment.Start),
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Password field
                 OutlinedTextField(
                     value = password,
@@ -193,7 +193,7 @@ fun SignUpScreen(
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Lock,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     },
                     trailingIcon = {
@@ -202,7 +202,7 @@ fun SignUpScreen(
                         } else {
                             Icons.Filled.VisibilityOff
                         }
-                        
+
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = image,
@@ -210,7 +210,7 @@ fun SignUpScreen(
                                     stringResource(R.string.hide_password)
                                 } else {
                                     stringResource(R.string.show_password)
-                                }
+                                },
                             )
                         }
                     },
@@ -222,7 +222,7 @@ fun SignUpScreen(
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
+                        imeAction = ImeAction.Done,
                     ),
                     keyboardActions = KeyboardActions(
                         onDone = {
@@ -231,23 +231,23 @@ fun SignUpScreen(
                             if (isFormValid) {
                                 viewModel.register(email, password, "")
                             }
-                        }
+                        },
                     ),
                     singleLine = true,
-                    isError = password.isNotBlank() && !isPasswordValid
+                    isError = password.isNotBlank() && !isPasswordValid,
                 )
-                
+
                 if (password.isNotBlank() && !isPasswordValid) {
                     Text(
                         text = stringResource(R.string.password_min_length, 6),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.align(Alignment.Start)
+                        modifier = Modifier.align(Alignment.Start),
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.height(32.dp))
-                
+
                 // Sign up button
                 val loading = authState.isLoading
                 Button(
@@ -262,47 +262,47 @@ fun SignUpScreen(
                     enabled = isFormValid && !loading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    )
+                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                    ),
                 ) {
                     if (loading) {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
                         )
                     } else {
                         Text(
                             text = stringResource(R.string.sign_up).uppercase(Locale.getDefault()),
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Already have an account? Login
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = stringResource(R.string.already_have_account),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    
+
                     TextButton(
                         onClick = onNavigateToLogin,
-                        modifier = Modifier.padding(start = 4.dp)
+                        modifier = Modifier.padding(start = 4.dp),
                     ) {
                         Text(
                             text = stringResource(R.string.login).uppercase(Locale.getDefault()),
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
-                
+
                 // Terms and privacy policy
                 Text(
                     text = stringResource(R.string.terms_and_privacy_policy),
@@ -310,7 +310,7 @@ fun SignUpScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .padding(top = 16.dp)
-                        .align(Alignment.CenterHorizontally)
+                        .align(Alignment.CenterHorizontally),
                 )
             }
         }
