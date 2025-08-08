@@ -92,7 +92,9 @@ interface UserDao {
      * @param passwordSalt New password salt
      * @param updatedAt Update timestamp
      */
-    @Query("UPDATE users SET password_hash = :passwordHash, password_salt = :passwordSalt, last_password_change = :updatedAt, updated_at = :updatedAt WHERE id = :userId")
+    @Query(
+        "UPDATE users SET password_hash = :passwordHash, password_salt = :passwordSalt, last_password_change = :updatedAt, updated_at = :updatedAt WHERE id = :userId",
+    )
     suspend fun updatePassword(userId: Long, passwordHash: String, passwordSalt: String, updatedAt: Date)
 
     /**
@@ -187,7 +189,9 @@ interface UserDao {
      * @param email User's email
      * @param currentTime Current timestamp
      */
-    @Query("UPDATE users SET failed_login_attempts = failed_login_attempts + 1, updated_at = :currentTime WHERE email = :email")
+    @Query(
+        "UPDATE users SET failed_login_attempts = failed_login_attempts + 1, updated_at = :currentTime WHERE email = :email",
+    )
     suspend fun incrementFailedLoginAttempts(email: String, currentTime: Date)
 
     /**
@@ -196,7 +200,9 @@ interface UserDao {
      * @param userId User ID
      * @param currentTime Current timestamp
      */
-    @Query("UPDATE users SET failed_login_attempts = 0, is_account_locked = 0, updated_at = :currentTime WHERE id = :userId")
+    @Query(
+        "UPDATE users SET failed_login_attempts = 0, is_account_locked = 0, updated_at = :currentTime WHERE id = :userId",
+    )
     suspend fun resetFailedLoginAttempts(userId: Long, currentTime: Date)
 
     /**
@@ -214,7 +220,9 @@ interface UserDao {
      * @param userId User ID
      * @param currentTime Current timestamp
      */
-    @Query("UPDATE users SET is_account_locked = 0, failed_login_attempts = 0, updated_at = :currentTime WHERE id = :userId")
+    @Query(
+        "UPDATE users SET is_account_locked = 0, failed_login_attempts = 0, updated_at = :currentTime WHERE id = :userId",
+    )
     suspend fun unlockAccount(userId: Long, currentTime: Date)
 
     /**
@@ -244,22 +252,24 @@ interface UserDao {
      * @param weightKg Weight in kilograms
      * @param currentTime Current timestamp
      */
-    @Query("""
-        UPDATE users SET 
-        first_name = :firstName, 
-        last_name = :lastName, 
-        height_cm = :heightCm, 
-        weight_kg = :weightKg, 
-        updated_at = :currentTime 
+    @Query(
+        """
+        UPDATE users SET
+        first_name = :firstName,
+        last_name = :lastName,
+        height_cm = :heightCm,
+        weight_kg = :weightKg,
+        updated_at = :currentTime
         WHERE id = :userId
-    """)
+    """,
+    )
     suspend fun updateUserProfile(
         userId: Long,
         firstName: String?,
         lastName: String?,
         heightCm: Float?,
         weightKg: Float?,
-        currentTime: Long
+        currentTime: Long,
     )
 
     /**
@@ -270,19 +280,21 @@ interface UserDao {
      * @param passwordSalt New password salt
      * @param currentTime Current timestamp
      */
-    @Query("""
-        UPDATE users SET 
-        password_hash = :passwordHash, 
-        password_salt = :passwordSalt, 
-        last_password_change = :currentTime, 
-        updated_at = :currentTime 
+    @Query(
+        """
+        UPDATE users SET
+        password_hash = :passwordHash,
+        password_salt = :passwordSalt,
+        last_password_change = :currentTime,
+        updated_at = :currentTime
         WHERE id = :userId
-    """)
+    """,
+    )
     suspend fun updatePassword(
         userId: Long,
         passwordHash: String,
         passwordSalt: String,
-        currentTime: Long
+        currentTime: Long,
     )
 
     /**

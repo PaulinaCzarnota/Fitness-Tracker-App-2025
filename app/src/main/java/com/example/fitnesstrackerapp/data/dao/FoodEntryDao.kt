@@ -8,6 +8,11 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.entity.MealType
+import com.example.fitnesstrackerapp.data.model.FoodConsumptionStats
+import com.example.fitnesstrackerapp.data.model.MacroTotals
+import com.example.fitnesstrackerapp.data.model.MealDistribution
+import com.example.fitnesstrackerapp.data.model.NutritionSummary
+import com.example.fitnesstrackerapp.data.model.WeeklyNutritionSummary
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -105,7 +110,9 @@ interface FoodEntryDao {
      * @param date Date to get entries for
      * @return Flow of list of food entries
      */
-    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date) ORDER BY date_consumed DESC")
+    @Query(
+        "SELECT * FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date) ORDER BY date_consumed DESC",
+    )
     fun getFoodEntriesForDate(userId: Long, date: Date): Flow<List<FoodEntry>>
 
     /**
@@ -116,7 +123,9 @@ interface FoodEntryDao {
      * @param endDate End date
      * @return Flow of list of food entries
      */
-    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate ORDER BY date_consumed DESC")
+    @Query(
+        "SELECT * FROM food_entries WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate ORDER BY date_consumed DESC",
+    )
     fun getFoodEntriesForDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<FoodEntry>>
 
     /**
@@ -127,7 +136,9 @@ interface FoodEntryDao {
      * @param mealType Meal type
      * @return Flow of list of food entries
      */
-    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date) AND meal_type = :mealType ORDER BY date_consumed DESC")
+    @Query(
+        "SELECT * FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date) AND meal_type = :mealType ORDER BY date_consumed DESC",
+    )
     fun getFoodEntriesByMealType(userId: Long, date: Date, mealType: MealType): Flow<List<FoodEntry>>
 
     /**
@@ -147,7 +158,9 @@ interface FoodEntryDao {
      * @param date Date
      * @return Total calories for the date
      */
-    @Query("SELECT SUM(calories_per_serving * serving_size) FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date)")
+    @Query(
+        "SELECT SUM(calories_per_serving * serving_size) FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date)",
+    )
     suspend fun getTotalCaloriesForDate(userId: Long, date: Date): Double?
 
     /**
@@ -155,17 +168,19 @@ interface FoodEntryDao {
      *
      * @param userId User ID
      * @param date Date
-     * @return Triple of (total protein, total carbs, total fat) in grams
+     * @return MacroTotals with (total protein, total carbs, total fat) in grams
      */
-    @Query("""
-        SELECT 
-        SUM(protein_grams * serving_size), 
-        SUM(carbs_grams * serving_size), 
-        SUM(fat_grams * serving_size) 
-        FROM food_entries 
+    @Query(
+        """
+        SELECT
+        SUM(protein_grams * serving_size) as total_protein,
+        SUM(carbs_grams * serving_size) as total_carbs,
+        SUM(fat_grams * serving_size) as total_fat
+        FROM food_entries
         WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date)
-    """)
-    suspend fun getTotalMacrosForDate(userId: Long, date: Date): Triple<Double?, Double?, Double?>
+    """,
+    )
+    suspend fun getTotalMacrosForDate(userId: Long, date: Date): MacroTotals?
 
     /**
      * Gets nutrition summary for a date range.
@@ -173,10 +188,11 @@ interface FoodEntryDao {
      * @param userId User ID
      * @param startDate Start date
      * @param endDate End date
-     * @return Map with nutrition totals
+     * @return NutritionSummary with nutrition totals
      */
-    @Query("""
-        SELECT 
+    @Query(
+        """
+        SELECT
         SUM(calories_per_serving * serving_size) as total_calories,
         SUM(protein_grams * serving_size) as total_protein,
         SUM(carbs_grams * serving_size) as total_carbs,
@@ -184,10 +200,11 @@ interface FoodEntryDao {
         SUM(fiber_grams * serving_size) as total_fiber,
         SUM(sugar_grams * serving_size) as total_sugar,
         SUM(sodium_mg * serving_size) as total_sodium
-        FROM food_entries 
+        FROM food_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate
-    """)
-    suspend fun getNutritionSummaryForDateRange(userId: Long, startDate: Date, endDate: Date): Map<String, Double?>
+    """,
+    )
+    suspend fun getNutritionSummaryForDateRange(userId: Long, startDate: Date, endDate: Date): NutritionSummary?
 
     /**
      * Gets average daily calories for a user.
@@ -195,14 +212,16 @@ interface FoodEntryDao {
      * @param userId User ID
      * @return Average daily calorie intake
      */
-    @Query("""
+    @Query(
+        """
         SELECT AVG(daily_calories) FROM (
             SELECT DATE(date_consumed) as date, SUM(calories_per_serving * serving_size) as daily_calories
-            FROM food_entries 
-            WHERE user_id = :userId 
+            FROM food_entries
+            WHERE user_id = :userId
             GROUP BY DATE(date_consumed)
         )
-    """)
+    """,
+    )
     suspend fun getAverageDailyCalories(userId: Long): Double?
 
     /**
@@ -212,13 +231,15 @@ interface FoodEntryDao {
      * @param date Date
      * @return List of meal type calorie distributions
      */
-    @Query("""
+    @Query(
+        """
         SELECT meal_type, SUM(calories_per_serving * serving_size) as calories
-        FROM food_entries 
+        FROM food_entries
         WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date)
         GROUP BY meal_type
-    """)
-    suspend fun getMealDistributionForDate(userId: Long, date: Date): List<Map<String, Any>>
+    """,
+    )
+    suspend fun getMealDistributionForDate(userId: Long, date: Date): List<MealDistribution>
 
     /**
      * Gets most consumed foods.
@@ -227,15 +248,17 @@ interface FoodEntryDao {
      * @param limit Number of top foods to return
      * @return List of most frequently consumed foods
      */
-    @Query("""
+    @Query(
+        """
         SELECT food_name, COUNT(*) as frequency, AVG(calories_per_serving * serving_size) as avg_calories
-        FROM food_entries 
-        WHERE user_id = :userId 
-        GROUP BY food_name 
-        ORDER BY frequency DESC 
+        FROM food_entries
+        WHERE user_id = :userId
+        GROUP BY food_name
+        ORDER BY frequency DESC
         LIMIT :limit
-    """)
-    suspend fun getMostConsumedFoods(userId: Long, limit: Int): List<Map<String, Any>>
+    """,
+    )
+    suspend fun getMostConsumedFoods(userId: Long, limit: Int): List<FoodConsumptionStats>
 
     /**
      * Gets total food entries count for a user.
@@ -264,17 +287,19 @@ interface FoodEntryDao {
      * @param weekEnd End of the week
      * @return Weekly nutrition totals
      */
-    @Query("""
-        SELECT 
+    @Query(
+        """
+        SELECT
         SUM(calories_per_serving * serving_size) as weekly_calories,
         AVG(calories_per_serving * serving_size) as avg_daily_calories,
         SUM(protein_grams * serving_size) as weekly_protein,
         SUM(carbs_grams * serving_size) as weekly_carbs,
         SUM(fat_grams * serving_size) as weekly_fat
-        FROM food_entries 
+        FROM food_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :weekStart AND :weekEnd
-    """)
-    suspend fun getWeeklyNutritionSummary(userId: Long, weekStart: Date, weekEnd: Date): Map<String, Double?>
+    """,
+    )
+    suspend fun getWeeklyNutritionSummary(userId: Long, weekStart: Date, weekEnd: Date): WeeklyNutritionSummary?
 
     /**
      * Searches food entries by food name.
@@ -283,7 +308,9 @@ interface FoodEntryDao {
      * @param searchQuery Search query for food name
      * @return Flow of matching food entries
      */
-    @Query("SELECT * FROM food_entries WHERE user_id = :userId AND food_name LIKE '%' || :searchQuery || '%' ORDER BY date_consumed DESC")
+    @Query(
+        "SELECT * FROM food_entries WHERE user_id = :userId AND food_name LIKE '%' || :searchQuery || '%' ORDER BY date_consumed DESC",
+    )
     fun searchFoodEntries(userId: Long, searchQuery: String): Flow<List<FoodEntry>>
 
     /**

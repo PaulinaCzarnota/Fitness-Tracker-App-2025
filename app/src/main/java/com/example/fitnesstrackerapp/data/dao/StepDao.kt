@@ -77,11 +77,13 @@ interface StepDao {
      * @param activeMinutes Active minutes
      * @param createdAt Creation timestamp
      */
-    @Query("""
-        INSERT OR REPLACE INTO steps 
-        (user_id, step_count, step_goal, date, calories_burned, distance_meters, active_minutes, created_at, updated_at) 
+    @Query(
+        """
+        INSERT OR REPLACE INTO steps
+        (user_id, step_count, step_goal, date, calories_burned, distance_meters, active_minutes, created_at, updated_at)
         VALUES (:userId, :stepCount, :goal, :date, :caloriesBurned, :distanceMeters, :activeMinutes, :createdAt, :createdAt)
-    """)
+    """,
+    )
     suspend fun insertOrUpdateSteps(
         userId: Long,
         stepCount: Int,
@@ -90,7 +92,7 @@ interface StepDao {
         caloriesBurned: Float,
         distanceMeters: Float,
         activeMinutes: Int,
-        createdAt: Date
+        createdAt: Date,
     )
 
     /**
@@ -100,6 +102,15 @@ interface StepDao {
      */
     @Delete
     suspend fun deleteStep(step: Step)
+
+    /**
+     * Gets today's step record for a user.
+     *
+     * @param userId User ID
+     * @return Flow of Step entity or null if not found
+     */
+    @Query("SELECT * FROM steps WHERE user_id = :userId AND DATE(date/1000, 'unixepoch') = DATE('now') LIMIT 1")
+    fun getTodaysSteps(userId: Long): Flow<Step?>
 
     /**
      * Gets today's step record for a user on a specific date.
@@ -192,7 +203,9 @@ interface StepDao {
      * @param userId User ID
      * @return Achievement rate as percentage
      */
-    @Query("SELECT (COUNT(CASE WHEN step_count >= step_goal THEN 1 END) * 100.0 / COUNT(*)) FROM steps WHERE user_id = :userId")
+    @Query(
+        "SELECT (COUNT(CASE WHEN step_count >= step_goal THEN 1 END) * 100.0 / COUNT(*)) FROM steps WHERE user_id = :userId",
+    )
     suspend fun getGoalAchievementRate(userId: Long): Float?
 
     /**
@@ -203,12 +216,14 @@ interface StepDao {
      * @param weekEnd End of the week
      * @return Total steps for the week
      */
-    @Query("""
+    @Query(
+        """
         SELECT SUM(step_count)
-        FROM steps 
-        WHERE user_id = :userId 
+        FROM steps
+        WHERE user_id = :userId
         AND date BETWEEN :weekStart AND :weekEnd
-    """)
+    """,
+    )
     suspend fun getWeeklyTotalSteps(userId: Long, weekStart: Date, weekEnd: Date): Int?
 
     /**
@@ -219,12 +234,14 @@ interface StepDao {
      * @param weekEnd End of the week
      * @return Average steps for the week
      */
-    @Query("""
+    @Query(
+        """
         SELECT AVG(step_count)
-        FROM steps 
-        WHERE user_id = :userId 
+        FROM steps
+        WHERE user_id = :userId
         AND date BETWEEN :weekStart AND :weekEnd
-    """)
+    """,
+    )
     suspend fun getWeeklyAverageSteps(userId: Long, weekStart: Date, weekEnd: Date): Float?
 
     /**
@@ -235,12 +252,14 @@ interface StepDao {
      * @param weekEnd End of the week
      * @return Days with goal achieved in the week
      */
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(CASE WHEN step_count >= step_goal THEN 1 END)
-        FROM steps 
-        WHERE user_id = :userId 
+        FROM steps
+        WHERE user_id = :userId
         AND date BETWEEN :weekStart AND :weekEnd
-    """)
+    """,
+    )
     suspend fun getWeeklyGoalAchievedDays(userId: Long, weekStart: Date, weekEnd: Date): Int
 
     /**
@@ -251,13 +270,15 @@ interface StepDao {
      * @param month Month (1-12)
      * @return Total steps for the month
      */
-    @Query("""
+    @Query(
+        """
         SELECT SUM(step_count)
-        FROM steps 
-        WHERE user_id = :userId 
-        AND strftime('%Y', date/1000, 'unixepoch') = :year 
+        FROM steps
+        WHERE user_id = :userId
+        AND strftime('%Y', date/1000, 'unixepoch') = :year
         AND strftime('%m', date/1000, 'unixepoch') = :month
-    """)
+    """,
+    )
     suspend fun getMonthlyTotalSteps(userId: Long, year: String, month: String): Int?
 
     /**
@@ -268,13 +289,15 @@ interface StepDao {
      * @param month Month (1-12)
      * @return Average steps for the month
      */
-    @Query("""
+    @Query(
+        """
         SELECT AVG(step_count)
-        FROM steps 
-        WHERE user_id = :userId 
-        AND strftime('%Y', date/1000, 'unixepoch') = :year 
+        FROM steps
+        WHERE user_id = :userId
+        AND strftime('%Y', date/1000, 'unixepoch') = :year
         AND strftime('%m', date/1000, 'unixepoch') = :month
-    """)
+    """,
+    )
     suspend fun getMonthlyAverageSteps(userId: Long, year: String, month: String): Float?
 
     /**
@@ -285,13 +308,15 @@ interface StepDao {
      * @param month Month (1-12)
      * @return Days with goal achieved in the month
      */
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(CASE WHEN step_count >= step_goal THEN 1 END)
-        FROM steps 
-        WHERE user_id = :userId 
-        AND strftime('%Y', date/1000, 'unixepoch') = :year 
+        FROM steps
+        WHERE user_id = :userId
+        AND strftime('%Y', date/1000, 'unixepoch') = :year
         AND strftime('%m', date/1000, 'unixepoch') = :month
-    """)
+    """,
+    )
     suspend fun getMonthlyGoalAchievedDays(userId: Long, year: String, month: String): Int
 
     /**

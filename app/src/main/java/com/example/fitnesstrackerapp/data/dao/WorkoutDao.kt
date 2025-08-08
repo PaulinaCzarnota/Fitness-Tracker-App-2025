@@ -13,7 +13,6 @@
  * - Analytics queries for charts and reports
  * - Batch operations for data management
  */
-
 package com.example.fitnesstrackerapp.data.dao
 
 import androidx.room.Dao
@@ -124,7 +123,9 @@ interface WorkoutDao {
      * @param endDate End date of range
      * @return Flow of list of workouts in date range
      */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate ORDER BY startTime DESC")
+    @Query(
+        "SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate ORDER BY startTime DESC",
+    )
     fun getWorkoutsInDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Workout>>
 
     /**
@@ -134,7 +135,9 @@ interface WorkoutDao {
      * @param date Specific date
      * @return Flow of list of workouts for the date
      */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND DATE(startTime/1000, 'unixepoch') = DATE(:date/1000, 'unixepoch') ORDER BY startTime DESC")
+    @Query(
+        "SELECT * FROM workouts WHERE userId = :userId AND DATE(startTime/1000, 'unixepoch') = DATE(:date/1000, 'unixepoch') ORDER BY startTime DESC",
+    )
     fun getWorkoutsForDate(userId: Long, date: Date): Flow<List<Workout>>
 
     /**
@@ -238,13 +241,15 @@ interface WorkoutDao {
      * @param month Month (1-12)
      * @return Count of workouts in the month
      */
-    @Query("""
-        SELECT COUNT(*) 
-        FROM workouts 
-        WHERE userId = :userId 
-        AND strftime('%Y', startTime/1000, 'unixepoch') = :year 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM workouts
+        WHERE userId = :userId
+        AND strftime('%Y', startTime/1000, 'unixepoch') = :year
         AND strftime('%m', startTime/1000, 'unixepoch') = :month
-    """)
+    """,
+    )
     suspend fun getMonthlyWorkoutCount(userId: Long, year: String, month: String): Int
 
     /**
@@ -255,13 +260,15 @@ interface WorkoutDao {
      * @param month Month (1-12)
      * @return Total calories burned in the month
      */
-    @Query("""
-        SELECT SUM(caloriesBurned) 
-        FROM workouts 
-        WHERE userId = :userId 
-        AND strftime('%Y', startTime/1000, 'unixepoch') = :year 
+    @Query(
+        """
+        SELECT SUM(caloriesBurned)
+        FROM workouts
+        WHERE userId = :userId
+        AND strftime('%Y', startTime/1000, 'unixepoch') = :year
         AND strftime('%m', startTime/1000, 'unixepoch') = :month
-    """)
+    """,
+    )
     suspend fun getMonthlyCaloriesBurned(userId: Long, year: String, month: String): Int?
 
     /**
@@ -272,13 +279,15 @@ interface WorkoutDao {
      * @param month Month (1-12)
      * @return Total duration in the month
      */
-    @Query("""
-        SELECT SUM(duration) 
-        FROM workouts 
-        WHERE userId = :userId 
-        AND strftime('%Y', startTime/1000, 'unixepoch') = :year 
+    @Query(
+        """
+        SELECT SUM(duration)
+        FROM workouts
+        WHERE userId = :userId
+        AND strftime('%Y', startTime/1000, 'unixepoch') = :year
         AND strftime('%m', startTime/1000, 'unixepoch') = :month
-    """)
+    """,
+    )
     suspend fun getMonthlyWorkoutDuration(userId: Long, year: String, month: String): Int?
 
     /**
@@ -289,12 +298,14 @@ interface WorkoutDao {
      * @param weekEnd End of the week
      * @return Count of workouts in the week
      */
-    @Query("""
-        SELECT COUNT(*) 
-        FROM workouts 
-        WHERE userId = :userId 
+    @Query(
+        """
+        SELECT COUNT(*)
+        FROM workouts
+        WHERE userId = :userId
         AND startTime BETWEEN :weekStart AND :weekEnd
-    """)
+    """,
+    )
     suspend fun getWeeklyWorkoutCount(userId: Long, weekStart: Date, weekEnd: Date): Int
 
     /**
@@ -305,12 +316,14 @@ interface WorkoutDao {
      * @param weekEnd End of the week
      * @return Total calories burned in the week
      */
-    @Query("""
-        SELECT SUM(caloriesBurned) 
-        FROM workouts 
-        WHERE userId = :userId 
+    @Query(
+        """
+        SELECT SUM(caloriesBurned)
+        FROM workouts
+        WHERE userId = :userId
         AND startTime BETWEEN :weekStart AND :weekEnd
-    """)
+    """,
+    )
     suspend fun getWeeklyCaloriesBurned(userId: Long, weekStart: Date, weekEnd: Date): Int?
 
     /**
@@ -321,12 +334,14 @@ interface WorkoutDao {
      * @param weekEnd End of the week
      * @return Total duration in the week
      */
-    @Query("""
-        SELECT SUM(duration) 
-        FROM workouts 
-        WHERE userId = :userId 
+    @Query(
+        """
+        SELECT SUM(duration)
+        FROM workouts
+        WHERE userId = :userId
         AND startTime BETWEEN :weekStart AND :weekEnd
-    """)
+    """,
+    )
     suspend fun getWeeklyWorkoutDuration(userId: Long, weekStart: Date, weekEnd: Date): Int?
 
     /**
@@ -408,7 +423,9 @@ interface WorkoutDao {
      * @param endDate End date timestamp
      * @return Total duration in minutes
      */
-    @Query("SELECT COALESCE(SUM(duration), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    @Query(
+        "SELECT COALESCE(SUM(duration), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate",
+    )
     suspend fun getTotalDurationInDateRange(userId: Long, startDate: Long, endDate: Long): Long
 
     /**
@@ -419,7 +436,9 @@ interface WorkoutDao {
      * @param endDate End date timestamp
      * @return Total calories burned
      */
-    @Query("SELECT COALESCE(SUM(caloriesBurned), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    @Query(
+        "SELECT COALESCE(SUM(caloriesBurned), 0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate",
+    )
     suspend fun getTotalCaloriesInDateRange(userId: Long, startDate: Long, endDate: Long): Long
 
     /**
@@ -430,7 +449,9 @@ interface WorkoutDao {
      * @param endDate End date timestamp
      * @return Total distance in kilometers
      */
-    @Query("SELECT COALESCE(SUM(distance), 0.0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate")
+    @Query(
+        "SELECT COALESCE(SUM(distance), 0.0) FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate",
+    )
     suspend fun getTotalDistanceInDateRange(userId: Long, startDate: Long, endDate: Long): Double
 
     /**
@@ -451,6 +472,8 @@ interface WorkoutDao {
      * @param endDate End date of range
      * @return Flow of workouts in date range
      */
-    @Query("SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate ORDER BY startTime DESC")
+    @Query(
+        "SELECT * FROM workouts WHERE userId = :userId AND startTime BETWEEN :startDate AND :endDate ORDER BY startTime DESC",
+    )
     fun getWorkoutsByDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Workout>>
 }

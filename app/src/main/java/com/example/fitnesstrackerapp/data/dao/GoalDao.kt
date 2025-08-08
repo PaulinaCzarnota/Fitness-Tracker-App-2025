@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
  * - Track goal progress and achievements
  * - Handle goal reminders and notifications
  */
-
 @Dao
 interface GoalDao {
 
@@ -153,13 +152,17 @@ interface GoalDao {
     /**
      * Gets goals due within a specified number of days.
      */
-    @Query("SELECT * FROM goals WHERE user_id = :userId AND status = 'ACTIVE' AND target_date <= :endDate ORDER BY target_date ASC")
+    @Query(
+        "SELECT * FROM goals WHERE user_id = :userId AND status = 'ACTIVE' AND target_date <= :endDate ORDER BY target_date ASC",
+    )
     fun getGoalsDueSoon(userId: Long, endDate: Long): Flow<List<Goal>>
 
     /**
      * Gets goals within a date range.
      */
-    @Query("SELECT * FROM goals WHERE user_id = :userId AND target_date BETWEEN :startDate AND :endDate ORDER BY target_date ASC")
+    @Query(
+        "SELECT * FROM goals WHERE user_id = :userId AND target_date BETWEEN :startDate AND :endDate ORDER BY target_date ASC",
+    )
     fun getGoalsByDateRange(userId: Long, startDate: Long, endDate: Long): Flow<List<Goal>>
 
     /**
@@ -207,13 +210,17 @@ interface GoalDao {
     /**
      * Gets overdue goals.
      */
-    @Query("SELECT * FROM goals WHERE user_id = :userId AND status = 'ACTIVE' AND target_date < :currentDate ORDER BY target_date ASC")
+    @Query(
+        "SELECT * FROM goals WHERE user_id = :userId AND status = 'ACTIVE' AND target_date < :currentDate ORDER BY target_date ASC",
+    )
     fun getOverdueGoals(userId: Long, currentDate: Long): Flow<List<Goal>>
 
     /**
      * Gets goals by achievement status within date range.
      */
-    @Query("SELECT * FROM goals WHERE user_id = :userId AND target_date BETWEEN :startDate AND :endDate AND status = :status")
+    @Query(
+        "SELECT * FROM goals WHERE user_id = :userId AND target_date BETWEEN :startDate AND :endDate AND status = :status",
+    )
     fun getGoalsByDateRangeAndStatus(userId: Long, startDate: Long, endDate: Long, status: String): Flow<List<Goal>>
 
     /**
@@ -241,20 +248,22 @@ interface GoalDao {
         val totalGoals: Int,
         val activeGoals: Int,
         val completedGoals: Int,
-        val overdueGoals: Int
+        val overdueGoals: Int,
     )
 
     /**
      * Gets goal statistics for a user.
      */
-    @Query("""
-        SELECT 
+    @Query(
+        """
+        SELECT
             COUNT(*) as totalGoals,
             SUM(CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END) as activeGoals,
             SUM(CASE WHEN status = 'COMPLETED' THEN 1 ELSE 0 END) as completedGoals,
             SUM(CASE WHEN status = 'ACTIVE' AND target_date < :currentDate THEN 1 ELSE 0 END) as overdueGoals
         FROM goals WHERE user_id = :userId
-    """)
+    """,
+    )
     suspend fun getGoalStats(userId: Long, currentDate: Long): GoalStats
 
     /**
@@ -282,7 +291,9 @@ interface GoalDao {
      * @param searchQuery Search term
      * @return Flow of matching goals
      */
-    @Query("SELECT * FROM goals WHERE user_id = :userId AND title LIKE '%' || :searchQuery || '%' ORDER BY target_date ASC")
+    @Query(
+        "SELECT * FROM goals WHERE user_id = :userId AND title LIKE '%' || :searchQuery || '%' ORDER BY target_date ASC",
+    )
     fun searchGoals(userId: Long, searchQuery: String): Flow<List<Goal>>
 
     /**
@@ -297,7 +308,9 @@ interface GoalDao {
     /**
      * Gets upcoming due goals within specified days.
      */
-    @Query("SELECT * FROM goals WHERE user_id = :userId AND status = 'ACTIVE' AND target_date <= :dueDate ORDER BY target_date ASC")
+    @Query(
+        "SELECT * FROM goals WHERE user_id = :userId AND status = 'ACTIVE' AND target_date <= :dueDate ORDER BY target_date ASC",
+    )
     fun getUpcomingDueGoals(userId: Long, dueDate: Long): Flow<List<Goal>>
 
     /**
