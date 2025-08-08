@@ -11,7 +11,7 @@
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    
+
     <!-- Base application theme using MaterialComponents -->
     <style name="Base.Theme.FitnessTrackerApp" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
@@ -33,5 +33,5 @@
 
     <!-- Main application theme -->
     <style name="Theme.FitnessTrackerApp" parent="Base.Theme.FitnessTrackerApp" />
-    
+
 </resources>
