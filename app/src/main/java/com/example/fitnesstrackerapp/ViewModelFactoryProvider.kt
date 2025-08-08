@@ -11,10 +11,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 import com.example.fitnesstrackerapp.ui.goal.GoalViewModel
+import com.example.fitnesstrackerapp.ui.nutrition.NutritionViewModel
 import com.example.fitnesstrackerapp.ui.viewmodel.ProgressViewModel
 import com.example.fitnesstrackerapp.ui.viewmodel.StepCounterViewModel
 import com.example.fitnesstrackerapp.ui.workout.WorkoutViewModel
-import com.example.fitnesstrackerapp.ui.nutrition.NutritionViewModel
 
 object ViewModelFactoryProvider {
     fun getAuthViewModel(activity: ComponentActivity): AuthViewModel {
@@ -109,4 +109,5 @@ object ViewModelFactoryProvider {
         }
         return ViewModelProvider(activity, factory)[NutritionViewModel::class.java]
     }
+
 }
