@@ -88,14 +88,13 @@ class AuthenticationFlowTest {
     fun loginScreen_withValidCredentials_callsRepository() = runTest {
         val email = TestData.VALID_EMAIL
         val password = TestData.STRONG_PASSWORD
-        var loginSuccessCalled = false
 
         coEvery { authRepository.login(email, password) } returns AuthResult.Success("Login successful")
 
         composeTestRule.setContent {
             LoginScreen(
                 viewModel = authViewModel,
-                onLoginSuccess = { loginSuccessCalled = true },
+                onLoginSuccess = { },
                 onNavigateToSignUp = { },
                 onNavigateToForgotPassword = { },
             )
@@ -267,7 +266,6 @@ class AuthenticationFlowTest {
         val name = "Test User"
         val email = TestData.VALID_EMAIL
         val password = TestData.STRONG_PASSWORD
-        var signUpSuccessCalled = false
 
         coEvery { authRepository.register(email, password, name) } returns
             AuthResult.Success("Registration successful")
@@ -275,7 +273,7 @@ class AuthenticationFlowTest {
         composeTestRule.setContent {
             SignUpScreen(
                 viewModel = authViewModel,
-                onSignUpSuccess = { signUpSuccessCalled = true },
+                onSignUpSuccess = { },
                 onNavigateToLogin = { },
             )
         }
