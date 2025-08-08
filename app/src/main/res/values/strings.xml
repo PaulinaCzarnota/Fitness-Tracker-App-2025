@@ -125,6 +125,30 @@
     <string name="functionality_reminders">workout reminders and goal tracking</string>
     <string name="functionality_step_counting">automatic step counting</string>
 
+    <!-- Notification strings -->
+    <string name="notification_channel_goals">Fitness Goals</string>
+    <string name="notification_channel_goals_description">Notifications about your fitness goals and reminders</string>
+    <string name="notification_channel_workouts">Workouts</string>
+    <string name="notification_channel_workouts_description">Workout completion and exercise notifications</string>
+    <string name="notification_channel_progress">Daily Progress</string>
+    <string name="notification_channel_progress_description">Daily progress summaries and statistics</string>
+    <string name="notification_channel_reminders">Reminders</string>
+    <string name="notification_channel_reminders_description">General fitness reminders and motivational messages</string>
+
+    <string name="notification_workout_complete_title">Workout Complete!</string>
+    <string name="notification_workout_complete_message">Great job! You completed %1$s in %2$d minutes and burned %3$d calories.</string>
+    <string name="notification_daily_progress_title">Daily Progress Summary</string>
+    <string name="notification_daily_progress_message">Today: %1$d steps, %2$d calories burned, %3$d workouts completed</string>
+
+    <string name="notification_goal_achieved_title">🎉 Goal Achieved!</string>
+    <string name="notification_goal_achieved_message">Congratulations! You\'ve completed your %1$s goal. Keep up the great work!</string>
+    <string name="notification_almost_there_title">🔥 Almost There!</string>
+    <string name="notification_almost_there_message">You\'re 75%% of the way to your %1$s goal. Just a little more!</string>
+    <string name="notification_halfway_title">💪 Halfway There!</string>
+    <string name="notification_halfway_message">Great progress! You\'re 50%% of the way to your %1$s goal.</string>
+    <string name="notification_keep_going_title">🚀 Keep Going!</string>
+    <string name="notification_keep_going_message">You\'ve made a good start on your %1$s goal. Don\'t give up!</string>
+
     <!-- General strings -->
     <string name="create_account_subtitle">Join us to start your fitness journey</string>
     <string name="invalid_email_format">Invalid email format</string>
