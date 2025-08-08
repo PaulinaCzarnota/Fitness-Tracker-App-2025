@@ -34,13 +34,13 @@ import java.util.Date
 @Composable
 fun GoalScreen(
     modifier: Modifier = Modifier,
-    activity: androidx.activity.ComponentActivity
+    activity: androidx.activity.ComponentActivity,
 ) {
     // Initialize ViewModel using ServiceLocator-backed factory
     val goalViewModel: GoalViewModel = ViewModelFactoryProvider.getGoalViewModel(activity)
     val uiState by goalViewModel.uiState.collectAsStateWithLifecycle()
     var showAddGoalDialog by remember { mutableStateOf(false) }
-    
+
     // Get current user ID from ServiceLocator
     val serviceLocator = remember { com.example.fitnesstrackerapp.ServiceLocator.get(activity) }
     val currentUserId = serviceLocator.authRepository.getCurrentUserId() ?: 1L
@@ -48,13 +48,13 @@ fun GoalScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         // Header
         Text(
             text = "My Goals",
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -62,7 +62,7 @@ fun GoalScreen(
         // Add new goal button
         Button(
             onClick = { showAddGoalDialog = true },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(Icons.Default.Add, contentDescription = "Add Goal")
             Spacer(modifier = Modifier.width(8.dp))
@@ -75,22 +75,22 @@ fun GoalScreen(
         if (uiState.goals.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
                         imageVector = Icons.Default.Flag,
                         contentDescription = "No goals icon",
                         modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "No goals yet. Add your first goal!",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -100,7 +100,7 @@ fun GoalScreen(
                     GoalItem(
                         goal = goal,
                         onDelete = { goalViewModel.deleteGoal(goal.id) },
-                        onToggleComplete = { goalViewModel.achieveGoal(goal.id) }
+                        onToggleComplete = { goalViewModel.achieveGoal(goal.id) },
                     )
                 }
             }
@@ -120,11 +120,11 @@ fun GoalScreen(
                     goalType = goalType,
                     targetValue = targetValue,
                     unit = getUnitForGoalType(goalType),
-                    targetDate = getDefaultTargetDate()
+                    targetDate = getDefaultTargetDate(),
                 )
                 goalViewModel.addGoal(goal)
                 showAddGoalDialog = false
-            }
+            },
         )
     }
 }
@@ -142,32 +142,32 @@ private fun GoalItem(
     goal: Goal,
     onDelete: () -> Unit,
     onToggleComplete: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = goal.title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 goal.description?.let { description ->
                     Text(
                         text = description,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp),
                     )
                 }
                 // Goal progress info
@@ -175,7 +175,7 @@ private fun GoalItem(
                     text = "Target: ${goal.targetValue} | Current: ${goal.currentValue}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp),
                 )
                 // Goal status
                 val statusColor = when (goal.status) {
@@ -188,7 +188,7 @@ private fun GoalItem(
                     text = "Status: ${goal.status.name}",
                     style = MaterialTheme.typography.bodySmall,
                     color = statusColor,
-                    modifier = Modifier.padding(top = 2.dp)
+                    modifier = Modifier.padding(top = 2.dp),
                 )
             }
             Column {
@@ -201,7 +201,7 @@ private fun GoalItem(
                             MaterialTheme.colorScheme.primary
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
-                        }
+                        },
                     )
                 }
                 // Delete button
@@ -209,7 +209,7 @@ private fun GoalItem(
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Delete goal",
-                        tint = MaterialTheme.colorScheme.error
+                        tint = MaterialTheme.colorScheme.error,
                     )
                 }
             }
@@ -227,7 +227,7 @@ private fun GoalItem(
 @Composable
 private fun AddGoalDialog(
     onDismiss: () -> Unit,
-    onAddGoal: (String, String, Double, GoalType) -> Unit
+    onAddGoal: (String, String, Double, GoalType) -> Unit,
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -241,20 +241,20 @@ private fun AddGoalDialog(
         title = { Text("Add New Goal") },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Goal Title") },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = showInputError && title.isBlank()
+                    isError = showInputError && title.isBlank(),
                 )
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description (optional)") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = targetValue,
@@ -262,19 +262,19 @@ private fun AddGoalDialog(
                     label = { Text("Target Value") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    isError = showInputError && (targetValue.isBlank() || targetValue.toDoubleOrNull() == null)
+                    isError = showInputError && (targetValue.isBlank() || targetValue.toDoubleOrNull() == null),
                 )
                 if (showInputError && (title.isBlank() || targetValue.isBlank() || targetValue.toDoubleOrNull() == null)) {
                     Text(
                         text = "Please enter a valid title and numeric target value.",
                         color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 }
                 // Goal Type Dropdown
                 ExposedDropdownMenuBox(
                     expanded = expandedGoalType,
-                    onExpandedChange = { expandedGoalType = !expandedGoalType }
+                    onExpandedChange = { expandedGoalType = !expandedGoalType },
                 ) {
                     OutlinedTextField(
                         value = selectedGoalType.name,
@@ -286,11 +286,11 @@ private fun AddGoalDialog(
                         },
                         modifier = Modifier
                             .menuAnchor()
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
                     )
                     ExposedDropdownMenu(
                         expanded = expandedGoalType,
-                        onDismissRequest = { expandedGoalType = false }
+                        onDismissRequest = { expandedGoalType = false },
                     ) {
                         GoalType.entries.forEach { goalType ->
                             DropdownMenuItem(
@@ -298,7 +298,7 @@ private fun AddGoalDialog(
                                 onClick = {
                                     selectedGoalType = goalType
                                     expandedGoalType = false
-                                }
+                                },
                             )
                         }
                     }
@@ -313,13 +313,13 @@ private fun AddGoalDialog(
                             title,
                             description,
                             targetValue.toDouble(),
-                            selectedGoalType
+                            selectedGoalType,
                         )
                     } else {
                         showInputError = true
                     }
                 },
-                enabled = title.isNotBlank() && targetValue.isNotBlank() && targetValue.toDoubleOrNull() != null
+                enabled = title.isNotBlank() && targetValue.isNotBlank() && targetValue.toDoubleOrNull() != null,
             ) {
                 Text("Add")
             }
@@ -328,7 +328,7 @@ private fun AddGoalDialog(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }
 
@@ -348,6 +348,12 @@ private fun getUnitForGoalType(goalType: GoalType): String {
         GoalType.DURATION_EXERCISE -> "minutes"
         GoalType.STRENGTH_TRAINING -> "reps"
         GoalType.OTHER -> "units"
+        GoalType.MUSCLE_BUILDING -> TODO()
+        GoalType.ENDURANCE -> TODO()
+        GoalType.FLEXIBILITY -> TODO()
+        GoalType.BODY_FAT -> TODO()
+        GoalType.HYDRATION -> TODO()
+        GoalType.SLEEP -> TODO()
     }
 }
 
