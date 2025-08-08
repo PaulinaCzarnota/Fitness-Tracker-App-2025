@@ -293,7 +293,7 @@ class WorkoutLoggingViewModel(
                     return@launch
                 }
 
-                val setId = workoutSetRepository.createWorkoutSet(
+                workoutSetRepository.createWorkoutSet(
                     workoutId = activeWorkout.id,
                     exerciseId = currentExercise.id,
                     repetitions = setInput.repetitions,

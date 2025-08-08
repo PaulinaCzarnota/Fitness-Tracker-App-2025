@@ -23,7 +23,7 @@ data class WorkoutSummary(
     val averageDuration: Double = 0.0,
     val totalDistance: Double = 0.0,
     val totalDuration: Long = 0L,
-    val averageCalories: Double = 0.0
+    val averageCalories: Double = 0.0,
 ) {
     /**
      * Calculates the average calories burned per minute across all workouts.
@@ -96,7 +96,7 @@ data class WorkoutSummary(
                 averageDuration = if (totalWorkouts > 0) totalDuration.toDouble() / totalWorkouts else 0.0,
                 totalDistance = totalDistance,
                 totalDuration = totalDuration,
-                averageCalories = if (totalWorkouts > 0) totalCalories / totalWorkouts else 0.0
+                averageCalories = if (totalWorkouts > 0) totalCalories / totalWorkouts else 0.0,
             )
         }
     }

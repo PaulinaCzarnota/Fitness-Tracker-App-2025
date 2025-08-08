@@ -2,12 +2,12 @@ package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnesstrackerapp.data.entity.Workout
-import com.example.fitnesstrackerapp.data.entity.WorkoutType
+import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.repository.ExerciseRepository
+import com.example.fitnesstrackerapp.repository.ExerciseStats
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.fitnesstrackerapp.repository.WorkoutSetRepository
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -24,7 +24,7 @@ data class WorkoutUiState(
     val isWorkoutActive: Boolean = false,
     val activeWorkout: Workout? = null,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 )
 
 /**
@@ -38,7 +38,7 @@ data class WorkoutUiState(
  */
 class WorkoutViewModel(
     private val workoutRepository: WorkoutRepository,
-    private val userId: Long
+    private val userId: Long,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutUiState())
@@ -59,13 +59,13 @@ class WorkoutViewModel(
                     _uiState.value = _uiState.value.copy(
                         workouts = workouts,
                         recentWorkouts = workouts.take(5),
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to load workouts: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -81,7 +81,7 @@ class WorkoutViewModel(
                     userId = userId,
                     workoutType = type,
                     title = title,
-                    startTime = Date()
+                    startTime = Date(),
                 )
                 val workoutId = workoutRepository.insertWorkout(workout)
                 val activeWorkout = workout.copy(id = workoutId)
@@ -89,11 +89,11 @@ class WorkoutViewModel(
                 _uiState.value = _uiState.value.copy(
                     isWorkoutActive = true,
                     activeWorkout = activeWorkout,
-                    successMessage = "Workout started!"
+                    successMessage = "Workout started!",
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to start workout: ${e.message}"
+                    error = "Failed to start workout: ${e.message}",
                 )
             }
         }
@@ -115,7 +115,7 @@ class WorkoutViewModel(
                         duration = duration,
                         caloriesBurned = caloriesBurned,
                         distance = distance,
-                        notes = notes
+                        notes = notes,
                     )
 
                     workoutRepository.updateWorkout(completedWorkout)
@@ -123,12 +123,12 @@ class WorkoutViewModel(
                     _uiState.value = _uiState.value.copy(
                         isWorkoutActive = false,
                         activeWorkout = null,
-                        successMessage = "Workout completed!"
+                        successMessage = "Workout completed!",
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to stop workout: ${e.message}"
+                    error = "Failed to stop workout: ${e.message}",
                 )
             }
         }
@@ -142,11 +142,11 @@ class WorkoutViewModel(
             try {
                 workoutRepository.deleteWorkout(workout.id)
                 _uiState.value = _uiState.value.copy(
-                    successMessage = "Workout deleted!"
+                    successMessage = "Workout deleted!",
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to delete workout: ${e.message}"
+                    error = "Failed to delete workout: ${e.message}",
                 )
             }
         }

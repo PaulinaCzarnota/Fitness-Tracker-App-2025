@@ -1,39 +1,44 @@
 /**
- * Workout Reminder Worker
+ * Simple Workout Reminder Worker for workout notifications.
  *
- * Responsibilities:
- * - Sends reminders to users about their workout schedule
- * - Checks for inactive periods and motivates users
- * - Runs periodically via WorkManager
+ * This worker sends notifications to remind users about their scheduled workouts.
+ * It uses only standard Android SDK components.
  */
 package com.example.fitnesstrackerapp.worker
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.fitnesstrackerapp.notifications.NotificationHelper
-import com.example.fitnesstrackerapp.repository.WorkoutRepository
-import java.util.*
+import androidx.work.workDataOf
+import com.example.fitnesstrackerapp.notifications.NotificationManager
 
+/**
+ * Worker for handling workout reminder notifications.
+ */
 class WorkoutReminderWorker(
     context: Context,
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    private val workoutRepository: WorkoutRepository by lazy { com.example.fitnesstrackerapp.ServiceLocator.get(applicationContext).workoutRepository }
-    private val notificationHelper = NotificationHelper(context)
+    private val notificationManager = NotificationManager(applicationContext)
+
+    companion object {
+        private const val TAG = "WorkoutReminderWorker"
+    }
 
     override suspend fun doWork(): Result {
         return try {
-            val userId = inputData.getLong("user_id", -1L)
-            if (userId == -1L) return Result.failure()
-
-            // Send workout reminder notification
-            notificationHelper.sendWorkoutReminder()
-
-            Result.success()
+            // Send a basic workout reminder notification
+            val notificationId = notificationManager.showWorkoutReminder(
+                title = "Workout Time!",
+                message = "Your scheduled workout is ready. Let's get moving!",
+                workoutType = "Cardio"
+            )
+            
+            Result.success(workDataOf("notification_id" to notificationId))
         } catch (e: Exception) {
-            Result.retry()
+            android.util.Log.e(TAG, "Failed to send workout reminder", e)
+            Result.failure(workDataOf("error" to e.message))
         }
     }
 }

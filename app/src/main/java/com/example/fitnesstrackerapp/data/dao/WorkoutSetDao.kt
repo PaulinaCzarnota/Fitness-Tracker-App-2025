@@ -98,6 +98,15 @@ interface WorkoutSetDao {
     fun getSetsByWorkout(workoutId: Long): Flow<List<WorkoutSet>>
 
     /**
+     * Gets all sets for multiple workouts.
+     *
+     * @param workoutIds List of workout IDs
+     * @return List of workout sets for the specified workouts
+     */
+    @Query("SELECT * FROM workout_sets WHERE workoutId IN (:workoutIds) ORDER BY workoutId ASC, setNumber ASC")
+    suspend fun getSetsByWorkoutIds(workoutIds: List<Long>): List<WorkoutSet>
+
+    /**
      * Gets all sets for a specific exercise within a workout.
      *
      * @param workoutId Workout ID

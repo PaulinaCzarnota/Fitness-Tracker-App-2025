@@ -101,6 +101,20 @@ class WorkoutSetRepository(
     }
 
     /**
+     * Gets all sets for multiple workouts.
+     *
+     * @param workoutIds List of workout IDs
+     * @return List of workout sets for the specified workouts
+     */
+    suspend fun getSetsByWorkoutIds(workoutIds: List<Long>): List<WorkoutSet> {
+        return if (workoutIds.isEmpty()) {
+            emptyList()
+        } else {
+            workoutSetDao.getSetsByWorkoutIds(workoutIds)
+        }
+    }
+
+    /**
      * Gets all sets for a specific exercise within a workout.
      *
      * @param workoutId The workout ID

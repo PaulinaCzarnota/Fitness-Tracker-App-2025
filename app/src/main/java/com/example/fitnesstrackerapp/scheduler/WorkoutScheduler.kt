@@ -20,7 +20,7 @@ import com.example.fitnesstrackerapp.worker.GoalReminderWorker
 import com.example.fitnesstrackerapp.worker.WorkoutReminderWorker
 import java.util.concurrent.TimeUnit
 
-class WorkoutScheduler(private val context: Context) {
+class WorkoutScheduler(context: Context) {
 
     companion object {
         private const val WORKOUT_REMINDER_WORK = "workout_reminder_work"
@@ -47,8 +47,8 @@ class WorkoutScheduler(private val context: Context) {
 
         workManager.enqueueUniquePeriodicWork(
             WORKOUT_REMINDER_WORK,
-            ExistingPeriodicWorkPolicy.REPLACE,
-            reminderRequest
+            ExistingPeriodicWorkPolicy.UPDATE,
+            reminderRequest,
         )
     }
 
@@ -68,7 +68,7 @@ class WorkoutScheduler(private val context: Context) {
         workManager.enqueueUniquePeriodicWork(
             GOAL_REMINDER_WORK,
             ExistingPeriodicWorkPolicy.KEEP,
-            goalReminderRequest
+            goalReminderRequest,
         )
     }
 
@@ -88,7 +88,7 @@ class WorkoutScheduler(private val context: Context) {
         workManager.enqueueUniquePeriodicWork(
             DAILY_REMINDER_WORK,
             ExistingPeriodicWorkPolicy.KEEP,
-            motivationalRequest
+            motivationalRequest,
         )
     }
 
