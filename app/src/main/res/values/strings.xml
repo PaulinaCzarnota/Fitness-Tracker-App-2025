@@ -12,10 +12,10 @@
     <!-- App name and general strings -->
     <string name="app_name">Fitness Tracker</string>
     <string name="app_description">Track your fitness journey</string>
-    
+
     <!-- WorkManager initialization -->
     <string name="workmanager_init_disable">false</string>
-    
+
     <!-- Navigation strings -->
     <string name="home">Home</string>
     <string name="workout">Workout</string>
@@ -23,7 +23,7 @@
     <string name="goals">Goals</string>
     <string name="progress">Progress</string>
     <string name="steps">Steps</string>
-    
+
     <!-- Authentication strings -->
     <string name="login">Login</string>
     <string name="register">Register</string>
@@ -35,7 +35,7 @@
     <string name="create_account">Create Account</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="dont_have_account">Don\'t have an account?</string>
-    
+
     <!-- Workout strings -->
     <string name="log_workout">Log Workout</string>
     <string name="workout_type">Workout Type</string>
@@ -45,7 +45,7 @@
     <string name="notes">Notes</string>
     <string name="save_workout">Save Workout</string>
     <string name="workout_history">Workout History</string>
-    
+
     <!-- Nutrition strings -->
     <string name="track_nutrition">Track Nutrition</string>
     <string name="log_meal">Log Meal</string>
