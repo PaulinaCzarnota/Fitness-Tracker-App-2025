@@ -50,18 +50,9 @@ data class GoalWithProgress(
     fun getStatus(): GoalStatus {
         return when {
             goal.isAchieved -> GoalStatus.COMPLETED
-            daysRemaining <= 0 -> GoalStatus.OVERDUE
-            progressPercentage < 25f && daysRemaining < 7 -> GoalStatus.AT_RISK
-            progressPercentage > 0f -> GoalStatus.IN_PROGRESS
-            else -> GoalStatus.NOT_STARTED
+            daysRemaining <= 0 && !goal.isAchieved -> GoalStatus.ABANDONED
+            progressPercentage < 25f && daysRemaining < 7 -> GoalStatus.PAUSED
+            else -> GoalStatus.ACTIVE
         }
     }
-}
-
-enum class GoalStatus {
-    NOT_STARTED,
-    IN_PROGRESS,
-    AT_RISK,
-    COMPLETED,
-    OVERDUE
 }

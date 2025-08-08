@@ -1,3 +1,18 @@
+/**
+ * Data entity classes for the Fitness Tracker application user management.
+ *
+ * This file contains the User entity and related enums for storing user profile data,
+ * authentication information, and fitness-related preferences. All data is stored
+ * using Room database with proper indexing for optimal performance.
+ *
+ * Key Components:
+ * - User entity with comprehensive profile information
+ * - Gender enum for user demographics
+ * - ActivityLevel enum with BMR multipliers for calorie calculations
+ * - Security features for account protection
+ * - Helper methods for BMI, age calculations, and validation
+ */
+
 package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.ColumnInfo
@@ -7,7 +22,10 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 /**
- * Enum for user's gender.
+ * Enumeration representing user gender options.
+ *
+ * Provides inclusive gender options while maintaining privacy through
+ * PREFER_NOT_TO_SAY option for users who wish to keep this information private.
  */
 enum class Gender {
     MALE,
@@ -17,9 +35,12 @@ enum class Gender {
 }
 
 /**
- * Enum for user's activity level.
+ * Enumeration representing user activity levels for calorie calculation.
  *
- * @property multiplier The value to multiply with BMR to get daily calorie needs.
+ * Each activity level includes a multiplier value used with Basal Metabolic Rate (BMR)
+ * to calculate daily calorie needs based on user's lifestyle and exercise habits.
+ *
+ * @property multiplier The multiplication factor for BMR to calculate daily calorie needs
  */
 enum class ActivityLevel(val multiplier: Double) {
     SEDENTARY(1.2),
@@ -42,8 +63,8 @@ enum class ActivityLevel(val multiplier: Double) {
     tableName = "users",
     indices = [
         Index(value = ["email"], unique = true),
-        Index(value = ["isActive"]),
-        Index(value = ["isAccountLocked"])
+        Index(value = ["is_active"]),
+        Index(value = ["is_account_locked"])
     ]
 )
 data class User(
@@ -81,7 +102,7 @@ data class User(
     val gender: Gender? = null,
 
     @ColumnInfo(name = "activity_level")
-    val activityLevel: ActivityLevel? = null,
+    val activityLevel: ActivityLevel = ActivityLevel.MODERATELY_ACTIVE,
 
     @ColumnInfo(name = "fitness_level")
     val fitnessLevel: String? = null, // beginner, intermediate, advanced
@@ -117,7 +138,16 @@ data class User(
     val createdAt: Date = Date(),
 
     @ColumnInfo(name = "updated_at")
-    val updatedAt: Date = Date()
+    val updatedAt: Date = Date(),
+
+    @ColumnInfo(name = "daily_step_goal")
+    val dailyStepGoal: Int = 10000,
+
+    @ColumnInfo(name = "daily_calorie_goal")
+    val dailyCalorieGoal: Int = 2000,
+
+    @ColumnInfo(name = "use_metric_units")
+    val useMetricUnits: Boolean = true
 ) {
     /**
      * Calculates the user's age based on date of birth.

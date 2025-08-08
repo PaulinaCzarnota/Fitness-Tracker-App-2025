@@ -131,4 +131,96 @@ data class FoodEntry(
      */
     val date: Date
         get() = dateConsumed
+
+    /**
+     * Calculates calories per 100g for comparison purposes.
+     *
+     * @return Calories per 100g or null if calculation not possible
+     */
+    fun getCaloriesPer100g(): Double? {
+        return if (servingSize > 0 && servingUnit == "grams") {
+            (caloriesPerServing / servingSize) * 100.0
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Calculates protein percentage of total calories.
+     *
+     * @return Protein percentage (0-100)
+     */
+    fun getProteinPercentage(): Double {
+        return if (getTotalCalories() > 0) {
+            ((proteinGrams * 4.0) / getTotalCalories()) * 100.0
+        } else {
+            0.0
+        }
+    }
+
+    /**
+     * Calculates carbohydrate percentage of total calories.
+     *
+     * @return Carbohydrate percentage (0-100)
+     */
+    fun getCarbsPercentage(): Double {
+        return if (getTotalCalories() > 0) {
+            ((carbsGrams * 4.0) / getTotalCalories()) * 100.0
+        } else {
+            0.0
+        }
+    }
+
+    /**
+     * Calculates fat percentage of total calories.
+     *
+     * @return Fat percentage (0-100)
+     */
+    fun getFatPercentage(): Double {
+        return if (getTotalCalories() > 0) {
+            ((fatGrams * 9.0) / getTotalCalories()) * 100.0
+        } else {
+            0.0
+        }
+    }
+
+    /**
+     * Gets macronutrient breakdown as a formatted string.
+     *
+     * @return Formatted macronutrient string
+     */
+    fun getMacroBreakdown(): String {
+        val proteinPct = getProteinPercentage().toInt()
+        val carbsPct = getCarbsPercentage().toInt()
+        val fatPct = getFatPercentage().toInt()
+
+        return "P: ${proteinPct}% | C: ${carbsPct}% | F: ${fatPct}%"
+    }
+
+    /**
+     * Checks if this food item is high in protein (>20% of calories).
+     *
+     * @return true if high protein food
+     */
+    fun isHighProtein(): Boolean {
+        return getProteinPercentage() > 20.0
+    }
+
+    /**
+     * Checks if this food item is high in fiber (>3g per serving).
+     *
+     * @return true if high fiber food
+     */
+    fun isHighFiber(): Boolean {
+        return fiberGrams > 3.0
+    }
+
+    /**
+     * Checks if this food item is low in sodium (<140mg per serving).
+     *
+     * @return true if low sodium food
+     */
+    fun isLowSodium(): Boolean {
+        return sodiumMg < 140.0
+    }
 }

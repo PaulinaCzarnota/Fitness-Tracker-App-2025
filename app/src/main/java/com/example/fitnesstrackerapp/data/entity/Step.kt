@@ -22,85 +22,77 @@ import java.util.Date
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
-            childColumns = ["userId"],
+            childColumns = ["user_id"],
             onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["userId"]),
+        Index(value = ["user_id"]),
         Index(value = ["date"]),
-        Index(value = ["userId", "date"], unique = true)
+        Index(value = ["user_id", "date"], unique = true)
     ]
 )
 data class Step(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
-    @ColumnInfo(name = "userId")
+    @ColumnInfo(name = "user_id")
     val userId: Long,
 
+    @ColumnInfo(name = "step_count")
+    val count: Int,
+
+    @ColumnInfo(name = "step_goal")
+    val goal: Int = 10000,
+
+    @ColumnInfo(name = "date")
     val date: Date,
 
-    @ColumnInfo(name = "stepCount")
-    val stepCount: Int,
-
-    @ColumnInfo(name = "distanceMeters")
-    val distanceMeters: Float = 0f,
-
-    @ColumnInfo(name = "caloriesBurned")
+    @ColumnInfo(name = "calories_burned")
     val caloriesBurned: Float = 0f,
 
-    @ColumnInfo(name = "goalSteps")
-    val goalSteps: Int = 10000,
+    @ColumnInfo(name = "distance_meters")
+    val distanceMeters: Float = 0f,
 
-    @ColumnInfo(name = "createdAt")
+    @ColumnInfo(name = "active_minutes")
+    val activeMinutes: Int = 0,
+
+    @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
 
-    @ColumnInfo(name = "updatedAt")
+    @ColumnInfo(name = "updated_at")
     val updatedAt: Date = Date()
 ) {
     /**
-     * Checks if the daily step goal has been reached.
-     */
-    fun isGoalReached(): Boolean {
-        return stepCount >= goalSteps
-    }
-
-    /**
-     * Calculates the progress percentage towards the goal.
+     * Calculate progress percentage towards daily goal.
      */
     fun getProgressPercentage(): Float {
-        return if (goalSteps > 0) {
-            ((stepCount.toFloat() / goalSteps.toFloat()) * 100).coerceAtMost(100f)
-        } else {
-            0f
-        }
+        return if (goal > 0) (count.toFloat() / goal * 100).coerceIn(0f, 100f) else 0f
     }
 
     /**
-     * Gets the remaining steps needed to reach the goal.
+     * Check if daily step goal is achieved.
      */
-    fun getRemainingSteps(): Int {
-        return (goalSteps - stepCount).coerceAtLeast(0)
+    fun isGoalAchieved(): Boolean {
+        return count >= goal
     }
 
     /**
-     * Estimates distance in kilometers based on step count.
-     * Assumes average step length of 0.76 meters.
+     * Get steps as alias for compatibility
      */
-    fun getEstimatedDistanceKm(): Float {
-        return (stepCount * 0.76f) / 1000f
+    val steps: Int
+        get() = count
+
+    /**
+     * Calculate distance in kilometers.
+     */
+    fun getDistanceKm(): Float {
+        return distanceMeters / 1000f
     }
 
     /**
-     * Estimates calories burned based on step count.
-     * Rough estimate: 0.04 calories per step for average adult.
+     * Get calories as alias for compatibility
      */
-    fun getEstimatedCalories(): Float {
-        return stepCount * 0.04f
-    }
-
-    companion object {
-        const val STEP_LENGTH_METERS = 0.76f
-    }
+    val calories: Float
+        get() = caloriesBurned
 }

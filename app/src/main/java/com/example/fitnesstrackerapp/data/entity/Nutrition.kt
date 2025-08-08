@@ -40,17 +40,11 @@ data class Nutrition(
     @ColumnInfo(name = "userId")
     val userId: Long,
 
-    @ColumnInfo(name = "date")
-    val date: Date,
-
-    @ColumnInfo(name = "mealType")
-    val mealType: MealType,
-
     @ColumnInfo(name = "foodName")
     val foodName: String,
 
-    @ColumnInfo(name = "brandName")
-    val brandName: String? = null,
+    @ColumnInfo(name = "mealType")
+    val mealType: MealType,
 
     @ColumnInfo(name = "quantity")
     val quantity: Float,
@@ -77,31 +71,16 @@ data class Nutrition(
     val sugar: Float = 0f, // in grams
 
     @ColumnInfo(name = "sodium")
-    val sodium: Float = 0f, // in milligrams
+    val sodium: Float = 0f, // in mg
 
-    @ColumnInfo(name = "cholesterol")
-    val cholesterol: Float = 0f, // in milligrams
-
-    @ColumnInfo(name = "vitaminC")
-    val vitaminC: Float = 0f, // in milligrams
-
-    @ColumnInfo(name = "calcium")
-    val calcium: Float = 0f, // in milligrams
-
-    @ColumnInfo(name = "iron")
-    val iron: Float = 0f, // in milligrams
+    @ColumnInfo(name = "date")
+    val date: Date,
 
     @ColumnInfo(name = "notes")
     val notes: String? = null,
 
-    @ColumnInfo(name = "preparationMethod")
-    val preparationMethod: String? = null, // grilled, fried, raw, etc.
-
     @ColumnInfo(name = "createdAt")
-    val createdAt: Date = Date(),
-
-    @ColumnInfo(name = "updatedAt")
-    val updatedAt: Date = Date()
+    val createdAt: Date = Date()
 ) {
     /**
      * Calculates calories per 100g for comparison purposes.
@@ -210,16 +189,4 @@ data class Nutrition(
         const val PREPARATION_STEAMED = "steamed"
         const val PREPARATION_BOILED = "boiled"
     }
-}
-
-/**
- * Enum representing different meal types.
- */
-enum class MealType {
-    BREAKFAST,
-    LUNCH,
-    DINNER,
-    SNACK,
-    PRE_WORKOUT,
-    POST_WORKOUT
 }
