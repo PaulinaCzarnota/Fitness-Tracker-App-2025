@@ -14,6 +14,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     // Kotlin annotation processing (for Room, Hilt)
     alias(libs.plugins.ksp)
+    // Spotless plugin for code formatting
+    id("com.diffplug.spotless")
+    // ktlint plugin for Kotlin linting
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -24,15 +28,18 @@ android {
      * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
      */
     namespace = "com.example.fitnesstrackerapp"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Enable multidex for apps with many dependencies
+        multiDexEnabled = true
     }
 
     // ksp configuration moved outside defaultConfig
@@ -46,7 +53,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -54,6 +61,8 @@ android {
     buildFeatures {
         // Enable Jetpack Compose and ViewBinding
         compose = true
+        // Enable BuildConfig generation
+        buildConfig = true
     }
 
     composeOptions {
@@ -130,7 +139,6 @@ dependencies {
     // Material Icons Extended for complete icon set
     implementation(libs.androidx.compose.material.icons.extended)
 
-
     // Biometric Authentication
     implementation(libs.androidx.biometric)
 
@@ -139,6 +147,9 @@ dependencies {
 
     // Security
     implementation(libs.androidx.security.crypto)
+    
+    // Multidex support for devices with API < 21
+    implementation(libs.androidx.multidex)
 
     // Testing
     testImplementation(libs.androidx.arch.core.testing)
@@ -162,4 +173,61 @@ dependencies {
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
+}
+
+/**
+ * Spotless configuration for code formatting
+ *
+ * Applies consistent formatting rules across all source files
+ * including Kotlin, XML, and Gradle files.
+ */
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**/*.kt")
+        ktlint("0.50.0").editorConfigOverride(
+            mapOf(
+                "ktlint_standard_max-line-length" to "disabled",
+                "ktlint_standard_no-wildcard-imports" to "disabled",
+            ),
+        )
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint("0.50.0")
+    }
+
+    format("xml") {
+        target("**/*.xml")
+        targetExclude("**/build/**/*.xml")
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+/**
+ * ktlint configuration for Kotlin linting
+ *
+ * Enforces Kotlin coding conventions and style guidelines
+ */
+ktlint {
+    version.set("0.50.0")
+    android.set(true)
+    ignoreFailures.set(true)
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
+    filter {
+        exclude("**/generated/**")
+        include("**/kotlin/**")
+    }
+    // Disable some rules that conflict with our coding standards
+    additionalEditorconfig = mapOf(
+        "max_line_length" to "off",
+    )
 }

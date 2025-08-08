@@ -16,4 +16,10 @@ plugins {
     
     // KSP plugin for annotation processing
     alias(libs.plugins.ksp) apply false
+    
+    // Spotless plugin for code formatting
+    id("com.diffplug.spotless") version "6.23.3" apply false
+    
+    // ktlint plugin for Kotlin linting
+    id("org.jlleitschuh.gradle.ktlint") version "12.0.3" apply false
 }

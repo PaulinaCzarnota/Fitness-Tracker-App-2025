@@ -6,10 +6,10 @@
 
 [versions]
 # Android Gradle Plugin
-agp = "8.4.0"
+agp = "8.6.1"
 # Kotlin language and Symbol Processing
-kotlin = "1.9.24"
-ksp = "1.9.24-1.0.20"
+kotlin = "1.9.25"
+ksp = "1.9.25-1.0.20"
 # AndroidX Core and Lifecycle
 coreKtx = "1.12.0"
 lifecycleRuntimeKtx = "2.6.2"
@@ -40,6 +40,8 @@ androidxTestRunner = "1.5.2"
 androidxTestOrchestrator = "1.4.2"
 # Splashscreen
 coreSplashscreen = "1.0.1"
+# Multidex
+multidex = "2.0.1"
 
 [libraries]
 # Core Android Libraries
@@ -101,6 +103,8 @@ androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testin
 # Mockito
 mockito-core = { group = "org.mockito", name = "mockito-core", version = "5.18.0" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version = "6.0.0" }
+# Multidex
+androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
