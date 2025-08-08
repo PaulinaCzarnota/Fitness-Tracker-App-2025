@@ -122,7 +122,7 @@ private fun AuthNavigationGraph(
                     navController.navigate("forgot_password") {
                         launchSingleTop = true
                     }
-                }
+                },
             )
         }
 
@@ -135,7 +135,7 @@ private fun AuthNavigationGraph(
                 viewModel = authViewModel,
             )
         }
-        
+
         composable("forgot_password") {
             ForgotPasswordScreen(
                 navController = navController,
