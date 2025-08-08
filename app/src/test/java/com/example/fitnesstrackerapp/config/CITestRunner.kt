@@ -6,6 +6,7 @@
  * - Sets up test environment
  * - Manages test reporting
  */
+
 package com.example.fitnesstrackerapp.config
 
 import org.junit.runner.notification.RunNotifier
