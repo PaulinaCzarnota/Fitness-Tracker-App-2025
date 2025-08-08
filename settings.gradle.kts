@@ -38,6 +38,8 @@ dependencyResolutionManagement {
         // Standard repositories needed for Android + Kotlin
         google()
         mavenCentral()
+        // JitPack repository for GitHub-hosted libraries like MPAndroidChart
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

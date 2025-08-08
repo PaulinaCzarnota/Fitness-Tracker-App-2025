@@ -17,6 +17,9 @@ plugins {
     // KSP plugin for annotation processing
     alias(libs.plugins.ksp) apply false
     
+    // Dokka plugin for generating HTML documentation from KDoc
+    id("org.jetbrains.dokka") version "1.9.10" apply false
+    
     // Spotless plugin for code formatting
     id("com.diffplug.spotless") version "6.23.3" apply false
     

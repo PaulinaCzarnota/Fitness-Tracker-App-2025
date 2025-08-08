@@ -14,6 +14,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     // Kotlin annotation processing (for Room, Hilt)
     alias(libs.plugins.ksp)
+    // Dokka plugin for generating HTML documentation from KDoc
+    id("org.jetbrains.dokka")
     // Spotless plugin for code formatting
     id("com.diffplug.spotless")
     // ktlint plugin for Kotlin linting
@@ -151,22 +153,63 @@ dependencies {
     // Multidex support for devices with API < 21
     implementation(libs.androidx.multidex)
 
-    // Testing
+    // Note: Using only standard Android SDK libraries as per assignment requirements
+
+    // JUnit 5 Testing Framework
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.1")
+    testImplementation("org.junit.vintage:junit-vintage-engine:5.10.1") // For JUnit 4 compatibility
+    
+    // MockK for Kotlin mocking
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("io.mockk:mockk-android:1.13.8")
+    androidTestImplementation("io.mockk:mockk-android:1.13.8")
+    
+    // Robolectric for unit testing Android components
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test:runner:1.5.2")
+    testImplementation("androidx.test.ext:junit:1.1.5")
+    
+    // Architecture Testing
     testImplementation(libs.androidx.arch.core.testing)
-    testImplementation(libs.mockito.core)
-    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
+    
+    // Espresso for UI testing
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-accessibility:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+    
+    // Compose Testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    // Additional testing utilities
+    
+    // Room Testing
+    testImplementation(libs.room.testing)
+    androidTestImplementation(libs.room.testing)
+    
+    // WorkManager Testing
+    testImplementation("androidx.work:work-testing:2.9.0")
+    androidTestImplementation("androidx.work:work-testing:2.9.0")
+    
+    // Fragment Testing
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+    
+    // Test runners and utilities
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
+    
+    // Truth assertion library
+    testImplementation("com.google.truth:truth:1.1.5")
+    androidTestImplementation("com.google.truth:truth:1.1.5")
 
     // Compose dependencies
     implementation(libs.androidx.compose.material3)
@@ -230,4 +273,42 @@ ktlint {
     additionalEditorconfig = mapOf(
         "max_line_length" to "off",
     )
+}
+
+/**
+ * Dokka configuration for generating HTML documentation from KDoc
+ *
+ * Generates comprehensive HTML documentation from KDoc comments
+ * including class diagrams, inheritance trees, and API documentation.
+ */
+tasks.dokkaHtml.configure {
+    outputDirectory.set(layout.buildDirectory.dir("dokka"))
+    
+    dokkaSourceSets {
+        named("main") {
+            moduleName.set("Fitness Tracker App")
+            moduleVersion.set("1.0")
+            
+            // Include source code in documentation
+            includeNonPublic.set(false)
+            skipEmptyPackages.set(true)
+            skipDeprecated.set(false)
+            reportUndocumented.set(true)
+            
+            // Package documentation
+            documentedVisibilities.set(setOf(
+                org.jetbrains.dokka.DokkaConfiguration.Visibility.PUBLIC,
+                org.jetbrains.dokka.DokkaConfiguration.Visibility.PROTECTED
+            ))
+            
+            // External documentation links
+            externalDocumentationLink {
+                url.set(uri("https://developer.android.com/reference/").toURL())
+            }
+            
+            externalDocumentationLink {
+                url.set(uri("https://kotlinlang.org/api/latest/jvm/stdlib/").toURL())
+            }
+        }
+    }
 }
