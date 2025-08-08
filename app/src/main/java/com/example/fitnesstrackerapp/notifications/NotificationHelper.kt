@@ -7,20 +7,8 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.example.fitnesstrackerapp.R
 
-/**
- * Helper class for managing notifications
- */
 class NotificationHelper(private val context: Context) {
-
-    companion object {
-        const val CHANNEL_ID_GENERAL = "general_notifications"
-        const val CHANNEL_ID_WORKOUTS = "workout_reminders"
-        const val CHANNEL_ID_GOALS = "goal_reminders"
-        const val CHANNEL_ID_STEPS = "step_tracking"
-    }
-
-    private val notificationManager =
-        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
         createNotificationChannels()
@@ -28,68 +16,106 @@ class NotificationHelper(private val context: Context) {
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channels = listOf(
-                NotificationChannel(
-                    CHANNEL_ID_GENERAL,
-                    "General Notifications",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                ),
-                NotificationChannel(
-                    CHANNEL_ID_WORKOUTS,
-                    "Workout Reminders",
-                    NotificationManager.IMPORTANCE_HIGH
-                ),
-                NotificationChannel(
-                    CHANNEL_ID_GOALS,
-                    "Goal Reminders",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                ),
-                NotificationChannel(
-                    CHANNEL_ID_STEPS,
-                    "Step Tracking",
-                    NotificationManager.IMPORTANCE_LOW
-                )
+            val workoutChannel = NotificationChannel(
+                CHANNEL_WORKOUT,
+                "Workout Reminders",
+                NotificationManager.IMPORTANCE_DEFAULT
             )
-
-            channels.forEach { channel ->
-                notificationManager.createNotificationChannel(channel)
-            }
+            val goalChannel = NotificationChannel(
+                CHANNEL_GOAL,
+                "Goal Reminders",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(workoutChannel)
+            notificationManager.createNotificationChannel(goalChannel)
         }
     }
 
-    fun showWorkoutReminder(title: String, message: String) {
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID_WORKOUTS)
-            .setContentTitle(title)
-            .setContentText(message)
+    fun showWorkoutReminder() {
+        val notification = NotificationCompat.Builder(context, CHANNEL_WORKOUT)
+            .setContentTitle("Time for a Workout!")
+            .setContentText("Stay on track with your fitness goals")
             .setSmallIcon(R.drawable.ic_notification)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(1001, notification)
+        notificationManager.notify(WORKOUT_NOTIFICATION_ID, notification)
     }
 
-    fun showGoalReminder(title: String, message: String) {
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID_GOALS)
-            .setContentTitle(title)
-            .setContentText(message)
+    fun showGoalReminder(goalTitle: String) {
+        val notification = NotificationCompat.Builder(context, CHANNEL_GOAL)
+            .setContentTitle("Goal Reminder")
+            .setContentText("Don't forget about your goal: $goalTitle")
             .setSmallIcon(R.drawable.ic_notification)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(1002, notification)
+        notificationManager.notify(GOAL_NOTIFICATION_ID, notification)
     }
 
-    fun showStepProgress(steps: Int, goal: Int) {
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID_STEPS)
-            .setContentTitle("Step Progress")
-            .setContentText("$steps / $goal steps today")
+    /**
+     * Sends a daily reminder notification to encourage user activity.
+     */
+    fun sendDailyReminder() {
+        val notification = NotificationCompat.Builder(context, CHANNEL_WORKOUT)
+            .setContentTitle("Daily Activity Reminder")
+            .setContentText("Start your day with some physical activity!")
+            .setSmallIcon(R.drawable.ic_notification)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(DAILY_NOTIFICATION_ID, notification)
+    }
+
+    /**
+     * Sends a goal reminder notification for a specific goal.
+     */
+    fun sendGoalReminder(goalTitle: String = "Your Fitness Goal") {
+        showGoalReminder(goalTitle)
+    }
+
+    /**
+     * Sends a workout reminder notification.
+     */
+    fun sendWorkoutReminder() {
+        showWorkoutReminder()
+    }
+
+    /**
+     * Shows a step goal achievement notification.
+     */
+    fun showStepGoalAchievement(stepCount: Int) {
+        val notification = NotificationCompat.Builder(context, CHANNEL_GOAL)
+            .setContentTitle("Step Goal Achieved!")
+            .setContentText("Congratulations! You've reached $stepCount steps today.")
             .setSmallIcon(R.drawable.ic_steps)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setOngoing(true)
+            .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(1003, notification)
+        notificationManager.notify(STEP_GOAL_NOTIFICATION_ID, notification)
+    }
+
+    /**
+     * Shows a motivational notification.
+     */
+    fun showMotivationalNotification(message: String) {
+        val notification = NotificationCompat.Builder(context, CHANNEL_WORKOUT)
+            .setContentTitle("Stay Motivated!")
+            .setContentText(message)
+            .setSmallIcon(R.drawable.ic_motivation)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(MOTIVATIONAL_NOTIFICATION_ID, notification)
+    }
+
+    companion object {
+        const val CHANNEL_WORKOUT = "workout_reminders"
+        const val CHANNEL_GOAL = "goal_reminders"
+        const val WORKOUT_NOTIFICATION_ID = 1
+        const val GOAL_NOTIFICATION_ID = 2
+        const val DAILY_NOTIFICATION_ID = 3
+        const val STEP_GOAL_NOTIFICATION_ID = 4
+        const val MOTIVATIONAL_NOTIFICATION_ID = 5
     }
 }

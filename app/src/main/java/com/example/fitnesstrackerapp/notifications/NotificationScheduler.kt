@@ -8,11 +8,12 @@
 
 package com.example.fitnesstrackerapp.notifications
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import androidx.annotation.RequiresPermission
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -57,6 +58,7 @@ class NotificationScheduler(private val context: Context) {
      * @param hour The hour of day (0-23) when the reminder should trigger. Defaults to 9 AM.
      * @param minute The minute of hour (0-59) when the reminder should trigger. Defaults to 0.
      */
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     fun scheduleDailyReminder(
         hour: Int = DEFAULT_REMINDER_HOUR,
         minute: Int = DEFAULT_REMINDER_MINUTE
@@ -88,20 +90,11 @@ class NotificationScheduler(private val context: Context) {
             }
 
             // Schedule the repeating alarm
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    pendingIntent
-                )
-            } else {
-                alarmManager.setRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    AlarmManager.INTERVAL_DAY,
-                    pendingIntent
-                )
-            }
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
 
             logDebug("Daily reminder scheduled for ${calendar.time}")
         } catch (e: Exception) {
@@ -127,7 +120,7 @@ class NotificationScheduler(private val context: Context) {
 
             workManager.enqueueUniquePeriodicWork(
                 GOAL_REMINDER_WORK_NAME,
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 goalReminderWork
             )
 
@@ -145,6 +138,7 @@ class NotificationScheduler(private val context: Context) {
      * @param deadlineMillis The deadline timestamp in milliseconds.
      * @param reminderOffsetHours How many hours before the deadline to send the reminder.
      */
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     fun scheduleGoalDeadlineReminder(
         goalId: String,
         goalTitle: String,
@@ -169,19 +163,11 @@ class NotificationScheduler(private val context: Context) {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        reminderTime,
-                        pendingIntent
-                    )
-                } else {
-                    alarmManager.set(
-                        AlarmManager.RTC_WAKEUP,
-                        reminderTime,
-                        pendingIntent
-                    )
-                }
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    reminderTime,
+                    pendingIntent
+                )
 
                 logDebug("Goal deadline reminder scheduled for goal: $goalTitle")
             }
