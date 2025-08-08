@@ -49,6 +49,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.fitnesstrackerapp.screens.ForgotPasswordScreen
 import com.example.fitnesstrackerapp.screens.GoalScreen
 import com.example.fitnesstrackerapp.screens.HomeScreen
 import com.example.fitnesstrackerapp.screens.SignUpScreen
@@ -117,6 +118,11 @@ private fun AuthNavigationGraph(
                         launchSingleTop = true
                     }
                 },
+                onNavigateToForgotPassword = {
+                    navController.navigate("forgot_password") {
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -125,6 +131,16 @@ private fun AuthNavigationGraph(
                 navController = navController,
                 onNavigateToLogin = {
                     navController.popBackStack()
+                },
+                viewModel = authViewModel,
+            )
+        }
+        
+        composable("forgot_password") {
+            ForgotPasswordScreen(
+                navController = navController,
+                onNavigateToLogin = {
+                    navController.popBackStack("login", inclusive = false)
                 },
                 viewModel = authViewModel,
             )
