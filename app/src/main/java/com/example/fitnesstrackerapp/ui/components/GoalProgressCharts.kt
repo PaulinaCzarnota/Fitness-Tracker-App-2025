@@ -37,20 +37,20 @@ import kotlin.math.min
 fun GoalProgressChart(
     goal: FitnessGoal,
     progressPercentage: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     // Get colors outside of Canvas context
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val primaryColor = MaterialTheme.colorScheme.primary
     val secondaryColor = MaterialTheme.colorScheme.secondary
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
-    
+
     Box(modifier = modifier) {
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             val canvasWidth = size.width
             val canvasHeight = size.height
@@ -63,7 +63,7 @@ fun GoalProgressChart(
                 color = surfaceVariantColor,
                 radius = circleRadius,
                 center = center,
-                style = Stroke(width = strokeWidth)
+                style = Stroke(width = strokeWidth),
             )
 
             // Draw progress arc
@@ -80,10 +80,10 @@ fun GoalProgressChart(
                 useCenter = false,
                 topLeft = Offset(
                     center.x - circleRadius,
-                    center.y - circleRadius
+                    center.y - circleRadius,
                 ),
                 size = Size(circleRadius * 2, circleRadius * 2),
-                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             )
         }
 
@@ -91,31 +91,31 @@ fun GoalProgressChart(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             Text(
                 text = "${progressPercentage.toInt()}%",
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             Text(
                 text = "${goal.type.name} Goal",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             LinearProgressIndicator(
                 progress = { progressPercentage / 100f },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 8.dp),
             )
 
             Text(
                 text = "Current: ${goal.currentValue}/${goal.targetValue}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -133,12 +133,12 @@ private fun WorkoutTrendStat(type: WorkoutType, count: Int, maxCount: Int) {
             progress = { progress },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp)
+                .height(8.dp),
         )
         Text(
             text = "$count sessions",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -146,18 +146,18 @@ private fun WorkoutTrendStat(type: WorkoutType, count: Int, maxCount: Int) {
 @Composable
 fun WorkoutTrendChart(
     workoutCounts: Map<WorkoutType, Int>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val maxCount = workoutCounts.values.maxOrNull() ?: 0
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         Text(
             text = "Workout Distribution",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
         )
         for ((type, count) in workoutCounts) {
             WorkoutTrendStat(type, count, maxCount)
@@ -179,25 +179,25 @@ private fun CaloriesBarLabel(day: String) {
 @Composable
 fun CaloriesBurnedChart(
     dailyCalories: List<Pair<String, Int>>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val maxCalories = dailyCalories.maxOfOrNull { it.second } ?: 0
     val primaryColor = MaterialTheme.colorScheme.primary
-    
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         Text(
             text = "Calories Burned (Last 7 Days)",
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 16.dp),
         )
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(200.dp),
         ) {
             val canvasWidth = size.width
             val canvasHeight = size.height
@@ -209,13 +209,13 @@ fun CaloriesBurnedChart(
                 drawRect(
                     color = primaryColor,
                     topLeft = Offset(x, canvasHeight - barHeight),
-                    size = Size(barWidth, barHeight)
+                    size = Size(barWidth, barHeight),
                 )
             }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             for ((day, _) in dailyCalories) {
                 CaloriesBarLabel(day)
@@ -230,23 +230,23 @@ fun CaloriesBurnedChart(
 @Composable
 fun GoalProgressDisplay(
     goal: FitnessGoal,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val progress = (goal.currentValue / goal.targetValue * 100).coerceIn(0.0, 100.0).toFloat()
     Column(modifier = modifier.padding(16.dp)) {
         Text(
             text = goal.title,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
         )
         LinearProgressIndicator(
             progress = { progress / 100f },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text("${progress.toInt()}% Complete")
             Text("Target: ${goal.targetValue}")

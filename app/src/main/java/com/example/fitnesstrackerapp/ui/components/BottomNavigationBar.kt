@@ -9,6 +9,7 @@
 package com.example.fitnesstrackerapp.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -20,19 +21,18 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 data class BottomNavItem(
     val route: String,
     val label: String,
-    val icon: ImageVector
+    val icon: ImageVector,
 )
 
 @Composable
 fun BottomNavigationBar(
-    navController: NavController
+    navController: NavController,
 ) {
     val items = listOf(
         BottomNavItem("home", "Home", Icons.Default.Home),
-        BottomNavItem("workout", "Workout", Icons.Default.DirectionsRun),
-        BottomNavItem("nutrition", "Nutrition", Icons.Default.LocalDining),
+        BottomNavItem("workout", "Workout", Icons.AutoMirrored.Filled.DirectionsRun),
         BottomNavItem("goals", "Goals", Icons.Default.Flag),
-        BottomNavItem("progress", "Progress", Icons.Default.ShowChart)
+        BottomNavItem("progress", "Progress", Icons.AutoMirrored.Filled.ShowChart),
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -49,7 +49,7 @@ fun BottomNavigationBar(
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
-                }
+                },
             )
         }
     }

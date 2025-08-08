@@ -20,14 +20,14 @@ import java.util.Date
 fun WorkoutProgressChart(
     workouts: List<Workout>,
     modifier: Modifier = Modifier,
-    period: ChartPeriod = ChartPeriod.WEEKLY
+    period: ChartPeriod = ChartPeriod.WEEKLY,
 ) {
     when (period) {
         ChartPeriod.WEEKLY -> workouts.groupByWeek()
         ChartPeriod.MONTHLY -> workouts.groupByMonth()
         ChartPeriod.YEARLY -> workouts.groupByYear()
     }
-    
+
     // Chart implementation using a charting library like MPAndroidChart
     // would go here. For this example, we're showing the structure.
 }
@@ -35,11 +35,11 @@ fun WorkoutProgressChart(
 @Composable
 fun GoalProgressChart(
     goals: List<Goal>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     goals.count { it.isCompleted() }
     goals.count { !it.isCompleted() }
-    
+
     // Pie chart implementation showing goal completion statistics
 }
 
@@ -47,10 +47,10 @@ fun GoalProgressChart(
 fun StepCountChart(
     steps: List<Step>,
     dailyGoal: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     steps.takeLast(7)
-    
+
     // Bar chart implementation showing daily steps vs goal
 }
 
@@ -58,14 +58,14 @@ fun StepCountChart(
 fun CaloriesBurnedChart(
     workouts: List<Workout>,
     modifier: Modifier = Modifier,
-    period: ChartPeriod = ChartPeriod.WEEKLY
+    period: ChartPeriod = ChartPeriod.WEEKLY,
 ) {
     when (period) {
         ChartPeriod.WEEKLY -> workouts.groupByWeek().mapValues { it.value.sumOf { w -> w.calories } }
         ChartPeriod.MONTHLY -> workouts.groupByMonth().mapValues { it.value.sumOf { w -> w.calories } }
         ChartPeriod.YEARLY -> workouts.groupByYear().mapValues { it.value.sumOf { w -> w.calories } }
     }
-    
+
     // Line chart implementation showing calories burned over time
 }
 
