@@ -133,7 +133,6 @@ fun StepTrackerScreen(
     val stepCounterViewModel: StepCounterViewModel = remember {
         ViewModelFactoryProvider.getStepCounterViewModel(activity, 1L) // Default user ID
     }
-    val uiState by stepCounterViewModel.uiState.collectAsStateWithLifecycle()
 
     // Collect step count and other state
     val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle()

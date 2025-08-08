@@ -58,10 +58,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.fitnesstrackerapp.ViewModelFactoryProvider
-import com.example.fitnesstrackerapp.ui.viewmodel.ProgressViewModel
 
 /**
  * Data classes for progress tracking
@@ -101,10 +99,9 @@ fun ProgressScreen(
 ) {
     // Initialize ViewModel via factory
     val activity = LocalContext.current as ComponentActivity
-    val progressViewModel: ProgressViewModel = remember {
+    remember {
         ViewModelFactoryProvider.getProgressViewModel(activity)
     }
-    val uiState by progressViewModel.uiState.collectAsStateWithLifecycle()
 
     // Sample data - in real app, this would come from ViewModel
     val weeklyStats = remember {
