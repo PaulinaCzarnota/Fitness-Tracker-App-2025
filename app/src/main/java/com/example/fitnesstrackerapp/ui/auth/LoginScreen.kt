@@ -1,11 +1,17 @@
 /**
- * Login Screen
+ * User authentication screen for the Fitness Tracker application.
  *
- * Responsibilities:
- * - Handles user authentication UI
- * - Provides login and registration options
- * - Manages authentication state and error handling
+ * This Compose screen provides:
+ * - User login functionality with email and password
+ * - User registration with name, email, and password  
+ * - Real-time validation and error handling
+ * - Loading states during authentication operations
+ * - Seamless navigation between login and registration modes
+ *
+ * The screen integrates with AuthViewModel for state management and
+ * authentication operations through the repository layer.
  */
+
 package com.example.fitnesstrackerapp.ui.auth
 
 import androidx.compose.foundation.layout.*
@@ -15,24 +21,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 
+/**
+ * Composable function for the Login and Registration screen.
+ *
+ * @param modifier Modifier for styling the screen.
+ * @param authViewModel The ViewModel for handling authentication logic.
+ * @param onLoginSuccess A callback to be invoked when login is successful.
+ */
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = koinViewModel()
+    authViewModel: AuthViewModel,
+    onLoginSuccess: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var isRegistering by remember { mutableStateOf(false) }
 
-    val authState by authViewModel.authState.collectAsState(initial = AuthViewModel.AuthUiState())
     val uiState by authViewModel.uiState.collectAsState()
 
-    LaunchedEffect(authState.isAuthenticated) {
-        if (authState.isAuthenticated) {
+    // Navigate on successful authentication
+    LaunchedEffect(uiState.isAuthenticated) {
+        if (uiState.isAuthenticated) {
             onLoginSuccess()
         }
     }
@@ -94,7 +106,7 @@ fun LoginScreen(
             enabled = !uiState.isLoading
         ) {
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                CircularProgressIndicator(modifier = Modifier.size(24.dp))
             } else {
                 Text(if (isRegistering) "Create Account" else "Login")
             }
@@ -102,29 +114,22 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(
-            onClick = { isRegistering = !isRegistering }
-        ) {
-            Text(
-                if (isRegistering) "Already have an account? Login"
-                else "Don't have an account? Create one"
-            )
+        TextButton(onClick = { isRegistering = !isRegistering }) {
+            Text(if (isRegistering) "Already have an account? Login" else "Don't have an account? Create one")
         }
 
-        // Fixed: Safe null handling for error message
-        uiState.error?.let { errorMessage ->
-            Spacer(modifier = Modifier.height(8.dp))
+        // Display error messages
+        uiState.error?.let { error ->
+            LaunchedEffect(error) {
+                // This could be a Snackbar, Toast, or a Text element
+                // For simplicity, we'll just log it for now
+                println("Auth Error: $error")
+                authViewModel.clearError() // Clear error after showing
+            }
             Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
-        uiState.successMessage?.let { successMessage ->
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = successMessage,
-                color = MaterialTheme.colorScheme.primary
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
