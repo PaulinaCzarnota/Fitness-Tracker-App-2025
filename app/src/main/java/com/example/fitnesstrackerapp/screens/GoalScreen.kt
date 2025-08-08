@@ -40,6 +40,10 @@ fun GoalScreen(
     val goalViewModel: GoalViewModel = ViewModelFactoryProvider.getGoalViewModel(activity)
     val uiState by goalViewModel.uiState.collectAsStateWithLifecycle()
     var showAddGoalDialog by remember { mutableStateOf(false) }
+    
+    // Get current user ID from ServiceLocator
+    val serviceLocator = remember { com.example.fitnesstrackerapp.ServiceLocator.get(activity) }
+    val currentUserId = serviceLocator.authRepository.getCurrentUserId() ?: 1L
 
     Column(
         modifier = modifier
@@ -108,9 +112,9 @@ fun GoalScreen(
         AddGoalDialog(
             onDismiss = { showAddGoalDialog = false },
             onAddGoal = { title, description, targetValue, goalType ->
-                // Create a proper Goal entity - TODO: Replace with actual user ID from auth
+                // Create a proper Goal entity with current user ID
                 val goal = Goal(
-                    userId = 1L, // TODO: Get actual current user ID from authentication
+                    userId = currentUserId,
                     title = title,
                     description = description.takeIf { it.isNotBlank() },
                     goalType = goalType,

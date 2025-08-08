@@ -319,12 +319,4 @@ interface GoalDao {
     fun getGoalsWithReminders(userId: Long): Flow<List<Goal>>
 }
 
-/**
- * Data class for goal statistics.
- */
-data class GoalStats(
-    val totalGoals: Int,
-    val activeGoals: Int,
-    val achievedGoals: Int,
-    val avgCompletionRate: Float?
-)
+
