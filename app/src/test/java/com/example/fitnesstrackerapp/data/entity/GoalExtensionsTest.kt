@@ -18,11 +18,13 @@
 
 package com.example.fitnesstrackerapp.data.entity
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.util.Date
 import java.util.Calendar
+import java.util.Date
 import kotlin.math.abs
 
 class GoalExtensionsTest {

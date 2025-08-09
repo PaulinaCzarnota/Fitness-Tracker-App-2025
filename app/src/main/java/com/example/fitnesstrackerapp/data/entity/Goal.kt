@@ -100,10 +100,15 @@ data class Goal(
     }
 
     /**
-     * Checks if the goal is completed.
+     * Checks if the goal is completed (moved to GoalExtensions.kt for enhanced logic)
+     * @deprecated Use the extension function in GoalExtensions.kt for improved completion logic
      * @return true if current value meets or exceeds target value or status is completed
      */
-    fun isCompleted(): Boolean {
+    @Deprecated(
+        "Use isCompleted() extension function for enhanced goal-type specific completion logic",
+        ReplaceWith("this.isCompleted()", "com.example.fitnesstrackerapp.data.entity.isCompleted")
+    )
+    fun isCompletedLegacy(): Boolean {
         return currentValue >= targetValue || status == GoalStatus.COMPLETED
     }
 

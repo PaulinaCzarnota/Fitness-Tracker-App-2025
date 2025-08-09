@@ -16,9 +16,7 @@
 
 package com.example.fitnesstrackerapp.data.entity
 
-import kotlin.math.abs
 import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Enhanced completion check that handles goal-type specific logic
