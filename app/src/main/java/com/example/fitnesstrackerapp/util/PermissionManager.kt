@@ -252,7 +252,11 @@ class PermissionManager(
         val grantedEssential = essential.filter { PermissionUtils.isPermissionGranted(activity, it) }
         val deniedEssential = essential.filter { !PermissionUtils.isPermissionGranted(activity, it) }
 
-        val optional = PermissionConstants.RUNTIME_PERMISSIONS.filterNot { it in essential }
+        val optional = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            PermissionConstants.RUNTIME_PERMISSIONS.filterNot { it in essential }
+        } else {
+            emptyList()
+        }
         val grantedOptional = optional.filter { PermissionUtils.isPermissionGranted(activity, it) }
         val deniedOptional = optional.filter { !PermissionUtils.isPermissionGranted(activity, it) }
 
