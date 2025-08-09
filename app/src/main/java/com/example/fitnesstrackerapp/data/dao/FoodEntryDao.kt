@@ -139,7 +139,7 @@ interface FoodEntryDao {
     @Query(
         "SELECT * FROM food_entries WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date) AND meal_type = :mealType ORDER BY date_consumed DESC",
     )
-    fun getFoodEntriesByMealType(userId: Long, date: MealType, mealType: MealType): Flow<List<FoodEntry>>
+    fun getFoodEntriesByMealType(userId: Long, mealType: MealType, date: Date): Flow<List<FoodEntry>>
 
     /**
      * Gets recent food entries with limit.
