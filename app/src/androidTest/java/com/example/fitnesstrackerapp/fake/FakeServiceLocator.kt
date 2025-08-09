@@ -16,6 +16,8 @@ object FakeServiceLocator {
     val goalRepository = FakeGoalRepository()
     val stepRepository = FakeStepRepository()
     val notificationRepository = FakeNotificationRepository()
+    val foodEntryRepository = FakeFoodEntryRepository()
+    val nutritionRepository = FakeNutritionRepository()
 
     // Fake services
     val notificationService = FakeNotificationService()
