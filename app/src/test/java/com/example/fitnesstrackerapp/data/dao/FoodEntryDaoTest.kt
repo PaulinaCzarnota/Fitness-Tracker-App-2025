@@ -525,7 +525,7 @@ class FoodEntryDaoTest {
         val targetDate = Date()
 
         // Insert entries for all meal types
-        MealType.values().forEach { mealType ->
+        MealType.entries.forEach { mealType ->
             foodEntryDao.insertFoodEntry(
                 TestHelper.createTestFoodEntry(
                     userId = userId,
@@ -537,7 +537,7 @@ class FoodEntryDaoTest {
         }
 
         // Verify each meal type has entries
-        MealType.values().forEach { mealType ->
+        MealType.entries.forEach { mealType ->
             val entries = foodEntryDao.getFoodEntriesByMealType(userId, mealType).first()
             assertThat(entries).hasSize(1)
             assertThat(entries[0].mealType).isEqualTo(mealType)
@@ -545,7 +545,7 @@ class FoodEntryDaoTest {
 
         // Check total calories for the day
         val totalCalories = foodEntryDao.getTotalCaloriesByDate(userId, targetDate)
-        val expectedTotal = MealType.values().size * 200.0
+        val expectedTotal = MealType.entries.size * 200.0
         assertThat(totalCalories).isEqualTo(expectedTotal)
     }
 }

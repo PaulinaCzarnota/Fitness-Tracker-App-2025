@@ -76,7 +76,7 @@ data class WorkoutLoggingUiState(
  */
 data class SetInput(
     val repetitions: Int = 0,
-    val weight: Float = 0f,
+    val weight: Double = 0.0,
     val duration: Int = 0, // seconds
     val distance: Float = 0f, // km
     val setType: SetType = SetType.NORMAL,

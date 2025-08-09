@@ -15,6 +15,9 @@ package com.example.fitnesstrackerapp.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
+import com.example.fitnesstrackerapp.auth.SessionManager
+import com.example.fitnesstrackerapp.auth.SessionRestoreResult
 import com.example.fitnesstrackerapp.data.dao.UserDao
 import com.example.fitnesstrackerapp.data.entity.User
 import com.example.fitnesstrackerapp.security.CryptoManager
@@ -22,7 +25,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Date
-import androidx.core.content.edit
 
 /**
  * Repository class for handling user authentication operations.
@@ -31,6 +33,7 @@ import androidx.core.content.edit
 class AuthRepository(
     private val userDao: UserDao,
     private val passwordManager: CryptoManager,
+    private val sessionManager: SessionManager,
     context: Context,
 ) {
 
@@ -51,64 +54,106 @@ class AuthRepository(
     )
 
     /**
-     * Registers a new user
+     * Registers a new user with enhanced security
      */
-    suspend fun register(email: String, password: String, name: String): AuthResult {
+    suspend fun register(email: String, password: String, name: String, rememberMe: Boolean = false): AuthResult {
         return try {
+            // Check if user already exists
             val existingUser = userDao.getUserByEmail(email)
             if (existingUser != null) {
-                AuthResult.Error("User with this email already exists")
-            } else {
-                val salt = passwordManager.generateSalt()
-                val hashedPassword = passwordManager.hashPassword(password, salt)
-                val user = User(
-                    email = email,
-                    username = name,
-                    passwordHash = passwordManager.bytesToHex(hashedPassword),
-                    passwordSalt = passwordManager.bytesToHex(salt),
-                    registrationDate = Date(),
-                    isActive = true,
-                )
-
-                val userId = userDao.insertUser(user)
-                val createdUser = user.copy(id = userId)
-                _currentUser.value = createdUser
-                _isAuthenticated.value = true
-                currentUserId = userId
-
-                // Save user ID to SharedPreferences
-                sharedPrefs.edit {putLong("current_user_id", userId) }
-
-                AuthResult.Success("Registration successful")
+                return AuthResult.Error("User with this email already exists")
             }
+
+            // Validate input
+            if (email.isBlank() || password.isBlank() || name.isBlank()) {
+                return AuthResult.Error("All fields are required")
+            }
+
+            // Create new user with secure password hashing
+            val salt = passwordManager.generateSalt()
+            val hashedPassword = passwordManager.hashPassword(password, salt)
+
+            val user = User(
+                email = email.trim().lowercase(),
+                username = name.trim(),
+                passwordHash = passwordManager.bytesToHex(hashedPassword),
+                passwordSalt = passwordManager.bytesToHex(salt),
+                firstName = name.split(" ").firstOrNull()?.trim(),
+                lastName = if (name.split(" ").size > 1) name.split(" ").drop(1).joinToString(" ").trim() else null,
+                registrationDate = Date(),
+                isActive = true,
+                failedLoginAttempts = 0,
+                isAccountLocked = false,
+            )
+
+            val userId = userDao.insertUser(user)
+            val createdUser = user.copy(id = userId)
+
+            // Save session using enhanced SessionManager
+            sessionManager.saveUserSession(createdUser, rememberMe)
+
+            _currentUser.value = createdUser
+            _isAuthenticated.value = true
+            currentUserId = userId
+
+            AuthResult.Success("Registration successful")
         } catch (e: Exception) {
             AuthResult.Error("Registration failed: ${e.message}")
         }
     }
 
     /**
-     * Logs in an existing user
+     * Logs in an existing user with enhanced security checks
      */
-    suspend fun login(email: String, password: String): AuthResult {
+    suspend fun login(email: String, password: String, rememberMe: Boolean = false): AuthResult {
         return try {
-            val user = userDao.getUserByEmail(email)
-            if (user != null) {
-                val salt = passwordManager.hexToBytes(user.passwordSalt)
-                val storedHash = passwordManager.hexToBytes(user.passwordHash)
-                if (passwordManager.verifyPassword(password, storedHash, salt)) {
-                    _currentUser.value = user
-                    _isAuthenticated.value = true
-                    currentUserId = user.id
+            if (email.isBlank() || password.isBlank()) {
+                return AuthResult.Error("Email and password are required")
+            }
 
-                    // Save user ID to SharedPreferences
-                    sharedPrefs.edit { putLong("current_user_id", user.id) }
+            val user = userDao.getUserByEmail(email.trim().lowercase())
+            if (user == null) {
+                return AuthResult.Error("Invalid email or password")
+            }
 
-                    AuthResult.Success("Login successful")
-                } else {
-                    AuthResult.Error("Invalid email or password")
+            // Check if account is locked
+            if (user.isAccountLocked) {
+                return AuthResult.Error("Account is locked due to too many failed attempts. Please contact support.")
+            }
+
+            // Check if account is active
+            if (!user.isActive) {
+                return AuthResult.Error("Account is deactivated. Please contact support.")
+            }
+
+            // Verify password
+            val salt = passwordManager.hexToBytes(user.passwordSalt)
+            val storedHash = passwordManager.hexToBytes(user.passwordHash)
+
+            if (passwordManager.verifyPassword(password, storedHash, salt)) {
+                // Reset failed login attempts on successful login
+                if (user.failedLoginAttempts > 0) {
+                    userDao.resetFailedLoginAttempts(user.id, Date())
                 }
+
+                // Update last login timestamp
+                val updatedUser = user.copy(
+                    lastLogin = Date(),
+                    failedLoginAttempts = 0,
+                )
+                userDao.updateUser(updatedUser)
+
+                // Save session using enhanced SessionManager
+                sessionManager.saveUserSession(updatedUser, rememberMe)
+
+                _currentUser.value = updatedUser
+                _isAuthenticated.value = true
+                currentUserId = user.id
+
+                AuthResult.Success("Login successful")
             } else {
-                AuthResult.Error("Invalid email or password")
+                // Handle failed login attempt
+                return handleFailedLogin(email)
             }
         } catch (e: Exception) {
             AuthResult.Error("Login failed: ${e.message}")
@@ -116,15 +161,24 @@ class AuthRepository(
     }
 
     /**
-     * Logs out the current user
+     * Logs out the current user with secure session cleanup
      */
-    fun logout() {
-        _currentUser.value = null
-        _isAuthenticated.value = false
-        currentUserId = null
+    suspend fun logout() {
+        try {
+            sessionManager.clearUserSession()
+            _currentUser.value = null
+            _isAuthenticated.value = false
+            currentUserId = null
 
-        // Clear user ID from SharedPreferences
-        sharedPrefs.edit { remove("current_user_id") }
+            // Clear user ID from SharedPreferences as backup
+            sharedPrefs.edit { remove("current_user_id") }
+        } catch (e: Exception) {
+            // Even if secure session clearing fails, clear local state
+            _currentUser.value = null
+            _isAuthenticated.value = false
+            currentUserId = null
+            sharedPrefs.edit { clear() }
+        }
     }
 
     /**
@@ -294,30 +348,27 @@ class AuthRepository(
     }
 
     /**
-     * Restores user session from stored data
+     * Restores user session using enhanced SessionManager
      */
     suspend fun restoreSession(): AuthResult {
         return try {
-            val userId = sharedPrefs.getLong("current_user_id", 0L)
-            if (userId != 0L) {
-                val user = userDao.getUserById(userId)
-                if (user != null && user.canLogin()) {
+            when (val result = sessionManager.restoreSession()) {
+                is SessionRestoreResult.Success -> {
+                    val user = result.user
                     _currentUser.value = user
                     _isAuthenticated.value = true
-                    currentUserId = userId
+                    currentUserId = user.id
 
-                    // Update last login
-                    val updatedUser = user.copy(lastLogin = Date())
-                    userDao.updateUser(updatedUser)
+                    // Refresh session to extend timeout
+                    sessionManager.refreshSession()
 
-                    AuthResult.Success("Session restored")
-                } else {
-                    // Clear invalid session
-                    sharedPrefs.edit {remove("current_user_id") }
-                    AuthResult.Error("Session expired or account disabled")
+                    AuthResult.Success("Session restored successfully")
                 }
-            } else {
-                AuthResult.Error("No saved session")
+                is SessionRestoreResult.Failed -> {
+                    // Clear any remaining legacy session data
+                    sharedPrefs.edit { clear() }
+                    AuthResult.Error(result.message)
+                }
             }
         } catch (e: Exception) {
             AuthResult.Error("Failed to restore session: ${e.message}")

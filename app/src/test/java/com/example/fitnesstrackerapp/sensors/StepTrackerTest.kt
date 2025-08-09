@@ -32,18 +32,18 @@ class StepTrackerTest {
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
-        
+
         // Mock SensorManager and sensors
         sensorManager = mockk()
         stepCounterSensor = mockk()
         stepDetectorSensor = mockk()
-        
+
         // Mock context.getSystemService to return our mock SensorManager
         mockkStatic(Context::class)
         every { context.getSystemService(Context.SENSOR_SERVICE) } returns sensorManager
         every { sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) } returns stepCounterSensor
         every { sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR) } returns stepDetectorSensor
-        
+
         stepTracker = StepTracker(context)
     }
 
@@ -55,7 +55,7 @@ class StepTrackerTest {
     @Test
     fun `isStepTrackingSupported returns true when sensors available`() {
         // Given - sensors are mocked to be available
-        
+
         // When
         val result = stepTracker.isStepTrackingSupported()
 
@@ -260,23 +260,23 @@ class StepTrackerTest {
             stepTracker.stopTracking()
             stepTracker.resetSessionSteps()
             stepTracker.getSessionStepCount()
-            
+
             // Calculations
             stepTracker.calculateDistance(1000)
             stepTracker.calculateDistanceKm(1000)
             stepTracker.calculateCalories(1000)
             stepTracker.getStepStats()
-            
+
             // Manual operations
             stepTracker.addManualSteps(100)
             stepTracker.setStepLength(0.8f)
             stepTracker.clearCache()
-            
+
             // Flows
             assertNotNull(stepTracker.stepCount)
             assertNotNull(stepTracker.isTracking)
             assertNotNull(stepTracker.totalSteps)
-            
+
             // Success - API surface is stable
             assertTrue(true)
         } catch (e: NoSuchMethodError) {
@@ -295,7 +295,7 @@ class StepTrackerTest {
             totalSteps = 1000L,
             sessionDistance = 0.76f,
             sessionCalories = 40.0f,
-            isTracking = true
+            isTracking = true,
         )
 
         // Then

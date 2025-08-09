@@ -1,7 +1,21 @@
+/**
+ * Constants and utility classes for the Fitness Tracker application.
+ *
+ * This file contains:
+ * - Application-wide constants for various features
+ * - Step tracking configuration constants
+ * - Date utility functions for formatting and calculations
+ * - Notification channel and frequency constants
+ *
+ * These constants help maintain consistency across the application
+ * and provide centralized configuration for core functionality.
+ */
+
 package com.example.fitnesstrackerapp.util
 
 /**
- * General application constants
+ * General application constants used throughout the Fitness Tracker app.
+ * Contains configuration values for goals, notifications, and WorkManager.
  */
 object AppConstants {
     // Goal frequency constants

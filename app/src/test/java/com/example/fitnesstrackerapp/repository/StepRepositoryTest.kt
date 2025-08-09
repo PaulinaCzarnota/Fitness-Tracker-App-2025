@@ -42,7 +42,7 @@ class StepRepositoryTest {
         context = ApplicationProvider.getApplicationContext()
         database = Room.inMemoryDatabaseBuilder(
             context,
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -51,7 +51,7 @@ class StepRepositoryTest {
     @BeforeEach
     fun setup() = runTest {
         stepRepository = StepRepository(database.stepDao())
-        
+
         // Create test user
         testUser = User(
             email = "test@example.com",
@@ -59,7 +59,7 @@ class StepRepositoryTest {
             passwordHash = "hash",
             passwordSalt = "salt",
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
         testUserId = database.userDao().insertUser(testUser)
     }
@@ -85,7 +85,7 @@ class StepRepositoryTest {
             goal = 10000,
             caloriesBurned = 200.0f,
             distanceMeters = 3500.0f,
-            activeMinutes = 45
+            activeMinutes = 45,
         )
 
         // When
@@ -110,7 +110,7 @@ class StepRepositoryTest {
         val originalStep = createTestStep(
             userId = testUserId,
             count = 3000,
-            caloriesBurned = 120.0f
+            caloriesBurned = 120.0f,
         )
         val stepId = stepRepository.insertStep(originalStep)
 
@@ -118,7 +118,7 @@ class StepRepositoryTest {
             id = stepId,
             count = 7000,
             caloriesBurned = 280.0f,
-            distanceMeters = 4200.0f
+            distanceMeters = 4200.0f,
         )
 
         // When
@@ -157,7 +157,7 @@ class StepRepositoryTest {
         val yesterday = Date(today.time - 86400000L)
         val steps = listOf(
             createTestStep(userId = testUserId, date = today, count = 8000),
-            createTestStep(userId = testUserId, date = yesterday, count = 6500)
+            createTestStep(userId = testUserId, date = yesterday, count = 6500),
         )
 
         // When
@@ -169,7 +169,7 @@ class StepRepositoryTest {
 
         val todaysSteps = stepRepository.getStepsForDate(testUserId, today).first()
         val yesterdaysSteps = stepRepository.getStepsForDate(testUserId, yesterday).first()
-        
+
         assertNotNull(todaysSteps)
         assertNotNull(yesterdaysSteps)
         assertEquals(8000, todaysSteps!!.count)
@@ -188,7 +188,7 @@ class StepRepositoryTest {
             userId = testUserId,
             date = today,
             count = 7500,
-            goal = 10000
+            goal = 10000,
         )
         stepRepository.insertStep(todaysSteps)
 
@@ -220,7 +220,7 @@ class StepRepositoryTest {
         val step = createTestStep(
             userId = testUserId,
             date = specificDate,
-            count = 4500
+            count = 4500,
         )
         stepRepository.insertStep(step)
 
@@ -249,7 +249,7 @@ class StepRepositoryTest {
             createTestStep(userId = testUserId, date = dayBeforeYesterday, count = 3000),
             createTestStep(userId = testUserId, date = yesterday, count = 5000),
             createTestStep(userId = testUserId, date = today, count = 7000),
-            createTestStep(userId = testUserId, date = tomorrow, count = 9000)
+            createTestStep(userId = testUserId, date = tomorrow, count = 9000),
         )
 
         steps.forEach { stepRepository.insertStep(it) }
@@ -271,7 +271,7 @@ class StepRepositoryTest {
         val baseTime = System.currentTimeMillis()
         val startTime = baseTime - 2 * 86400000L // 2 days ago
         val endTime = baseTime // now
-        
+
         val step1 = createTestStep(userId = testUserId, date = Date(startTime), count = 4000)
         val step2 = createTestStep(userId = testUserId, date = Date(baseTime - 86400000L), count = 6000)
         val step3 = createTestStep(userId = testUserId, date = Date(baseTime + 86400000L), count = 8000) // tomorrow
@@ -296,7 +296,7 @@ class StepRepositoryTest {
         val today = Date()
         val step1 = createTestStep(userId = testUserId, date = today, count = 5000)
         val step2 = createTestStep(userId = testUserId, date = Date(today.time - 86400000L), count = 3000)
-        
+
         stepRepository.insertStep(step1)
         stepRepository.insertStep(step2)
 
@@ -319,7 +319,7 @@ class StepRepositoryTest {
         val step = createTestStep(
             userId = testUserId,
             count = 8500,
-            goal = 12000
+            goal = 12000,
         )
 
         // When
@@ -327,7 +327,7 @@ class StepRepositoryTest {
 
         // Then
         assertTrue(stepId > 0)
-        
+
         val savedStep = database.stepDao().getStepsForDate(testUserId, step.date).first()
         assertNotNull(savedStep)
         assertEquals(8500, savedStep!!.count)
@@ -339,12 +339,12 @@ class StepRepositoryTest {
         // Given
         val step = createTestStep(
             userId = testUserId,
-            count = 3000
+            count = 3000,
         )
 
         // When - first upsert (insert)
         val stepId1 = stepRepository.upsertSteps(step)
-        
+
         // When - second upsert (update)
         val updatedStep = step.copy(id = stepId1, count = 6000)
         val stepId2 = stepRepository.upsertSteps(updatedStep)
@@ -352,7 +352,7 @@ class StepRepositoryTest {
         // Then
         assertTrue(stepId1 > 0)
         assertTrue(stepId2 > 0)
-        
+
         val savedStep = database.stepDao().getStepsForDate(testUserId, step.date).first()
         assertNotNull(savedStep)
         assertEquals(6000, savedStep!!.count) // Should reflect the updated count
@@ -385,7 +385,7 @@ class StepRepositoryTest {
             goal = 10000,
             caloriesBurned = 0.0f,
             distanceMeters = 0.0f,
-            activeMinutes = 0
+            activeMinutes = 0,
         )
 
         // When
@@ -393,7 +393,7 @@ class StepRepositoryTest {
 
         // Then
         assertTrue(stepId > 0)
-        
+
         val savedStep = database.stepDao().getStepsForDate(testUserId, zeroStep.date).first()
         assertNotNull(savedStep)
         assertEquals(0, savedStep!!.count)
@@ -411,7 +411,7 @@ class StepRepositoryTest {
             goal = 50000,
             caloriesBurned = 2500.0f,
             distanceMeters = 30000.0f, // 30km
-            activeMinutes = 480 // 8 hours
+            activeMinutes = 480, // 8 hours
         )
 
         // When
@@ -419,7 +419,7 @@ class StepRepositoryTest {
 
         // Then
         assertTrue(stepId > 0)
-        
+
         val savedStep = database.stepDao().getStepsForDate(testUserId, highStep.date).first()
         assertNotNull(savedStep)
         assertEquals(50000, savedStep!!.count)
@@ -435,7 +435,7 @@ class StepRepositoryTest {
             email = "another@example.com",
             username = "anotheruser",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
         val anotherUserId = database.userDao().insertUser(anotherUser)
 
@@ -477,9 +477,9 @@ class StepRepositoryTest {
 
         // When
         val stepsAroundMidnight = stepRepository.getStepsInDateRange(
-            testUserId, 
-            beforeMidnight, 
-            afterMidnight
+            testUserId,
+            beforeMidnight,
+            afterMidnight,
         ).first()
 
         // Then
@@ -498,7 +498,7 @@ class StepRepositoryTest {
         date: Date = Date(),
         caloriesBurned: Float = 200.0f,
         distanceMeters: Float = 3000.0f,
-        activeMinutes: Int = 45
+        activeMinutes: Int = 45,
     ): Step {
         return Step(
             userId = userId,
@@ -509,7 +509,7 @@ class StepRepositoryTest {
             distanceMeters = distanceMeters,
             activeMinutes = activeMinutes,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
     }
 }

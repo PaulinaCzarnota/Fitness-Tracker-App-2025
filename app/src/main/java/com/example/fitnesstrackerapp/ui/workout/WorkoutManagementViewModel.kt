@@ -28,17 +28,17 @@ data class WorkoutManagementUiState(
     val workouts: List<Workout> = emptyList(),
     val error: String? = null,
     val successMessage: String? = null,
-    
+
     // Filter and search state
     val searchQuery: String = "",
     val selectedWorkoutTypes: Set<String> = emptySet(),
     val dateRange: Pair<Date?, Date?> = Pair(null, null),
-    
+
     // Statistics
     val totalWorkouts: Int = 0,
     val totalDuration: Int = 0,
     val totalCalories: Int = 0,
-    val averageDuration: Float = 0f
+    val averageDuration: Float = 0f,
 )
 
 /**
@@ -46,7 +46,7 @@ data class WorkoutManagementUiState(
  */
 class WorkoutManagementViewModel(
     private val workoutRepository: WorkoutRepository,
-    private val userId: Long
+    private val userId: Long,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutManagementUiState())
@@ -68,13 +68,13 @@ class WorkoutManagementViewModel(
                     _uiState.value = _uiState.value.copy(
                         workouts = workouts,
                         totalWorkouts = workouts.size,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to load workouts: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -88,10 +88,10 @@ class WorkoutManagementViewModel(
             try {
                 val totalDuration = workoutRepository.getTotalWorkoutDuration(userId)
                 val averageDuration = workoutRepository.getAverageWorkoutDuration(userId)
-                
+
                 _uiState.value = _uiState.value.copy(
                     totalDuration = totalDuration,
-                    averageDuration = averageDuration
+                    averageDuration = averageDuration,
                 )
             } catch (e: Exception) {
                 // Statistics loading failed, but not critical
@@ -106,7 +106,7 @@ class WorkoutManagementViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                
+
                 // Calculate calories using MET tables
                 val estimatedCalories = MetTableCalculator.calculateWorkoutCalories(
                     workoutType = workoutData.workoutType,
@@ -114,9 +114,9 @@ class WorkoutManagementViewModel(
                     weightKg = 70.0, // Default weight, should be user's actual weight
                     intensity = workoutData.intensity,
                     distance = workoutData.distance.takeIf { it > 0 },
-                    avgHeartRate = workoutData.avgHeartRate
+                    avgHeartRate = workoutData.avgHeartRate,
                 )
-                
+
                 // Create workout entity
                 val workout = Workout(
                     userId = userId,
@@ -131,20 +131,19 @@ class WorkoutManagementViewModel(
                     maxHeartRate = workoutData.maxHeartRate,
                     notes = workoutData.notes.takeIf { it.isNotBlank() },
                     createdAt = Date(),
-                    updatedAt = Date()
+                    updatedAt = Date(),
                 )
-                
+
                 workoutRepository.insertWorkout(workout)
-                
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    successMessage = "Workout created successfully! Estimated ${estimatedCalories} calories burned."
+                    successMessage = "Workout created successfully! Estimated $estimatedCalories calories burned.",
                 )
-                
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to create workout: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -157,18 +156,17 @@ class WorkoutManagementViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                
+
                 workoutRepository.updateWorkout(workout)
-                
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    successMessage = "Workout updated successfully!"
+                    successMessage = "Workout updated successfully!",
                 )
-                
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to update workout: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -181,18 +179,17 @@ class WorkoutManagementViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-                
+
                 workoutRepository.deleteWorkout(workout.id)
-                
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    successMessage = "Workout deleted successfully!"
+                    successMessage = "Workout deleted successfully!",
                 )
-                
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to delete workout: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -203,7 +200,7 @@ class WorkoutManagementViewModel(
      */
     fun searchWorkouts(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
-        
+
         if (query.isBlank()) {
             loadWorkouts()
         } else {
@@ -212,17 +209,17 @@ class WorkoutManagementViewModel(
                     workoutRepository.getWorkoutsByUserId(userId).collect { allWorkouts ->
                         val filteredWorkouts = allWorkouts.filter { workout ->
                             workout.title.contains(query, ignoreCase = true) ||
-                                    workout.workoutType.name.contains(query, ignoreCase = true) ||
-                                    workout.notes?.contains(query, ignoreCase = true) == true
+                                workout.workoutType.name.contains(query, ignoreCase = true) ||
+                                workout.notes?.contains(query, ignoreCase = true) == true
                         }
-                        
+
                         _uiState.value = _uiState.value.copy(
-                            workouts = filteredWorkouts
+                            workouts = filteredWorkouts,
                         )
                     }
                 } catch (e: Exception) {
                     _uiState.value = _uiState.value.copy(
-                        error = "Failed to search workouts: ${e.message}"
+                        error = "Failed to search workouts: ${e.message}",
                     )
                 }
             }
@@ -234,9 +231,9 @@ class WorkoutManagementViewModel(
      */
     fun filterByDateRange(startDate: Date?, endDate: Date?) {
         _uiState.value = _uiState.value.copy(
-            dateRange = Pair(startDate, endDate)
+            dateRange = Pair(startDate, endDate),
         )
-        
+
         if (startDate == null || endDate == null) {
             loadWorkouts()
         } else {
@@ -245,12 +242,12 @@ class WorkoutManagementViewModel(
                     workoutRepository.getWorkoutsByDateRange(userId, startDate, endDate)
                         .collect { filteredWorkouts ->
                             _uiState.value = _uiState.value.copy(
-                                workouts = filteredWorkouts
+                                workouts = filteredWorkouts,
                             )
                         }
                 } catch (e: Exception) {
                     _uiState.value = _uiState.value.copy(
-                        error = "Failed to filter workouts: ${e.message}"
+                        error = "Failed to filter workouts: ${e.message}",
                     )
                 }
             }
@@ -262,9 +259,9 @@ class WorkoutManagementViewModel(
      */
     fun filterByWorkoutTypes(workoutTypes: Set<String>) {
         _uiState.value = _uiState.value.copy(
-            selectedWorkoutTypes = workoutTypes
+            selectedWorkoutTypes = workoutTypes,
         )
-        
+
         if (workoutTypes.isEmpty()) {
             loadWorkouts()
         } else {
@@ -274,14 +271,14 @@ class WorkoutManagementViewModel(
                         val filteredWorkouts = allWorkouts.filter { workout ->
                             workoutTypes.contains(workout.workoutType.name)
                         }
-                        
+
                         _uiState.value = _uiState.value.copy(
-                            workouts = filteredWorkouts
+                            workouts = filteredWorkouts,
                         )
                     }
                 } catch (e: Exception) {
                     _uiState.value = _uiState.value.copy(
-                        error = "Failed to filter workouts: ${e.message}"
+                        error = "Failed to filter workouts: ${e.message}",
                     )
                 }
             }
@@ -294,7 +291,7 @@ class WorkoutManagementViewModel(
     fun getWorkoutStatistics(
         startDate: Date,
         endDate: Date,
-        callback: (WorkoutStatistics) -> Unit
+        callback: (WorkoutStatistics) -> Unit,
     ) {
         viewModelScope.launch {
             try {
@@ -308,17 +305,21 @@ class WorkoutManagementViewModel(
                             totalDistance = workouts.sumOf { it.distance.toDouble() }.toFloat(),
                             averageDuration = if (workouts.isNotEmpty()) {
                                 workouts.sumOf { it.duration }.toFloat() / workouts.size
-                            } else 0f,
+                            } else {
+                                0f
+                            },
                             averageCalories = if (workouts.isNotEmpty()) {
                                 workouts.sumOf { it.caloriesBurned }.toFloat() / workouts.size
-                            } else 0f,
-                            workoutsByType = workouts.groupingBy { it.workoutType.name }.eachCount()
+                            } else {
+                                0f
+                            },
+                            workoutsByType = workouts.groupingBy { it.workoutType.name }.eachCount(),
                         )
                         callback(stats)
                     }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to calculate statistics: ${e.message}"
+                    error = "Failed to calculate statistics: ${e.message}",
                 )
             }
         }
@@ -334,12 +335,12 @@ class WorkoutManagementViewModel(
                 _uiState.value = _uiState.value.copy(
                     isLoading = true,
                     successMessage = null,
-                    error = null
+                    error = null,
                 )
-                
+
                 val currentWorkouts = _uiState.value.workouts
                 var updatedCount = 0
-                
+
                 currentWorkouts.forEach { workout ->
                     try {
                         val newCalories = MetTableCalculator.calculateWorkoutCalories(
@@ -347,13 +348,13 @@ class WorkoutManagementViewModel(
                             durationMinutes = workout.duration,
                             weightKg = userWeight,
                             distance = workout.distance.takeIf { it > 0 },
-                            avgHeartRate = workout.avgHeartRate
+                            avgHeartRate = workout.avgHeartRate,
                         )
-                        
+
                         if (newCalories != workout.caloriesBurned) {
                             val updatedWorkout = workout.copy(
                                 caloriesBurned = newCalories,
-                                updatedAt = Date()
+                                updatedAt = Date(),
                             )
                             workoutRepository.updateWorkout(updatedWorkout)
                             updatedCount++
@@ -362,20 +363,19 @@ class WorkoutManagementViewModel(
                         // Continue with other workouts if one fails
                     }
                 }
-                
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     successMessage = if (updatedCount > 0) {
                         "Updated calorie calculations for $updatedCount workouts"
                     } else {
                         "All workouts already have accurate calorie calculations"
-                    }
+                    },
                 )
-                
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to recalculate calories: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -402,7 +402,7 @@ class WorkoutManagementViewModel(
         _uiState.value = _uiState.value.copy(
             searchQuery = "",
             selectedWorkoutTypes = emptySet(),
-            dateRange = Pair(null, null)
+            dateRange = Pair(null, null),
         )
         loadWorkouts()
     }
@@ -418,5 +418,5 @@ data class WorkoutStatistics(
     val totalDistance: Float, // in kilometers
     val averageDuration: Float, // in minutes
     val averageCalories: Float,
-    val workoutsByType: Map<String, Int>
+    val workoutsByType: Map<String, Int>,
 )

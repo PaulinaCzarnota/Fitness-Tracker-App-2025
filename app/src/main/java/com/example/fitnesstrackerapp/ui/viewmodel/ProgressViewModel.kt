@@ -67,7 +67,7 @@ sealed class ProgressUiState {
         val weeklyChartData: List<Float> = emptyList(),
         val recentWorkouts: List<Workout> = emptyList(),
         val stepHistory: List<Step> = emptyList(),
-        val lastUpdated: Long = System.currentTimeMillis()
+        val lastUpdated: Long = System.currentTimeMillis(),
     ) : ProgressUiState()
 
     /**
@@ -78,7 +78,7 @@ sealed class ProgressUiState {
      */
     data class Error(
         val message: String,
-        val retryAction: () -> Unit = {}
+        val retryAction: () -> Unit = {},
     ) : ProgressUiState()
 }
 
@@ -107,7 +107,7 @@ data class WorkoutSummary(
     val averageDuration: Int = 0, // in minutes
     val averageDistance: Float = 0f, // in km
     val startDate: Long = 0L,
-    val endDate: Long = 0L
+    val endDate: Long = 0L,
 ) {
     /**
      * Returns true if the summary contains no data.
@@ -126,7 +126,7 @@ data class WorkoutSummary(
 class ProgressViewModel(
     private val workoutRepository: WorkoutRepository,
     private val stepRepository: StepRepository,
-    authRepository: AuthRepository
+    authRepository: AuthRepository,
 ) : ViewModel() {
     companion object {
         private const val DAYS_IN_WEEK = 7
@@ -167,7 +167,7 @@ class ProgressViewModel(
             combine(
                 userId,
                 refreshTrigger,
-                ::Pair
+                ::Pair,
             ).flatMapLatest { (userId, _) ->
                 if (userId == null) {
                     flow<ProgressUiState> { emit(ProgressUiState.Error("Not logged in")) }
@@ -176,7 +176,7 @@ class ProgressViewModel(
                     val now = Date()
                     combine(
                         workoutRepository.getWorkoutsByUserId(userId),
-                        stepRepository.getStepsInDateRange(userId, epochStart, now)
+                        stepRepository.getStepsInDateRange(userId, epochStart, now),
                     ) { workouts: List<Workout>, steps: List<Step> ->
                         // Compute weekly summary
                         val weeklyWorkouts = workouts.filter { isWithinLastDays(it, DAYS_IN_WEEK) }
@@ -196,7 +196,7 @@ class ProgressViewModel(
                             weeklyChartData = chartData,
                             recentWorkouts = recentWorkouts,
                             stepHistory = stepHistory,
-                            lastUpdated = System.currentTimeMillis()
+                            lastUpdated = System.currentTimeMillis(),
                         )
                     }
                 }
@@ -247,7 +247,7 @@ class ProgressViewModel(
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
             }
-            
+
             val daysAgo = ((today.timeInMillis - workoutDate.timeInMillis) / (1000 * 60 * 60 * 24)).toInt()
             if (daysAgo in 0 until DAYS_IN_WEEK) {
                 // Index 0 is 6 days ago, index 6 is today
@@ -255,10 +255,10 @@ class ProgressViewModel(
                 dailyTotals[dayIndex] += workout.caloriesBurned.toFloat()
             }
         }
-        
+
         return dailyTotals.toList()
     }
-    
+
     /**
      * Gets the current user ID if available.
      *
@@ -291,7 +291,7 @@ class ProgressViewModel(
             averageDuration = if (workouts.isNotEmpty()) totalDuration / workouts.size else 0,
             averageDistance = if (workouts.isNotEmpty()) totalDistance / workouts.size else 0f,
             startDate = startDate,
-            endDate = endDate
+            endDate = endDate,
         )
     }
 }

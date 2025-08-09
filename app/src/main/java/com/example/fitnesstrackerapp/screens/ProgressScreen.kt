@@ -58,7 +58,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 
 /**
@@ -94,8 +93,8 @@ data class WeeklyData(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgressScreen(
-    navController: NavController,
     modifier: Modifier = Modifier,
+    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
 ) {
     // Initialize ViewModel via factory
     val activity = LocalContext.current as ComponentActivity

@@ -93,10 +93,10 @@ data class WorkoutSummary(
             return WorkoutSummary(
                 totalWorkouts = totalWorkouts,
                 totalCalories = totalCalories,
-                averageDuration = if (totalWorkouts > 0) totalDuration.toDouble() / totalWorkouts else 0.0,
+                averageDuration = totalDuration.toDouble() / totalWorkouts,
                 totalDistance = totalDistance,
                 totalDuration = totalDuration,
-                averageCalories = if (totalWorkouts > 0) totalCalories / totalWorkouts else 0.0,
+                averageCalories = totalCalories / totalWorkouts,
             )
         }
     }

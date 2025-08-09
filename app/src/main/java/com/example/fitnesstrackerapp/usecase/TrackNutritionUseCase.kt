@@ -14,7 +14,7 @@ import java.util.Date
  * while keeping ViewModels focused on UI state management.
  */
 class TrackNutritionUseCase(
-    private val nutritionRepository: SimpleNutritionRepository
+    private val nutritionRepository: SimpleNutritionRepository,
 ) {
 
     /**
@@ -27,7 +27,7 @@ class TrackNutritionUseCase(
         servingSize: Double = 1.0,
         servingUnit: String = "serving",
         mealType: MealType,
-        dateConsumed: Date = Date()
+        dateConsumed: Date = Date(),
     ): Result<FoodEntry> {
         return try {
             val foodEntry = FoodEntry(
@@ -37,7 +37,7 @@ class TrackNutritionUseCase(
                 servingUnit = servingUnit,
                 caloriesPerServing = calories,
                 mealType = mealType,
-                dateConsumed = dateConsumed
+                dateConsumed = dateConsumed,
             )
             nutritionRepository.addFoodEntry(foodEntry)
             Result.success(foodEntry)
@@ -106,7 +106,7 @@ class TrackNutritionUseCase(
     fun calculateDailyNutritionStats(foodEntries: List<FoodEntry>): NutritionStats {
         val totalCalories = foodEntries.sumOf { it.calories }
         val entriesByMeal = foodEntries.groupBy { it.mealType }
-        
+
         return NutritionStats(
             totalCalories = totalCalories,
             breakfastCalories = entriesByMeal[MealType.BREAKFAST]?.sumOf { it.calories } ?: 0.0,
@@ -114,7 +114,7 @@ class TrackNutritionUseCase(
             dinnerCalories = entriesByMeal[MealType.DINNER]?.sumOf { it.calories } ?: 0.0,
             snackCalories = entriesByMeal[MealType.SNACK]?.sumOf { it.calories } ?: 0.0,
             totalEntries = foodEntries.size,
-            averageCaloriesPerMeal = if (foodEntries.isNotEmpty()) totalCalories / foodEntries.size else 0.0
+            averageCaloriesPerMeal = if (foodEntries.isNotEmpty()) totalCalories / foodEntries.size else 0.0,
         )
     }
 
@@ -127,7 +127,7 @@ class TrackNutritionUseCase(
             calendar.time
             calendar.add(Calendar.DAY_OF_YEAR, -7)
             calendar.time
-            
+
             // This would need to be implemented to collect a single value from the flow
             // For now, we'll return a placeholder
             val stats = WeeklyNutritionStats(
@@ -136,9 +136,9 @@ class TrackNutritionUseCase(
                 highestDayCalories = 0.0,
                 lowestDayCalories = 0.0,
                 totalEntries = 0,
-                daysLogged = 0
+                daysLogged = 0,
             )
-            
+
             Result.success(stats)
         } catch (e: Exception) {
             Result.failure(e)
@@ -151,7 +151,7 @@ class TrackNutritionUseCase(
     fun validateFoodEntry(
         foodName: String,
         calories: Double,
-        servingSize: Double
+        servingSize: Double,
     ): ValidationResult {
         return when {
             foodName.isBlank() -> ValidationResult(false, "Food name cannot be empty")
@@ -170,14 +170,14 @@ class TrackNutritionUseCase(
         age: Int,
         gender: Gender,
         activityLevel: ActivityLevel = ActivityLevel.MODERATE,
-        weightKg: Double = 70.0
+        weightKg: Double = 70.0,
     ): Int {
         // Simplified BMR calculation using Mifflin-St Jeor Equation
         val bmr = when (gender) {
             Gender.MALE -> 10 * weightKg + 6.25 * 175 - 5 * age + 5 // Assuming 175cm height
             Gender.FEMALE -> 10 * weightKg + 6.25 * 165 - 5 * age - 161 // Assuming 165cm height
         }
-        
+
         val activityMultiplier = when (activityLevel) {
             ActivityLevel.SEDENTARY -> 1.2
             ActivityLevel.LIGHT -> 1.375
@@ -185,7 +185,7 @@ class TrackNutritionUseCase(
             ActivityLevel.ACTIVE -> 1.725
             ActivityLevel.VERY_ACTIVE -> 1.9
         }
-        
+
         return (bmr * activityMultiplier).toInt()
     }
 
@@ -199,7 +199,7 @@ class TrackNutritionUseCase(
             recommended = recommendedCalories.toDouble(),
             difference = difference,
             isDeficit = difference < 0,
-            isSurplus = difference > 0
+            isSurplus = difference > 0,
         )
     }
 
@@ -208,27 +208,27 @@ class TrackNutritionUseCase(
      */
     fun getNutritionTips(stats: NutritionStats, recommendedCalories: Int): List<String> {
         val tips = mutableListOf<String>()
-        
+
         if (stats.totalCalories < recommendedCalories * 0.8) {
             tips.add("You're eating significantly below your recommended calories. Consider adding healthy snacks.")
         }
-        
+
         if (stats.totalCalories > recommendedCalories * 1.2) {
             tips.add("You're eating significantly above your recommended calories. Consider smaller portions.")
         }
-        
+
         if (stats.breakfastCalories < stats.totalCalories * 0.15) {
             tips.add("Try eating a more substantial breakfast - it's important for metabolism.")
         }
-        
+
         if (stats.snackCalories > stats.totalCalories * 0.3) {
             tips.add("Consider reducing snack intake and focusing on balanced meals.")
         }
-        
+
         if (stats.totalEntries < 3) {
             tips.add("Try to eat at least 3 meals a day for better nutrition distribution.")
         }
-        
+
         return tips
     }
 }
@@ -243,7 +243,7 @@ data class NutritionStats(
     val dinnerCalories: Double,
     val snackCalories: Double,
     val totalEntries: Int,
-    val averageCaloriesPerMeal: Double
+    val averageCaloriesPerMeal: Double,
 )
 
 /**
@@ -255,7 +255,7 @@ data class WeeklyNutritionStats(
     val highestDayCalories: Double,
     val lowestDayCalories: Double,
     val totalEntries: Int,
-    val daysLogged: Int
+    val daysLogged: Int,
 )
 
 /**
@@ -266,7 +266,7 @@ data class CalorieBalance(
     val recommended: Double,
     val difference: Double,
     val isDeficit: Boolean,
-    val isSurplus: Boolean
+    val isSurplus: Boolean,
 )
 
 /**
@@ -274,19 +274,24 @@ data class CalorieBalance(
  */
 data class ValidationResult(
     val isValid: Boolean,
-    val message: String
+    val message: String,
 )
 
 /**
  * Enum for gender
  */
 enum class Gender {
-    MALE, FEMALE
+    MALE,
+    FEMALE,
 }
 
 /**
  * Enum for activity levels
  */
 enum class ActivityLevel {
-    SEDENTARY, LIGHT, MODERATE, ACTIVE, VERY_ACTIVE
+    SEDENTARY,
+    LIGHT,
+    MODERATE,
+    ACTIVE,
+    VERY_ACTIVE,
 }

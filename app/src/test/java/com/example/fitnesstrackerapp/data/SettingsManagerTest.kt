@@ -106,8 +106,10 @@ class SettingsManagerTest {
 
         // Then
         assertNotNull("Weight unit should not be null", weightUnit)
-        assertTrue("Weight unit should be valid", 
-                  weightUnit == "kg" || weightUnit == "lbs")
+        assertTrue(
+            "Weight unit should be valid",
+            weightUnit == "kg" || weightUnit == "lbs",
+        )
     }
 
     @Test
@@ -130,8 +132,10 @@ class SettingsManagerTest {
 
         // Then
         assertNotNull("Distance unit should not be null", distanceUnit)
-        assertTrue("Distance unit should be valid", 
-                  distanceUnit == "km" || distanceUnit == "miles")
+        assertTrue(
+            "Distance unit should be valid",
+            distanceUnit == "km" || distanceUnit == "miles",
+        )
     }
 
     @Test
@@ -235,14 +239,14 @@ class SettingsManagerTest {
         // Given - Set initial values
         settingsManager.setDarkModeEnabled(false)
         settingsManager.setStepGoal(10000)
-        
+
         // Export current settings
         val originalSettings = settingsManager.exportSettings()
-        
+
         // Change values
         settingsManager.setDarkModeEnabled(true)
         settingsManager.setStepGoal(20000)
-        
+
         // When - Import original settings
         val success = settingsManager.importSettings(originalSettings)
 
@@ -354,11 +358,11 @@ class SettingsManagerTest {
             settingsManager.setAutoBackup(true)
             settingsManager.getPrivacyMode()
             settingsManager.setPrivacyMode(true)
-            
+
             // Numeric settings
             settingsManager.getStepGoal()
             settingsManager.setStepGoal(10000)
-            
+
             // String settings
             settingsManager.getWeightUnit()
             settingsManager.setWeightUnit("kg")
@@ -366,17 +370,17 @@ class SettingsManagerTest {
             settingsManager.setDistanceUnit("km")
             settingsManager.getLanguage()
             settingsManager.setLanguage("en")
-            
+
             // Generic settings
             settingsManager.getSetting("key", "default")
             settingsManager.setSetting("key", "value")
             settingsManager.getSettingFlow("key", "default")
-            
+
             // Import/Export
             settingsManager.exportSettings()
             settingsManager.importSettings("{}")
             settingsManager.resetToDefaults()
-            
+
             // Success - API surface is stable
             assertTrue(true)
         } catch (e: NoSuchMethodError) {
@@ -451,7 +455,7 @@ class SettingsManagerTest {
         // When
         settingsManager.setStepGoal(minValue)
         val minResult = settingsManager.getStepGoal().first()
-        
+
         settingsManager.setStepGoal(maxValue)
         val maxResult = settingsManager.getStepGoal().first()
 

@@ -39,7 +39,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     companion object {
         private const val TAG = "NotificationActionReceiver"
-        
+
         // Action constants for different notification actions
         const val ACTION_MARK_GOAL_COMPLETE = "com.example.fitnesstrackerapp.ACTION_MARK_GOAL_COMPLETE"
         const val ACTION_SNOOZE_REMINDER = "com.example.fitnesstrackerapp.ACTION_SNOOZE_REMINDER"
@@ -47,7 +47,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         const val ACTION_LOG_HYDRATION = "com.example.fitnesstrackerapp.ACTION_LOG_HYDRATION"
         const val ACTION_QUICK_EXERCISE_LOG = "com.example.fitnesstrackerapp.ACTION_QUICK_EXERCISE_LOG"
         const val ACTION_DISMISS_NOTIFICATION = "com.example.fitnesstrackerapp.ACTION_DISMISS_NOTIFICATION"
-        
+
         // Extra keys for action data
         const val EXTRA_GOAL_ID = "goal_id"
         const val EXTRA_NOTIFICATION_ID = "notification_id"
@@ -59,11 +59,11 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "NotificationActionReceiver triggered with action: ${intent.action}")
-        
+
         try {
             val notificationManager = SimpleNotificationManager(context)
             val coroutineScope = CoroutineScope(Dispatchers.IO)
-            
+
             when (intent.action) {
                 ACTION_MARK_GOAL_COMPLETE -> {
                     handleMarkGoalComplete(context, intent, notificationManager, coroutineScope)
@@ -99,34 +99,34 @@ class NotificationActionReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
         notificationManager: SimpleNotificationManager,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
     ) {
         val goalId = intent.getLongExtra(EXTRA_GOAL_ID, -1L)
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
-        
+
         if (goalId == -1L) {
             Log.w(TAG, "Invalid goal ID for mark complete action")
             return
         }
-        
-        coroutineScope.launch @androidx.annotation.RequiresPermission(android.Manifest.permission.POST_NOTIFICATIONS) {
+
+        coroutineScope.launch {
             try {
-                val serviceLocator = ServiceLocator.get(context)
+                val serviceLocator = ServiceLocator.getInstance(context)
                 serviceLocator.goalRepository
-                
+
                 // Update goal progress - placeholder implementation
                 // In real implementation, would update goal completion status
-                
+
                 // Cancel the original notification
                 if (notificationId != -1) {
                     notificationManager.cancelNotification(notificationId)
                 }
-                
+
                 // Show completion confirmation
                 val title = "Goal Completed! 🎉"
                 val message = "Great job! You've made progress on your fitness goal."
                 notificationManager.showGeneralReminder(title, message)
-                
+
                 Log.d(TAG, "Goal $goalId marked as complete")
             } catch (e: Exception) {
                 Log.e(TAG, "Error marking goal as complete", e)
@@ -140,27 +140,26 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private fun handleSnoozeReminder(
         context: Context,
         intent: Intent,
-        notificationManager: SimpleNotificationManager
+        notificationManager: SimpleNotificationManager,
     ) {
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
         val snoozeMinutes = intent.getIntExtra(EXTRA_SNOOZE_MINUTES, 15) // Default 15 minutes
-        
+
         try {
             // Cancel the current notification
             if (notificationId != -1) {
                 notificationManager.cancelNotification(notificationId)
             }
-            
+
             // Schedule a new reminder after snooze period
             // In real implementation, would use AlarmManager to schedule delayed notification
-            
+
             Log.d(TAG, "Reminder snoozed for $snoozeMinutes minutes")
-            
+
             // Optionally show confirmation
             val title = "Reminder Snoozed"
             val message = "We'll remind you again in $snoozeMinutes minutes."
             notificationManager.showGeneralReminder(title, message)
-            
         } catch (e: Exception) {
             Log.e(TAG, "Error snoozing reminder", e)
         }
@@ -172,31 +171,31 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private fun handleStartWorkout(
         context: Context,
         intent: Intent,
-        notificationManager: SimpleNotificationManager
+        notificationManager: SimpleNotificationManager,
     ) {
         val workoutType = intent.getStringExtra(EXTRA_WORKOUT_TYPE) ?: "General Workout"
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
-        
+
         try {
             // Cancel the workout reminder notification
             if (notificationId != -1) {
                 notificationManager.cancelNotification(notificationId)
             }
-            
+
             // Create intent to open workout screen
             val workoutIntent = Intent(context, com.example.fitnesstrackerapp.MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 putExtra("navigate_to", "workout")
                 putExtra("workout_type", workoutType)
             }
-            
+
             context.startActivity(workoutIntent)
-            
+
             // Show workout started confirmation
             val title = "Workout Started! 💪"
             val message = "Let's get moving with your $workoutType!"
             notificationManager.showGeneralReminder(title, message)
-            
+
             Log.d(TAG, "Workout started: $workoutType")
         } catch (e: Exception) {
             Log.e(TAG, "Error starting workout", e)
@@ -210,25 +209,25 @@ class NotificationActionReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
         notificationManager: SimpleNotificationManager,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
     ) {
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
-        
+
         coroutineScope.launch {
             try {
                 // Log hydration entry - placeholder implementation
                 // In real implementation, would add hydration entry to database
-                
+
                 // Cancel the hydration reminder
                 if (notificationId != -1) {
                     notificationManager.cancelNotification(notificationId)
                 }
-                
+
                 // Show confirmation
                 val title = "Hydration Logged! 💧"
                 val message = "Good job staying hydrated! Keep it up throughout the day."
                 notificationManager.showGeneralReminder(title, message)
-                
+
                 Log.d(TAG, "Hydration logged from notification")
             } catch (e: Exception) {
                 Log.e(TAG, "Error logging hydration", e)
@@ -243,29 +242,29 @@ class NotificationActionReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
         notificationManager: SimpleNotificationManager,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
     ) {
         val exerciseName = intent.getStringExtra(EXTRA_EXERCISE_NAME) ?: "Exercise"
         val duration = intent.getIntExtra(EXTRA_EXERCISE_DURATION, 15) // Default 15 minutes
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
-        
-        coroutineScope.launch @androidx.annotation.RequiresPermission(android.Manifest.permission.POST_NOTIFICATIONS) {
+
+        coroutineScope.launch {
             try {
-                ServiceLocator.get(context)
-                
+                ServiceLocator.getInstance(context)
+
                 // Create quick workout entry - placeholder implementation
                 // In real implementation, would add workout entry to database
-                
+
                 // Cancel the exercise reminder
                 if (notificationId != -1) {
                     notificationManager.cancelNotification(notificationId)
                 }
-                
+
                 // Show completion confirmation
                 val title = "Exercise Completed! 🏃‍♀️"
                 val message = "Great job completing $duration minutes of $exerciseName!"
                 notificationManager.showGeneralReminder(title, message)
-                
+
                 Log.d(TAG, "Quick exercise logged: $exerciseName for $duration minutes")
             } catch (e: Exception) {
                 Log.e(TAG, "Error logging quick exercise", e)
@@ -279,10 +278,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
     private fun handleDismissNotification(
         context: Context,
         intent: Intent,
-        notificationManager: SimpleNotificationManager
+        notificationManager: SimpleNotificationManager,
     ) {
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1)
-        
+
         try {
             if (notificationId != -1) {
                 notificationManager.cancelNotification(notificationId)

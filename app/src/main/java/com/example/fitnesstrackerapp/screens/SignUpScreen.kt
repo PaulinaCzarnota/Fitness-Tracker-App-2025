@@ -93,7 +93,7 @@ fun SignUpScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    // Form validation
+    // Form validation - check required fields are not empty
     val isEmailValid = email.isNotBlank() &&
         android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     val isPasswordValid = password.length >= 6
@@ -229,7 +229,12 @@ fun SignUpScreen(
                             keyboardController?.hide()
                             focusManager.clearFocus()
                             if (isFormValid) {
-                                viewModel.register(email, password, "")
+                                val validation = viewModel.validateLoginForm(email, password)
+                                if (!validation.isValid) {
+                                    viewModel.setError(validation.message)
+                                } else {
+                                    viewModel.register(email, password, "New User")
+                                }
                             }
                         },
                     ),
@@ -254,7 +259,14 @@ fun SignUpScreen(
                     onClick = {
                         keyboardController?.hide()
                         focusManager.clearFocus()
-                        viewModel.register(email, password, "")
+
+                        // Validate form first
+                        val validation = viewModel.validateLoginForm(email, password)
+                        if (!validation.isValid) {
+                            viewModel.setError(validation.message)
+                        } else {
+                            viewModel.register(email, password, "New User")
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

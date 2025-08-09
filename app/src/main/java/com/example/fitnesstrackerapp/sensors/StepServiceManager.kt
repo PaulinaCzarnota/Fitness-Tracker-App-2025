@@ -17,22 +17,22 @@ import androidx.core.content.ContextCompat
  * Manager class for StepCounterService operations
  */
 object StepServiceManager {
-    
+
     private const val TAG = "StepServiceManager"
-    
+
     /**
      * Starts the step counter service as a foreground service
      */
     fun startService(context: Context): Boolean {
         return try {
             val serviceIntent = Intent(context, StepCounterService::class.java)
-            
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ContextCompat.startForegroundService(context, serviceIntent)
             } else {
                 context.startService(serviceIntent)
             }
-            
+
             Log.d(TAG, "Step counter service started")
             true
         } catch (e: Exception) {
@@ -40,7 +40,7 @@ object StepServiceManager {
             false
         }
     }
-    
+
     /**
      * Stops the step counter service
      */
@@ -55,7 +55,7 @@ object StepServiceManager {
             false
         }
     }
-    
+
     /**
      * Checks if the step counter service is currently running
      */
@@ -64,14 +64,14 @@ object StepServiceManager {
         return try {
             val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             val runningServices = activityManager.getRunningServices(Integer.MAX_VALUE)
-            
+
             for (service in runningServices) {
                 if (StepCounterService::class.java.name == service.service.className) {
                     Log.d(TAG, "Step counter service is running")
                     return true
                 }
             }
-            
+
             Log.d(TAG, "Step counter service is not running")
             false
         } catch (e: Exception) {
@@ -79,19 +79,19 @@ object StepServiceManager {
             false
         }
     }
-    
+
     /**
      * Restarts the step counter service
      */
     fun restartService(context: Context): Boolean {
         stopService(context)
-        
+
         // Small delay to ensure clean shutdown
         Thread.sleep(500)
-        
+
         return startService(context)
     }
-    
+
     /**
      * Ensures the step counter service is running
      * Starts it if not already running

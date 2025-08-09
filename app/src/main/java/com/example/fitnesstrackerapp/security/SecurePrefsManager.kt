@@ -2,9 +2,9 @@ package com.example.fitnesstrackerapp.security
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import androidx.core.content.edit
 
 /**
  * Manages secure storage of sensitive data using Android's EncryptedSharedPreferences.
@@ -16,7 +16,7 @@ import androidx.core.content.edit
  */
 class SecurePrefsManager(
     private val context: Context,
-    private val prefsFileName: String = "secure_prefs"
+    private val prefsFileName: String = "secure_prefs",
 ) {
     private val masterKey = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -27,7 +27,7 @@ class SecurePrefsManager(
         prefsFileName,
         masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
     )
 
     /**

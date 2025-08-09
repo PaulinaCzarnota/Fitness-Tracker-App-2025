@@ -97,6 +97,57 @@
 
 
 ########################################
+# Security & Biometric Authentication
+########################################
+
+# Keep security crypto classes to prevent R8 issues
+-keep class androidx.security.crypto.** { *; }
+-dontwarn androidx.security.crypto.**
+-keep class com.google.crypto.tink.** { *; }
+-dontwarn com.google.crypto.tink.**
+
+# Keep javax annotations to prevent missing class errors
+-keep class javax.annotation.** { *; }
+-dontwarn javax.annotation.**
+-keep class com.google.errorprone.annotations.** { *; }
+-dontwarn com.google.errorprone.annotations.**
+
+# Keep biometric classes
+-keep class androidx.biometric.** { *; }
+-dontwarn androidx.biometric.**
+
+########################################
+# WorkManager & Data Storage
+########################################
+
+# Keep WorkManager classes
+-keep class androidx.work.** { *; }
+-dontwarn androidx.work.**
+
+# Keep DataStore classes
+-keep class androidx.datastore.** { *; }
+-dontwarn androidx.datastore.**
+
+# Keep multidex classes
+-keep class androidx.multidex.** { *; }
+-dontwarn androidx.multidex.**
+
+########################################
+# App-specific Entity Classes
+########################################
+
+# Keep all data classes and entities
+-keep class com.example.fitnesstrackerapp.data.** { *; }
+-keep class com.example.fitnesstrackerapp.ui.**.ViewModel { *; }
+-keep class com.example.fitnesstrackerapp.ui.**.ViewModel$* { *; }
+
+# Keep all enum classes
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+########################################
 # Testing Tools (if needed)
 ########################################
 

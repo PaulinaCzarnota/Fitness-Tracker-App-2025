@@ -38,13 +38,13 @@ class NotificationReceiver : BroadcastReceiver() {
 
     companion object {
         private const val TAG = "NotificationReceiver"
-        
+
         // Action constants for different notification types
         const val ACTION_DAILY_REMINDER = "com.example.fitnesstrackerapp.ACTION_DAILY_REMINDER"
         const val ACTION_GOAL_REMINDER = "com.example.fitnesstrackerapp.ACTION_GOAL_REMINDER"
         const val ACTION_WORKOUT_REMINDER = "com.example.fitnesstrackerapp.ACTION_WORKOUT_REMINDER"
         const val ACTION_PROGRESS_UPDATE = "com.example.fitnesstrackerapp.ACTION_PROGRESS_UPDATE"
-        
+
         // Extra keys for notification data
         const val EXTRA_NOTIFICATION_TYPE = "notification_type"
         const val EXTRA_GOAL_ID = "goal_id"
@@ -54,11 +54,11 @@ class NotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "NotificationReceiver triggered with action: ${intent.action}")
-        
+
         try {
             val notificationManager = SimpleNotificationManager(context)
             val coroutineScope = CoroutineScope(Dispatchers.IO)
-            
+
             when (intent.action) {
                 ACTION_DAILY_REMINDER -> {
                     handleDailyReminder(context, notificationManager, coroutineScope)
@@ -88,13 +88,13 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun handleDailyReminder(
         context: Context,
         notificationManager: SimpleNotificationManager,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
     ) {
         coroutineScope.launch {
             try {
                 val title = "Daily Fitness Reminder"
                 val message = "Don't forget to log your workouts and track your progress today!"
-                
+
                 notificationManager.showGeneralReminder(title, message)
                 Log.d(TAG, "Daily reminder notification sent")
             } catch (e: Exception) {
@@ -111,12 +111,12 @@ class NotificationReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
         notificationManager: SimpleNotificationManager,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
     ) {
         val goalId = intent.getLongExtra(EXTRA_GOAL_ID, -1L)
         val title = intent.getStringExtra(EXTRA_TITLE) ?: "Goal Reminder"
         val message = intent.getStringExtra(EXTRA_MESSAGE) ?: "Time to work on your fitness goal!"
-        
+
         coroutineScope.launch {
             try {
                 if (goalId != -1L) {
@@ -138,11 +138,11 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun handleWorkoutReminder(
         context: Context,
         intent: Intent,
-        notificationManager: SimpleNotificationManager
+        notificationManager: SimpleNotificationManager,
     ) {
         val title = intent.getStringExtra(EXTRA_TITLE) ?: "Workout Reminder"
         val message = intent.getStringExtra(EXTRA_MESSAGE) ?: "Time for your scheduled workout!"
-        
+
         try {
             notificationManager.showGeneralReminder(title, message)
             Log.d(TAG, "Workout reminder notification sent")
@@ -158,23 +158,23 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun handleProgressUpdate(
         context: Context,
         notificationManager: SimpleNotificationManager,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
     ) {
         coroutineScope.launch {
             try {
                 val serviceLocator = ServiceLocator.get(context)
                 serviceLocator.stepRepository
-                
+
                 // Get today's step data - placeholder implementation
                 // In real implementation, would query repository for current user's data
                 val todaySteps = 5000 // Placeholder
                 val caloriesBurned = 200 // Placeholder
                 val workoutsCompleted = 1 // Placeholder
-                
+
                 notificationManager.showDailyProgress(
                     todaySteps,
                     caloriesBurned,
-                    workoutsCompleted
+                    workoutsCompleted,
                 )
                 Log.d(TAG, "Progress update notification sent")
             } catch (e: Exception) {

@@ -29,19 +29,19 @@ class SimpleNotificationManagerTest {
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
-        
+
         // Mock system notification managers
         systemNotificationManager = mockk(relaxed = true)
         notificationManagerCompat = mockk(relaxed = true)
-        
+
         // Mock context.getSystemService
         every { context.getSystemService(Context.NOTIFICATION_SERVICE) } returns systemNotificationManager
-        
+
         // Mock static NotificationManagerCompat
         mockkStatic(NotificationManagerCompat::class)
         every { NotificationManagerCompat.from(any()) } returns notificationManagerCompat
         every { notificationManagerCompat.areNotificationsEnabled() } returns true
-        
+
         notificationManager = SimpleNotificationManager(context)
     }
 
@@ -53,7 +53,7 @@ class SimpleNotificationManagerTest {
     @Test
     fun `constructor creates notification channels on Android O+`() {
         // Given/When - Constructor is called in setUp()
-        
+
         // Then - Should not throw exception and channels should be created
         verify(atLeast = 0) { systemNotificationManager.createNotificationChannels(any()) }
         assertTrue(true) // Constructor completed successfully
@@ -65,7 +65,7 @@ class SimpleNotificationManagerTest {
         val title = "Goal Reminder"
         val message = "Time to work on your fitness goal!"
         val goalId = 123L
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -80,7 +80,7 @@ class SimpleNotificationManagerTest {
         // Given
         val title = "Goal Reminder"
         val message = "Time to work on your fitness goal!"
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -96,7 +96,7 @@ class SimpleNotificationManagerTest {
         val workoutName = "Morning Run"
         val duration = 30
         val caloriesBurned = 250
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -112,7 +112,7 @@ class SimpleNotificationManagerTest {
         val stepsCompleted = 8500
         val caloriesBurned = 320
         val workoutsCompleted = 2
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -127,7 +127,7 @@ class SimpleNotificationManagerTest {
         // Given
         val title = "Fitness Reminder"
         val message = "Don't forget to exercise today!"
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -203,7 +203,7 @@ class SimpleNotificationManagerTest {
         // Given
         val progressPercentage = 100
         val goalType = "steps"
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -218,7 +218,7 @@ class SimpleNotificationManagerTest {
         // Given
         val progressPercentage = 75
         val goalType = "calories"
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -233,7 +233,7 @@ class SimpleNotificationManagerTest {
         // Given
         val progressPercentage = 50
         val goalType = "workouts"
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -248,7 +248,7 @@ class SimpleNotificationManagerTest {
         // Given
         val progressPercentage = 25
         val goalType = "distance"
-        
+
         every { notificationManagerCompat.notify(any(), any()) } just runs
 
         // When
@@ -290,22 +290,22 @@ class SimpleNotificationManagerTest {
             // Goal notifications
             notificationManager.showGoalReminder("title", "message")
             notificationManager.showGoalReminder("title", "message", 1L)
-            
+
             // Workout notifications
             notificationManager.showWorkoutComplete("workout", 30, 250)
-            
+
             // Progress notifications
             notificationManager.showDailyProgress(1000, 100, 1)
-            
+
             // General notifications
             notificationManager.showGeneralReminder("title", "message")
             notificationManager.showMotivationalNotification(50, "steps")
-            
+
             // Management
             notificationManager.cancelNotification(1)
             notificationManager.cancelAllNotifications()
             notificationManager.areNotificationsEnabled()
-            
+
             // Success - API surface is stable
             assertTrue(true)
         } catch (e: NoSuchMethodError) {

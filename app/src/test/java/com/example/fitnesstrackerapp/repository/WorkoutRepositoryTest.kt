@@ -41,7 +41,7 @@ class WorkoutRepositoryTest {
         context = ApplicationProvider.getApplicationContext()
         database = Room.inMemoryDatabaseBuilder(
             context,
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -50,7 +50,7 @@ class WorkoutRepositoryTest {
     @BeforeEach
     fun setup() = runTest {
         workoutRepository = WorkoutRepository(database.workoutDao())
-        
+
         // Create test user
         testUser = User(
             email = "test@example.com",
@@ -58,7 +58,7 @@ class WorkoutRepositoryTest {
             passwordHash = "hash",
             passwordSalt = "salt",
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
         testUserId = database.userDao().insertUser(testUser)
     }
@@ -84,7 +84,7 @@ class WorkoutRepositoryTest {
             type = WorkoutType.RUNNING,
             duration = 30,
             caloriesBurned = 300,
-            distance = 5.0
+            distance = 5.0,
         )
 
         // When
@@ -109,7 +109,7 @@ class WorkoutRepositoryTest {
         val originalWorkout = createTestWorkout(
             userId = testUserId,
             name = "Original Workout",
-            duration = 20
+            duration = 20,
         )
         val workoutId = workoutRepository.insertWorkout(originalWorkout)
 
@@ -117,7 +117,7 @@ class WorkoutRepositoryTest {
             id = workoutId,
             name = "Updated Workout",
             durationMinutes = 45,
-            caloriesBurned = 400
+            caloriesBurned = 400,
         )
 
         // When
@@ -156,13 +156,13 @@ class WorkoutRepositoryTest {
         // Given
         val workout1 = createTestWorkout(userId = testUserId, name = "Workout 1")
         val workout2 = createTestWorkout(userId = testUserId, name = "Workout 2")
-        
+
         // Create workout for different user
         val anotherUser = User(
             email = "another@example.com",
             username = "anotheruser",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
         val anotherUserId = database.userDao().insertUser(anotherUser)
         val workout3 = createTestWorkout(userId = anotherUserId, name = "Other User's Workout")
@@ -204,7 +204,7 @@ class WorkoutRepositoryTest {
         val workoutsInRange = workoutRepository.getWorkoutsByDateRange(
             userId = testUserId,
             startDate = today,
-            endDate = tomorrow
+            endDate = tomorrow,
         ).first()
 
         // Then
@@ -243,7 +243,7 @@ class WorkoutRepositoryTest {
             val workout = createTestWorkout(
                 userId = testUserId,
                 name = "Workout $i",
-                date = Date(baseTime - (i * 86400000L)) // i days ago
+                date = Date(baseTime - (i * 86400000L)), // i days ago
             )
             workoutRepository.insertWorkout(workout)
         }
@@ -441,7 +441,7 @@ class WorkoutRepositoryTest {
         val workouts = workoutRepository.getWorkoutsByDateRange(
             userId = testUserId,
             startDate = specificDate,
-            endDate = specificDate
+            endDate = specificDate,
         ).first()
 
         // Then
@@ -458,10 +458,10 @@ class WorkoutRepositoryTest {
             date = Date(),
             durationMinutes = 30,
             caloriesBurned = null, // nullable field
-            distanceKm = null,     // nullable field
-            notes = null,          // nullable field
+            distanceKm = null, // nullable field
+            notes = null, // nullable field
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
 
         // When
@@ -488,7 +488,7 @@ class WorkoutRepositoryTest {
         calories: Int? = 250,
         distance: Double? = null,
         date: Date = Date(),
-        notes: String? = null
+        notes: String? = null,
     ): Workout {
         return Workout(
             userId = userId,
@@ -500,7 +500,7 @@ class WorkoutRepositoryTest {
             distanceKm = distance,
             notes = notes,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
     }
 }

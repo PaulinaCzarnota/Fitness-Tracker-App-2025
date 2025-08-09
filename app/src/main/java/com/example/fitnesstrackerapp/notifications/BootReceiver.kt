@@ -45,12 +45,12 @@ class BootReceiver : BroadcastReceiver() {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             try {
                 val coroutineScope = CoroutineScope(Dispatchers.IO)
-                
+
                 coroutineScope.launch {
                     restoreNotificationSchedules(context)
                     restoreBackgroundTasks(context)
                 }
-                
+
                 Log.d(TAG, "Boot completed - notification schedules restored")
             } catch (e: Exception) {
                 Log.e(TAG, "Error restoring schedules after boot", e)
@@ -66,19 +66,19 @@ class BootReceiver : BroadcastReceiver() {
         try {
             val serviceLocator = ServiceLocator.get(context)
             val taskScheduler = TaskScheduler(context)
-            
+
             // Re-schedule daily reminders
             scheduleDailyReminders(context, taskScheduler)
-            
+
             // Re-schedule goal reminders based on user's active goals
             restoreGoalReminders(context, taskScheduler, serviceLocator)
-            
+
             // Re-schedule workout reminders
             restoreWorkoutReminders(context, taskScheduler)
-            
+
             // Re-schedule progress update notifications
             scheduleProgressUpdates(context, taskScheduler)
-            
+
             Log.d(TAG, "All notification schedules restored successfully")
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring notification schedules", e)
@@ -94,7 +94,7 @@ class BootReceiver : BroadcastReceiver() {
             Intent(context, NotificationReceiver::class.java).apply {
                 action = NotificationReceiver.ACTION_DAILY_REMINDER
             }
-            
+
             // Use TaskScheduler to set up recurring daily notifications
             // In a real implementation, this would use AlarmManager or WorkManager
             Log.d(TAG, "Daily reminders scheduled")
@@ -109,14 +109,14 @@ class BootReceiver : BroadcastReceiver() {
     private fun restoreGoalReminders(
         context: Context,
         taskScheduler: TaskScheduler,
-        serviceLocator: ServiceLocator
+        serviceLocator: ServiceLocator,
     ) {
         try {
             serviceLocator.goalRepository
-            
+
             // Get active goals for current user - placeholder implementation
             // In real implementation, would query active goals and schedule reminders
-            
+
             Log.d(TAG, "Goal reminders restored")
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring goal reminders", e)
@@ -130,7 +130,7 @@ class BootReceiver : BroadcastReceiver() {
         try {
             // Restore workout reminders based on user preferences
             // This would typically query user's workout schedule and re-register alarms
-            
+
             Log.d(TAG, "Workout reminders restored")
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring workout reminders", e)
@@ -146,7 +146,7 @@ class BootReceiver : BroadcastReceiver() {
             Intent(context, NotificationReceiver::class.java).apply {
                 action = NotificationReceiver.ACTION_PROGRESS_UPDATE
             }
-            
+
             Log.d(TAG, "Progress update notifications scheduled")
         } catch (e: Exception) {
             Log.e(TAG, "Error scheduling progress updates", e)
@@ -161,13 +161,13 @@ class BootReceiver : BroadcastReceiver() {
             // Check if step counter service should be running
             val sharedPrefs = context.getSharedPreferences("fitness_tracker_prefs", Context.MODE_PRIVATE)
             val isStepTrackingEnabled = sharedPrefs.getBoolean("step_tracking_enabled", true)
-            
+
             if (isStepTrackingEnabled) {
                 // Optionally restart step counter service
                 // This would depend on app design - services might be started by user interaction instead
                 Log.d(TAG, "Step tracking is enabled - service can be restarted when needed")
             }
-            
+
             Log.d(TAG, "Background tasks restored")
         } catch (e: Exception) {
             Log.e(TAG, "Error restoring background tasks", e)

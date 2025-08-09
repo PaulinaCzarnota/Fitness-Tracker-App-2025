@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
-import com.example.fitnesstrackerapp.util.PermissionConstants
-import com.example.fitnesstrackerapp.util.PermissionUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -186,7 +184,7 @@ class PermissionUtilsTest {
             PermissionUtils.isActivityRecognitionPermissionGranted(context)
             PermissionUtils.getRuntimePermissionsToRequest(context)
             PermissionUtils.areEssentialPermissionsGranted(context)
-            
+
             // Success - API surface is stable
             assertTrue(true)
         } catch (e: NoSuchMethodError) {

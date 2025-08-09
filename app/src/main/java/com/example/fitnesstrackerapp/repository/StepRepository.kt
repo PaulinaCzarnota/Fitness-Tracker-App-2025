@@ -12,7 +12,6 @@ import com.example.fitnesstrackerapp.data.dao.StepDao
 import com.example.fitnesstrackerapp.data.entity.Step
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import java.util.Date
 
 /**
@@ -30,8 +29,8 @@ class StepRepository(private val stepDao: StepDao) {
      *
      * @param step The [Step] entity to save.
      */
-    suspend fun upsertSteps(step: Step) {
-        stepDao.upsertSteps(step)
+    suspend fun upsertSteps(step: Step): Long {
+        return stepDao.insert(step)
     }
 
     /**
@@ -67,7 +66,7 @@ class StepRepository(private val stepDao: StepDao) {
      * Returns only the first match if multiple entries exist for the date.
      */
     fun getStepsForDate(userId: Long, date: Date): Flow<Step?> {
-        return stepDao.getStepsForDate(userId, date).map { list -> list.firstOrNull() }
+        return stepDao.getStepsForDate(userId, date)
     }
 
     /**
@@ -81,18 +80,18 @@ class StepRepository(private val stepDao: StepDao) {
      * Retrieves step data within a specific date range using Date objects.
      */
     fun getStepsInDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Step>> {
-        return stepDao.getStepsForDateRange(userId, startDate, endDate)
+        return stepDao.getStepsInDateRange(userId, startDate, endDate)
     }
 
     /**
      * Retrieves steps by exact date as a one-shot list.
      */
     suspend fun getStepsByDate(userId: Long, date: Date): List<Step> {
-        return stepDao.getStepsByDate(userId, date).first()
+        return stepDao.getStepsByUserId(userId).first()
     }
 
     /**
      * Saves a step entry and returns its ID.
      */
-    suspend fun saveSteps(step: Step): Long = stepDao.saveSteps(step)
+    suspend fun saveSteps(step: Step): Long = stepDao.insert(step)
 }

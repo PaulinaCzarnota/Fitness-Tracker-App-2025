@@ -165,7 +165,7 @@ class WorkoutSetRepository(
         workoutId: Long,
         exerciseId: Long,
         repetitions: Int = 0,
-        weight: Float = 0f,
+        weight: Double = 0.0,
         duration: Int = 0,
         distance: Float = 0f,
         setType: SetType = SetType.NORMAL,
@@ -315,7 +315,7 @@ class WorkoutSetRepository(
      */
     suspend fun duplicateSet(
         originalSetId: Long,
-        newWeight: Float? = null,
+        newWeight: Double? = null,
         newReps: Int? = null,
     ): Long {
         val originalSet = workoutSetDao.getWorkoutSetById(originalSetId)

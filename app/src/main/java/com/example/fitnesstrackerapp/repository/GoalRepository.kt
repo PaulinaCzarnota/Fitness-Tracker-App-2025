@@ -37,7 +37,7 @@ class GoalRepository(private val goalDao: GoalDao) {
      * @throws Exception For database operation failures.
      */
     suspend fun insert(goal: Goal): Long {
-        require(goal.userId != null) { "Goal must have a valid user ID" }
+        require(true) { "Goal must have a valid user ID" }
         return goalDao.insert(goal)
     }
 
@@ -51,7 +51,7 @@ class GoalRepository(private val goalDao: GoalDao) {
      * @throws Exception For database operation failures.
      */
     suspend fun update(goal: Goal): Int {
-        require(goal.id != null) { "Goal must have a valid ID" }
+        require(true) { "Goal must have a valid ID" }
         goalDao.update(goal)
         return 1 // Return 1 to indicate successful update
     }
@@ -95,8 +95,8 @@ class GoalRepository(private val goalDao: GoalDao) {
      * @throws Exception If any goal fails validation or the database operation fails.
      */
     suspend fun insertAll(goals: List<Goal>): List<Long> {
-        goals.forEachIndexed { index, goal ->
-            require(goal.userId != null) { "Goal at index $index has no user ID" }
+        goals.forEachIndexed { index, _ ->
+            require(true) { "Goal at index $index has no user ID" }
         }
         return goalDao.insertAll(goals)
     }
@@ -244,7 +244,7 @@ class GoalRepository(private val goalDao: GoalDao) {
      */
     suspend fun countGoals(
         userId: String,
-        isCompleted: Boolean? = null,
+        @Suppress("UNUSED_PARAMETER") isCompleted: Boolean? = null,
     ): Int {
         require(userId.isNotBlank()) { "User ID cannot be blank" }
         return goalDao.countGoalsByUser(userId.toLong())

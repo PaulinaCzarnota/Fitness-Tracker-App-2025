@@ -20,7 +20,7 @@ import org.junit.Test
 
 /**
  * Comprehensive unit tests for authentication security edge cases.
- * 
+ *
  * Tests include:
  * - Account lockout mechanisms
  * - Failed login attempt tracking
@@ -50,18 +50,18 @@ class AuthenticationSecurityTest {
         mockUserDao = mockk()
         mockCryptoManager = mockk()
         mockSessionManager = mockk()
-        
+
         // Setup common crypto manager behavior
         every { mockCryptoManager.generateSalt() } returns TestData.MOCK_SALT.toByteArray()
         every { mockCryptoManager.hashPassword(any(), any()) } returns TestData.MOCK_HASH.toByteArray()
         every { mockCryptoManager.bytesToHex(any()) } returns TestData.MOCK_HEX_STRING
         every { mockCryptoManager.hexToBytes(any()) } returns TestData.MOCK_HASH.toByteArray()
-        
+
         authRepository = AuthRepository(
             userDao = mockUserDao,
             passwordManager = mockCryptoManager,
             sessionManager = mockSessionManager,
-            context = TestHelper.createMockContext()
+            context = TestHelper.createMockContext(),
         )
     }
 
@@ -76,9 +76,9 @@ class AuthenticationSecurityTest {
         val lockedUser = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
             isAccountLocked = true,
-            failedLoginAttempts = 5
+            failedLoginAttempts = 5,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns lockedUser
 
         // When
@@ -97,9 +97,9 @@ class AuthenticationSecurityTest {
         val inactiveUser = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
             isActive = false,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns inactiveUser
 
         // When
@@ -116,9 +116,9 @@ class AuthenticationSecurityTest {
         // Given
         val user = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
-            failedLoginAttempts = 2
+            failedLoginAttempts = 2,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         coEvery { mockUserDao.updateUser(any()) } just Runs
 
@@ -129,12 +129,12 @@ class AuthenticationSecurityTest {
         assertThat(result).isInstanceOf(AuthResult.Error::class.java)
         val error = result as AuthResult.Error
         assertThat(error.message).contains("2 attempts remaining")
-        
+
         coVerify {
             mockUserDao.updateUser(
                 match { updatedUser ->
                     updatedUser.failedLoginAttempts == 3 && !updatedUser.isAccountLocked
-                }
+                },
             )
         }
     }
@@ -144,9 +144,9 @@ class AuthenticationSecurityTest {
         // Given
         val user = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
-            failedLoginAttempts = 4 // One less than max
+            failedLoginAttempts = 4, // One less than max
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         coEvery { mockUserDao.updateUser(any()) } just Runs
 
@@ -157,12 +157,12 @@ class AuthenticationSecurityTest {
         assertThat(result).isInstanceOf(AuthResult.Error::class.java)
         val error = result as AuthResult.Error
         assertThat(error.message).contains("Account locked")
-        
+
         coVerify {
             mockUserDao.updateUser(
                 match { updatedUser ->
                     updatedUser.failedLoginAttempts == 5 && updatedUser.isAccountLocked
-                }
+                },
             )
         }
     }
@@ -174,9 +174,9 @@ class AuthenticationSecurityTest {
             email = TestData.VALID_EMAIL,
             failedLoginAttempts = 3,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true
         coEvery { mockUserDao.resetFailedLoginAttempts(any(), any()) } just Runs
@@ -272,9 +272,9 @@ class AuthenticationSecurityTest {
         assertThat(result).isInstanceOf(AuthResult.Success::class.java)
         coVerify {
             mockUserDao.insertUser(
-                match { user -> 
+                match { user ->
                     user.email == uppercaseEmail.lowercase()
-                }
+                },
             )
         }
     }
@@ -284,7 +284,7 @@ class AuthenticationSecurityTest {
         // Given
         val emailWithSpaces = "  user@example.com  "
         val nameWithSpaces = "  Test User  "
-        
+
         coEvery { mockUserDao.getUserByEmail("user@example.com") } returns null
         coEvery { mockUserDao.insertUser(any()) } returns 123L
         coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
@@ -296,10 +296,10 @@ class AuthenticationSecurityTest {
         assertThat(result).isInstanceOf(AuthResult.Success::class.java)
         coVerify {
             mockUserDao.insertUser(
-                match { user -> 
+                match { user ->
                     user.email == "user@example.com" &&
-                    user.username == "Test User"
-                }
+                        user.username == "Test User"
+                },
             )
         }
     }
@@ -341,9 +341,9 @@ class AuthenticationSecurityTest {
         val user = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns false
         coEvery { mockUserDao.updateUser(any()) } just Runs
@@ -363,9 +363,9 @@ class AuthenticationSecurityTest {
         val user = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         every { mockCryptoManager.hexToBytes(any()) } throws RuntimeException("Crypto operation failed")
 
@@ -384,9 +384,9 @@ class AuthenticationSecurityTest {
         val user = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true
         coEvery { mockUserDao.resetFailedLoginAttempts(any(), any()) } just Runs
@@ -409,9 +409,9 @@ class AuthenticationSecurityTest {
             email = TestData.VALID_EMAIL,
             failedLoginAttempts = 0,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns user
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns false
         coEvery { mockUserDao.updateUser(any()) } just Runs
@@ -425,7 +425,7 @@ class AuthenticationSecurityTest {
         assertThat(result1).isInstanceOf(AuthResult.Error::class.java)
         assertThat(result2).isInstanceOf(AuthResult.Error::class.java)
         assertThat(result3).isInstanceOf(AuthResult.Error::class.java)
-        
+
         // Should increment failed attempts for each call
         coVerify(exactly = 3) { mockUserDao.updateUser(any()) }
     }
@@ -436,9 +436,9 @@ class AuthenticationSecurityTest {
         val lockedUser = TestHelper.createTestUser(
             email = TestData.VALID_EMAIL,
             isAccountLocked = true,
-            failedLoginAttempts = 5
+            failedLoginAttempts = 5,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns lockedUser
 
         // When - try to login with correct password
@@ -448,7 +448,7 @@ class AuthenticationSecurityTest {
         assertThat(result).isInstanceOf(AuthResult.Error::class.java)
         val error = result as AuthResult.Error
         assertThat(error.message).contains("Account is locked")
-        
+
         // Verify no password verification was attempted
         verify(exactly = 0) { mockCryptoManager.verifyPassword(any(), any(), any()) }
     }
@@ -462,14 +462,14 @@ class AuthenticationSecurityTest {
             username = "testuser",
             passwordHash = "hash",
             passwordSalt = "salt",
-            firstName = null,  // null values
+            firstName = null, // null values
             lastName = null,
             dateOfBirth = null,
             heightCm = null,
             weightKg = null,
-            gender = null
+            gender = null,
         )
-        
+
         coEvery { mockUserDao.getUserByEmail(TestData.VALID_EMAIL) } returns userWithNulls
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true
         coEvery { mockUserDao.resetFailedLoginAttempts(any(), any()) } just Runs
@@ -498,9 +498,9 @@ class AuthenticationSecurityTest {
         assertThat(result).isInstanceOf(AuthResult.Success::class.java)
         coVerify {
             mockUserDao.insertUser(
-                match { user -> 
+                match { user ->
                     user.username == nameWithSpecialChars
-                }
+                },
             )
         }
     }
@@ -511,9 +511,9 @@ class AuthenticationSecurityTest {
         val user = TestHelper.createTestUser(
             email = "user@example.com", // lowercase in database
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
-        
+
         // Mock will be called with lowercase version
         coEvery { mockUserDao.getUserByEmail("user@example.com") } returns user
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true

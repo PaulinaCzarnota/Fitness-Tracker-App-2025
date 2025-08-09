@@ -38,8 +38,8 @@ class StepDashboardViewModel(application: Application) : AndroidViewModel(applic
             progress = 0f,
             distance = 0f,
             calories = 0f,
-            isTracking = false
-        )
+            isTracking = false,
+        ),
     )
     val stepData: StateFlow<StepData> = _stepData.asStateFlow()
 
@@ -57,10 +57,10 @@ class StepDashboardViewModel(application: Application) : AndroidViewModel(applic
             stepService = binder.getService()
             isServiceBound = true
             _isServiceConnected.value = true
-            
+
             // Start observing step data
             observeStepData()
-            
+
             // Get initial step data
             updateStepData()
         }
@@ -86,16 +86,16 @@ class StepDashboardViewModel(application: Application) : AndroidViewModel(applic
      */
     private fun startAndBindService() {
         val context = getApplication<Application>().applicationContext
-        
+
         try {
             // Start the service
             val serviceIntent = Intent(context, StepCounterService::class.java)
             context.startForegroundService(serviceIntent)
-            
+
             // Bind to the service
             val bindIntent = Intent(context, StepCounterService::class.java)
             val success = context.bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
-            
+
             if (!success) {
                 _errorMessage.value = "Failed to bind to step tracking service"
                 Log.e(TAG, "Failed to bind to StepCounterService")
@@ -120,28 +120,28 @@ class StepDashboardViewModel(application: Application) : AndroidViewModel(applic
                         updateStepDataField { it.copy(steps = steps) }
                     }
                 }
-                
+
                 // Observe daily goal
                 launch {
                     service.dailyGoal.collect { goal ->
                         updateStepDataField { it.copy(goal = goal) }
                     }
                 }
-                
+
                 // Observe progress
                 launch {
                     service.stepProgress.collect { progress ->
                         updateStepDataField { it.copy(progress = progress) }
                     }
                 }
-                
+
                 // Observe calories burned
                 launch {
                     service.caloriesBurned.collect { calories ->
                         updateStepDataField { it.copy(calories = calories) }
                     }
                 }
-                
+
                 // Observe distance
                 launch {
                     service.distanceMeters.collect { distance ->
@@ -267,7 +267,7 @@ class StepDashboardViewModel(application: Application) : AndroidViewModel(applic
     override fun onCleared() {
         super.onCleared()
         Log.d(TAG, "ViewModel cleared, unbinding service")
-        
+
         // Unbind service
         if (isServiceBound) {
             try {

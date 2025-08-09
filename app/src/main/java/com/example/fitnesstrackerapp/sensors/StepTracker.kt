@@ -5,9 +5,12 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * Step tracking utility class for monitoring user steps using device sensors.
@@ -20,7 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
  */
 
 class StepTracker(
-    private val context: Context
+    private val context: Context,
 ) : SensorEventListener {
 
     private val sensorManager: SensorManager by lazy {
@@ -33,6 +36,10 @@ class StepTracker(
 
     private val stepDetectorSensor: Sensor? by lazy {
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+    }
+
+    private val accelerometerSensor: Sensor? by lazy {
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     }
 
     private val _stepCount = MutableStateFlow(0)
@@ -48,6 +55,14 @@ class StepTracker(
     private var sessionStepCount = 0
     private var isInitialized = false
 
+    // Accelerometer fallback variables
+    private var lastAcceleration = floatArrayOf(0f, 0f, 0f)
+    private var lastAccelerationMagnitude = 0f
+    private var stepThreshold = 11.0f
+    private var lastStepTime = 0L
+    private val minStepInterval = 300L // Minimum time between steps in milliseconds
+    private var isUsingAccelerometer = false
+
     companion object {
         private const val STEP_LENGTH_METERS = 0.76f
         private const val CALORIES_PER_STEP = 0.04f
@@ -59,7 +74,7 @@ class StepTracker(
      * @return true if step tracking is supported
      */
     fun isStepTrackingSupported(): Boolean {
-        return stepCounterSensor != null || stepDetectorSensor != null
+        return stepCounterSensor != null || stepDetectorSensor != null || accelerometerSensor != null
     }
 
     /**
@@ -69,18 +84,23 @@ class StepTracker(
      */
     fun startTracking(): Boolean {
         if (!isStepTrackingSupported()) {
+            Log.w("StepTracker", "No step tracking sensors available")
             return false
         }
 
         var success = false
+        isUsingAccelerometer = false
 
         // Prefer step counter sensor for accuracy
         stepCounterSensor?.let { sensor ->
             success = sensorManager.registerListener(
                 this,
                 sensor,
-                SensorManager.SENSOR_DELAY_NORMAL
+                SensorManager.SENSOR_DELAY_NORMAL,
             )
+            if (success) {
+                Log.d("StepTracker", "Step counter sensor registered")
+            }
         }
 
         // Fallback to step detector if step counter is not available
@@ -88,12 +108,30 @@ class StepTracker(
             success = sensorManager.registerListener(
                 this,
                 stepDetectorSensor,
-                SensorManager.SENSOR_DELAY_NORMAL
+                SensorManager.SENSOR_DELAY_NORMAL,
             )
+            if (success) {
+                Log.d("StepTracker", "Step detector sensor registered")
+            }
+        }
+
+        // Final fallback to accelerometer with custom pedometer algorithm
+        if (!success && accelerometerSensor != null) {
+            success = sensorManager.registerListener(
+                this,
+                accelerometerSensor,
+                SensorManager.SENSOR_DELAY_GAME,
+            )
+            if (success) {
+                isUsingAccelerometer = true
+                Log.d("StepTracker", "Accelerometer sensor registered for step detection")
+            }
         }
 
         if (success) {
             _isTracking.value = true
+        } else {
+            Log.e("StepTracker", "Failed to register any sensors for step tracking")
         }
 
         return success
@@ -165,7 +203,7 @@ class StepTracker(
             totalSteps = _totalSteps.value,
             sessionDistance = calculateDistanceKm(sessionStepCount),
             sessionCalories = calculateCalories(sessionStepCount),
-            isTracking = _isTracking.value
+            isTracking = _isTracking.value,
         )
     }
 
@@ -191,8 +229,42 @@ class StepTracker(
                     _stepCount.value = sessionStepCount
                     _totalSteps.value = _totalSteps.value + 1
                 }
+
+                Sensor.TYPE_ACCELEROMETER -> {
+                    if (isUsingAccelerometer) {
+                        handleAccelerometerData(sensorEvent)
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * Handles accelerometer data for step detection using pedometer algorithm.
+     */
+    private fun handleAccelerometerData(event: SensorEvent) {
+        val x = event.values[0]
+        val y = event.values[1]
+        val z = event.values[2]
+
+        // Calculate acceleration magnitude
+        val acceleration = sqrt(x * x + y * y + z * z)
+
+        // Detect step using threshold and timing
+        val currentTime = System.currentTimeMillis()
+        val accelerationDelta = abs(acceleration - lastAccelerationMagnitude)
+
+        if (accelerationDelta > stepThreshold &&
+            currentTime - lastStepTime > minStepInterval
+        ) {
+            sessionStepCount++
+            _stepCount.value = sessionStepCount
+            _totalSteps.value = _totalSteps.value + 1
+            lastStepTime = currentTime
+            Log.v("StepTracker", "Step detected via accelerometer. Total: $sessionStepCount")
+        }
+
+        lastAccelerationMagnitude = acceleration
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -233,6 +305,14 @@ class StepTracker(
         // This could be stored in preferences for personalized calculations
         // For now, we'll use the default constant
     }
+
+    /**
+     * Clears cached data for memory cleanup.
+     */
+    fun clearCache() {
+        // Clear any cached values or reset state if needed
+        // Currently no significant cache to clear, but method provided for interface compliance
+    }
 }
 
 /**
@@ -243,5 +323,5 @@ data class StepStats(
     val totalSteps: Long,
     val sessionDistance: Float, // in kilometers
     val sessionCalories: Float,
-    val isTracking: Boolean
+    val isTracking: Boolean,
 )

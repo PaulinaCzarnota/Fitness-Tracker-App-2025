@@ -1,5 +1,5 @@
 /**
- * Comprehensive unit tests for Goal, FoodEntry, and Notification repositories 
+ * Comprehensive unit tests for Goal, FoodEntry, and Notification repositories
  * using Room in-memory database and JUnit 5.
  *
  * This test class covers:
@@ -40,7 +40,7 @@ class ComprehensiveRepositoryTest {
         context = ApplicationProvider.getApplicationContext()
         database = Room.inMemoryDatabaseBuilder(
             context,
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -51,7 +51,7 @@ class ComprehensiveRepositoryTest {
         goalRepository = GoalRepository(database.goalDao())
         foodEntryRepository = FoodEntryRepository(database.foodEntryDao())
         notificationRepository = NotificationRepository(database.notificationDao())
-        
+
         // Create test user
         testUser = User(
             email = "test@example.com",
@@ -59,7 +59,7 @@ class ComprehensiveRepositoryTest {
             passwordHash = "hash",
             passwordSalt = "salt",
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
         testUserId = database.userDao().insertUser(testUser)
     }
@@ -85,7 +85,7 @@ class ComprehensiveRepositoryTest {
             type = GoalType.WEIGHT_LOSS,
             targetValue = 10.0,
             currentValue = 2.0,
-            unit = "lbs"
+            unit = "lbs",
         )
 
         // When
@@ -110,7 +110,7 @@ class ComprehensiveRepositoryTest {
         val goal = createTestGoal(
             userId = testUserId,
             targetValue = 10000.0,
-            currentValue = 5000.0
+            currentValue = 5000.0,
         )
         val goalId = goalRepository.insertGoal(goal)
 
@@ -128,7 +128,7 @@ class ComprehensiveRepositoryTest {
         // Given
         val goal = createTestGoal(
             userId = testUserId,
-            status = GoalStatus.ACTIVE
+            status = GoalStatus.ACTIVE,
         )
         val goalId = goalRepository.insertGoal(goal)
 
@@ -214,7 +214,7 @@ class ComprehensiveRepositoryTest {
             proteinGrams = 0.5,
             carbsGrams = 25.0,
             fatGrams = 0.3,
-            mealType = MealType.SNACK
+            mealType = MealType.SNACK,
         )
 
         // When
@@ -225,7 +225,7 @@ class ComprehensiveRepositoryTest {
 
         val savedEntries = foodEntryRepository.getFoodEntriesByUserId(testUserId).first()
         assertEquals(1, savedEntries.size)
-        
+
         val savedEntry = savedEntries[0]
         assertEquals("Apple", savedEntry.foodName)
         assertEquals(95.0, savedEntry.caloriesPerServing, 0.01)
@@ -239,9 +239,9 @@ class ComprehensiveRepositoryTest {
         // Given - invalid food entry with negative calories
         val invalidEntry = createTestFoodEntry(
             userId = 0L, // Invalid user ID
-            foodName = "",  // Empty food name
+            foodName = "", // Empty food name
             servingSize = -1.0, // Negative serving size
-            caloriesPerServing = -50.0 // Negative calories
+            caloriesPerServing = -50.0, // Negative calories
         )
 
         // When
@@ -291,7 +291,9 @@ class ComprehensiveRepositoryTest {
 
         // When
         val breakfastEntries = foodEntryRepository.getFoodEntriesByMealType(
-            testUserId, Date(), MealType.BREAKFAST
+            testUserId,
+            Date(),
+            MealType.BREAKFAST,
         ).first()
 
         // Then
@@ -327,7 +329,7 @@ class ComprehensiveRepositoryTest {
         val entries = listOf(
             createTestFoodEntry(userId = testUserId, foodName = "Entry 1"),
             createTestFoodEntry(userId = testUserId, foodName = "Entry 2"),
-            createTestFoodEntry(userId = testUserId, foodName = "Entry 3")
+            createTestFoodEntry(userId = testUserId, foodName = "Entry 3"),
         )
 
         // When
@@ -353,7 +355,7 @@ class ComprehensiveRepositoryTest {
             title = "Workout Reminder",
             message = "Time for your morning workout!",
             type = NotificationType.WORKOUT_REMINDER,
-            channelId = "workout_reminders"
+            channelId = "workout_reminders",
         )
 
         // When
@@ -376,9 +378,9 @@ class ComprehensiveRepositoryTest {
         // Given - invalid notification
         val invalidNotification = createTestNotification(
             userId = 0L, // Invalid user ID
-            title = "",   // Empty title
+            title = "", // Empty title
             message = "", // Empty message
-            channelId = "" // Empty channel ID
+            channelId = "", // Empty channel ID
         )
 
         // When
@@ -408,7 +410,8 @@ class ComprehensiveRepositoryTest {
 
         // When
         val workoutNotifications = notificationRepository.getNotificationsByType(
-            testUserId, NotificationType.WORKOUT_REMINDER
+            testUserId,
+            NotificationType.WORKOUT_REMINDER,
         ).first()
 
         // Then
@@ -430,7 +433,8 @@ class ComprehensiveRepositoryTest {
 
         // When
         val pendingNotifications = notificationRepository.getNotificationsByStatus(
-            testUserId, NotificationStatus.PENDING
+            testUserId,
+            NotificationStatus.PENDING,
         ).first()
 
         // Then
@@ -444,15 +448,15 @@ class ComprehensiveRepositoryTest {
         // Given
         val notification = createTestNotification(
             userId = testUserId,
-            status = NotificationStatus.PENDING
+            status = NotificationStatus.PENDING,
         )
         val notificationId = notificationRepository.insertNotification(notification)
 
         // When
         notificationRepository.updateNotificationStatus(
-            notificationId, 
-            NotificationStatus.SENT, 
-            Date()
+            notificationId,
+            NotificationStatus.SENT,
+            Date(),
         )
 
         // Then
@@ -466,7 +470,7 @@ class ComprehensiveRepositoryTest {
         // Given
         val notification = createTestNotification(
             userId = testUserId,
-            status = NotificationStatus.SENT
+            status = NotificationStatus.SENT,
         )
         val notificationId = notificationRepository.insertNotification(notification)
 
@@ -533,14 +537,14 @@ class ComprehensiveRepositoryTest {
             email = "another@example.com",
             username = "anotheruser",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
         val anotherUserId = database.userDao().insertUser(anotherUser)
 
         // Create data for both users
         val goal1 = createTestGoal(userId = testUserId, title = "User1 Goal")
         val goal2 = createTestGoal(userId = anotherUserId, title = "User2 Goal")
-        
+
         goalRepository.insertGoal(goal1)
         goalRepository.insertGoal(goal2)
 
@@ -581,7 +585,7 @@ class ComprehensiveRepositoryTest {
         currentValue: Double = 0.0,
         unit: String = "steps",
         targetDate: Date = Date(System.currentTimeMillis() + 86400000L),
-        status: GoalStatus = GoalStatus.ACTIVE
+        status: GoalStatus = GoalStatus.ACTIVE,
     ): Goal {
         return Goal(
             userId = userId,
@@ -596,7 +600,7 @@ class ComprehensiveRepositoryTest {
             reminderEnabled = false,
             reminderFrequency = null,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
     }
 
@@ -614,7 +618,7 @@ class ComprehensiveRepositoryTest {
         sugarGrams: Double? = null,
         sodiumMg: Double? = null,
         mealType: MealType = MealType.LUNCH,
-        dateConsumed: Date = Date()
+        dateConsumed: Date = Date(),
     ): FoodEntry {
         return FoodEntry(
             userId = userId,
@@ -632,7 +636,7 @@ class ComprehensiveRepositoryTest {
             mealType = mealType,
             dateConsumed = dateConsumed,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
     }
 
@@ -646,7 +650,7 @@ class ComprehensiveRepositoryTest {
         channelId: String = "test_channel",
         scheduledTime: Date = Date(),
         relatedEntityType: String? = null,
-        relatedEntityId: Long? = null
+        relatedEntityId: Long? = null,
     ): Notification {
         return Notification(
             userId = userId,
@@ -668,7 +672,7 @@ class ComprehensiveRepositoryTest {
             retryCount = 0,
             systemNotificationId = null,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
     }
 }

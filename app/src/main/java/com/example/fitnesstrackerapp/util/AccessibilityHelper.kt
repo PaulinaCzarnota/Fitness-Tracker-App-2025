@@ -57,12 +57,14 @@ object AccessibilityHelper {
         type: String,
         duration: Int,
         calories: Int,
-        distance: Float? = null
+        distance: Float? = null,
     ): String {
         val base = "$type workout, duration $duration minutes, burned $calories calories"
         return if (distance != null) {
             "$base, distance ${String.format("%.1f", distance)} kilometers"
-        } else base
+        } else {
+            base
+        }
     }
 
     /**
@@ -72,7 +74,7 @@ object AccessibilityHelper {
         title: String,
         current: Float,
         target: Float,
-        unit: String
+        unit: String,
     ): String {
         val percentage = (current / target * 100).toInt()
         return "$title: $current out of $target $unit, $percentage% complete"
@@ -83,7 +85,7 @@ object AccessibilityHelper {
      */
     fun getStepCountDescription(
         steps: Int,
-        goal: Int
+        goal: Int,
     ): String {
         val percentage = (steps.toFloat() / goal * 100).toInt()
         return "$steps steps taken out of $goal goal, $percentage% complete"
@@ -95,7 +97,7 @@ object AccessibilityHelper {
     fun getNavigationDescription(
         destination: String,
         hasActiveWorkout: Boolean = false,
-        unreadNotifications: Int = 0
+        unreadNotifications: Int = 0,
     ): String {
         val base = "Navigate to $destination"
         val additionalInfo = mutableListOf<String>()
@@ -107,8 +109,11 @@ object AccessibilityHelper {
             additionalInfo.add("$unreadNotifications unread notifications")
         }
 
-        return if (additionalInfo.isEmpty()) base
-        else "$base, ${additionalInfo.joinToString(", ")}"
+        return if (additionalInfo.isEmpty()) {
+            base
+        } else {
+            "$base, ${additionalInfo.joinToString(", ")}"
+        }
     }
 
     /**
@@ -117,7 +122,7 @@ object AccessibilityHelper {
     fun isColorContrastValid(
         foregroundColor: Int,
         backgroundColor: Int,
-        isLargeText: Boolean = false
+        isLargeText: Boolean = false,
     ): Boolean {
         val ratio = calculateContrastRatio(foregroundColor, backgroundColor)
         val minRatio = if (isLargeText) MIN_CONTRAST_RATIO_LARGE else MIN_CONTRAST_RATIO_NORMAL

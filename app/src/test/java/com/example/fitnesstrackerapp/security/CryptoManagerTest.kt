@@ -76,8 +76,10 @@ class CryptoManagerTest {
         val hash2 = cryptoManager.hashPassword(password2, salt)
 
         // Then
-        assertFalse("Different passwords should create different hashes", 
-                   hash1.contentEquals(hash2))
+        assertFalse(
+            "Different passwords should create different hashes",
+            hash1.contentEquals(hash2),
+        )
     }
 
     @Test
@@ -92,8 +94,10 @@ class CryptoManagerTest {
         val hash2 = cryptoManager.hashPassword(password, salt2)
 
         // Then
-        assertFalse("Same password with different salts should create different hashes", 
-                   hash1.contentEquals(hash2))
+        assertFalse(
+            "Same password with different salts should create different hashes",
+            hash1.contentEquals(hash2),
+        )
     }
 
     @Test
@@ -190,14 +194,18 @@ class CryptoManagerTest {
         val result2 = cryptoManager.encrypt(plaintext)
 
         // Then
-        assertTrue("Both encryptions should succeed", 
-                  result1 is CryptoResult.Success && result2 is CryptoResult.Success)
-        
+        assertTrue(
+            "Both encryptions should succeed",
+            result1 is CryptoResult.Success && result2 is CryptoResult.Success,
+        )
+
         val success1 = result1 as CryptoResult.Success
         val success2 = result2 as CryptoResult.Success
-        
-        assertFalse("Encrypted data should be different", 
-                   success1.encryptedData!!.contentEquals(success2.encryptedData!!))
+
+        assertFalse(
+            "Encrypted data should be different",
+            success1.encryptedData!!.contentEquals(success2.encryptedData!!),
+        )
     }
 
     @Test
@@ -205,7 +213,7 @@ class CryptoManagerTest {
         // Given
         val originalPlaintext = "Secret message to encrypt and decrypt"
         val encryptResult = cryptoManager.encrypt(originalPlaintext)
-        
+
         assertTrue("Encryption should succeed", encryptResult is CryptoResult.Success)
         val encryptSuccess = encryptResult as CryptoResult.Success
 
@@ -224,7 +232,7 @@ class CryptoManagerTest {
         val plaintext = "Secret message"
         val encryptResult = cryptoManager.encrypt(plaintext)
         assertTrue(encryptResult is CryptoResult.Success)
-        
+
         val encryptSuccess = encryptResult as CryptoResult.Success
         val wrongIV = ByteArray(12) { 0x00 } // Wrong IV
 
@@ -254,21 +262,21 @@ class CryptoManagerTest {
         try {
             // Salt operations
             cryptoManager.generateSalt()
-            
+
             // Password operations
             val salt = ByteArray(32)
             cryptoManager.hashPassword("password", salt)
             val hash = ByteArray(32)
             cryptoManager.verifyPassword("password", hash, salt)
-            
+
             // Conversion operations
             cryptoManager.bytesToHex(ByteArray(16))
             cryptoManager.hexToBytes("00112233")
-            
+
             // Encryption operations
             cryptoManager.encrypt("plaintext")
             cryptoManager.decrypt(ByteArray(16), ByteArray(12))
-            
+
             // Success - API surface is stable
             assertTrue(true)
         } catch (e: NoSuchMethodError) {
@@ -292,7 +300,7 @@ class CryptoManagerTest {
         assertEquals(encryptedData, successWithEncryption.encryptedData)
         assertEquals(iv, successWithEncryption.iv)
         assertNull(successWithEncryption.decryptedData)
-        
+
         assertEquals(decryptedData, successWithDecryption.decryptedData)
         assertEquals(iv, successWithDecryption.iv)
         assertNull(successWithDecryption.encryptedData)

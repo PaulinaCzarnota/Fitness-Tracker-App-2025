@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.entity.MealType
-import com.example.fitnesstrackerapp.repository.NutritionRepository
+import com.example.fitnesstrackerapp.repository.SimpleNutritionRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -20,7 +20,7 @@ data class NutritionUiState(
     val dinnerCalories: Double = 0.0,
     val snackCalories: Double = 0.0,
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
 )
 
 /**
@@ -33,8 +33,8 @@ data class NutritionUiState(
  * - Provides UI state for nutrition screens
  */
 class NutritionViewModel(
-    private val repository: NutritionRepository,
-    private val userId: Long
+    private val repository: SimpleNutritionRepository,
+    private val userId: Long,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NutritionUiState())
@@ -58,14 +58,14 @@ class NutritionViewModel(
                     servingUnit = "serving",
                     caloriesPerServing = calories,
                     mealType = mealType,
-                    dateConsumed = Date()
+                    dateConsumed = Date(),
                 )
                 repository.addFoodEntry(entry)
                 loadTodaysFoodEntries()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to add food entry: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -77,7 +77,7 @@ class NutritionViewModel(
     private fun loadTodaysFoodEntries() {
         viewModelScope.launch {
             try {
-                repository.getTodaysFoodEntries(userId).collect { entries ->
+                repository.getAllFoodEntriesForUser(userId).collect { entries ->
                     val totalCalories = entries.sumOf { it.calories }
                     val entriesByMeal = entries.groupBy { it.mealType }
 
@@ -89,13 +89,13 @@ class NutritionViewModel(
                         dinnerCalories = entriesByMeal[MealType.DINNER]?.sumOf { it.calories } ?: 0.0,
                         snackCalories = entriesByMeal[MealType.SNACK]?.sumOf { it.calories } ?: 0.0,
                         isLoading = false,
-                        error = null
+                        error = null,
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to load food entries: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }
@@ -111,7 +111,7 @@ class NutritionViewModel(
                 loadTodaysFoodEntries()
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to delete food entry: ${e.message}"
+                    error = "Failed to delete food entry: ${e.message}",
                 )
             }
         }

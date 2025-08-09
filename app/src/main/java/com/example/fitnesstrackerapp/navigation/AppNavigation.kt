@@ -6,17 +6,14 @@
  * - Main application screens (home, workouts, goals, progress, steps, nutrition)
  * - Profile and settings screens
  *
- * Uses Jetpack Compose Navigation for modern declarative navigation with proper
- * state management and deep linking support.
+ * Uses Jetpack Compose Navigation with proper ViewModel scoping via ServiceLocator
+ * for state management and dependency injection without external libraries.
  */
 
 package com.example.fitnesstrackerapp.navigation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DirectionsRun
@@ -25,23 +22,19 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalDining
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -52,10 +45,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fitnesstrackerapp.screens.ForgotPasswordScreen
 import com.example.fitnesstrackerapp.screens.GoalScreen
 import com.example.fitnesstrackerapp.screens.HomeScreen
+import com.example.fitnesstrackerapp.screens.ProgressScreen
 import com.example.fitnesstrackerapp.screens.SignUpScreen
 import com.example.fitnesstrackerapp.screens.StepTrackerScreen
 import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 import com.example.fitnesstrackerapp.ui.auth.LoginScreen
+import com.example.fitnesstrackerapp.ui.nutrition.NutritionScreen
+import com.example.fitnesstrackerapp.ui.profile.ProfileScreen
+import com.example.fitnesstrackerapp.ui.workout.WorkoutScreen
 
 /**
  * Sealed class representing navigation destinations in the app.
@@ -63,8 +60,9 @@ import com.example.fitnesstrackerapp.ui.auth.LoginScreen
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Home : Screen("home", "Home", Icons.Filled.Home)
     object Workouts : Screen("workouts", "Workouts", Icons.Default.FitnessCenter)
-    object Nutrition : Screen("nutrition", "Nutrition", Icons.Default.LocalDining)
+    object Progress : Screen("progress", "Progress", Icons.Default.Timeline)
     object Goals : Screen("goals", "Goals", Icons.Filled.Star)
+    object Nutrition : Screen("nutrition", "Nutrition", Icons.Default.LocalDining)
     object Steps : Screen("steps", "Steps", Icons.AutoMirrored.Outlined.DirectionsRun)
     object Profile : Screen("profile", "Profile", Icons.Filled.Person)
 }
@@ -157,7 +155,7 @@ private fun AuthNavigationGraph(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainNavigationGraph(
-    navController: NavHostController,
+    @Suppress("UNUSED_PARAMETER") navController: NavHostController,
     authViewModel: AuthViewModel,
 ) {
     val bottomNavController = rememberNavController()
@@ -167,9 +165,9 @@ private fun MainNavigationGraph(
     val bottomNavItems = listOf(
         Screen.Home,
         Screen.Workouts,
-        Screen.Nutrition,
+        Screen.Progress,
         Screen.Goals,
-        Screen.Steps,
+        Screen.Nutrition,
     )
 
     Scaffold(
@@ -216,15 +214,22 @@ private fun MainNavigationGraph(
             }
 
             composable(Screen.Workouts.route) {
-                com.example.fitnesstrackerapp.ui.workout.WorkoutScreen(
+                WorkoutScreen(
                     modifier = Modifier.fillMaxSize(),
                     authViewModel = authViewModel,
-                    activity = androidx.compose.ui.platform.LocalContext.current as androidx.activity.ComponentActivity,
+                    activity = LocalContext.current as ComponentActivity,
+                )
+            }
+
+            composable(Screen.Progress.route) {
+                ProgressScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    authViewModel = authViewModel,
                 )
             }
 
             composable(Screen.Nutrition.route) {
-                com.example.fitnesstrackerapp.ui.nutrition.NutritionScreen(
+                NutritionScreen(
                     modifier = Modifier.fillMaxSize(),
                     authViewModel = authViewModel,
                 )
@@ -233,7 +238,7 @@ private fun MainNavigationGraph(
             composable(Screen.Goals.route) {
                 GoalScreen(
                     modifier = Modifier.fillMaxSize(),
-                    activity = androidx.compose.ui.platform.LocalContext.current as androidx.activity.ComponentActivity,
+                    activity = LocalContext.current as ComponentActivity,
                 )
             }
 
@@ -248,62 +253,7 @@ private fun MainNavigationGraph(
                 ProfileScreen(
                     navController = bottomNavController,
                     authViewModel = authViewModel,
-                    onLogout = {
-                        authViewModel.logout()
-                    },
                 )
-            }
-        }
-    }
-}
-
-/**
- * Profile screen composable for user settings and logout.
- *
- * @param navController Navigation controller
- * @param authViewModel Authentication ViewModel
- * @param onLogout Callback for logout action
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ProfileScreen(
-    navController: NavHostController,
-    authViewModel: AuthViewModel,
-    onLogout: () -> Unit,
-) {
-    val authUiState by authViewModel.uiState.collectAsState()
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Profile") },
-            )
-        },
-    ) { innerPadding ->
-        // Profile screen implementation would go here
-        // For now, this is a placeholder
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "Welcome, ${authUiState.user?.email ?: "User"}!",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Button(
-                onClick = onLogout,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                ),
-            ) {
-                Text("Logout")
             }
         }
     }

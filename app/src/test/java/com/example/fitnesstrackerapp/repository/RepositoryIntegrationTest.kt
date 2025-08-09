@@ -34,13 +34,13 @@ class RepositoryIntegrationTest {
 
     private lateinit var context: Context
     private lateinit var database: AppDatabase
-    
+
     // Repositories under test
     private lateinit var stepRepository: StepRepository
     private lateinit var goalRepository: GoalRepository
     private lateinit var foodEntryRepository: FoodEntryRepository
     private lateinit var notificationRepository: NotificationRepository
-    
+
     // Test data
     private lateinit var testUser: User
     private var testUserId: Long = 0L
@@ -49,13 +49,13 @@ class RepositoryIntegrationTest {
     fun setUp() = runTest {
         context = ApplicationProvider.getApplicationContext()
         database = AppDatabase.getInMemoryDatabase(context)
-        
+
         // Initialize repositories
         stepRepository = StepRepository(database.stepDao())
         goalRepository = GoalRepository(database.goalDao())
         foodEntryRepository = FoodEntryRepository(database.foodEntryDao())
         notificationRepository = NotificationRepository(database.notificationDao())
-        
+
         // Create test user
         testUser = User(
             email = "test@example.com",
@@ -63,7 +63,7 @@ class RepositoryIntegrationTest {
             passwordHash = "hash",
             passwordSalt = "salt",
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
         testUserId = database.userDao().insertUser(testUser)
     }
@@ -84,7 +84,7 @@ class RepositoryIntegrationTest {
             date = Date(),
             caloriesBurned = 200.0f,
             distanceMeters = 3000.0f,
-            activeMinutes = 45
+            activeMinutes = 45,
         )
 
         // Test insertion
@@ -108,15 +108,15 @@ class RepositoryIntegrationTest {
             date = Date(),
             caloriesBurned = 120.0f,
             distanceMeters = 1800.0f,
-            activeMinutes = 30
+            activeMinutes = 30,
         )
 
         val stepId = stepRepository.insertStep(testStep)
         val updatedStep = testStep.copy(id = stepId, count = 7000, caloriesBurned = 280.0f)
-        
+
         // Test update
         stepRepository.updateStep(updatedStep)
-        
+
         // Verify update
         val retrieved = stepRepository.getTodaysSteps(testUserId).first()
         Assert.assertEquals("Count should be updated", 7000, retrieved?.count)
@@ -140,9 +140,9 @@ class RepositoryIntegrationTest {
 
         // Test date range query
         val stepsInRange = stepRepository.getStepsInDateRange(
-            testUserId, 
-            Date(yesterday.time - 1000L), 
-            Date(now.time + 1000L)
+            testUserId,
+            Date(yesterday.time - 1000L),
+            Date(now.time + 1000L),
         ).first()
 
         Assert.assertEquals("Should return 2 steps in range", 2, stepsInRange.size)
@@ -166,7 +166,7 @@ class RepositoryIntegrationTest {
             unit = "kg",
             targetDate = Date(System.currentTimeMillis() + 86400000L * 30), // 30 days from now
             reminderEnabled = true,
-            reminderFrequency = "daily"
+            reminderFrequency = "daily",
         )
 
         // Test insertion
@@ -191,14 +191,14 @@ class RepositoryIntegrationTest {
             targetValue = 10000.0,
             currentValue = 5000.0,
             unit = "steps",
-            targetDate = Date(System.currentTimeMillis() + 86400000L)
+            targetDate = Date(System.currentTimeMillis() + 86400000L),
         )
 
         val goalId = goalRepository.insertGoal(testGoal)
-        
+
         // Test progress update
         goalRepository.updateGoalProgress(goalId, 8500.0, System.currentTimeMillis())
-        
+
         // Verify update
         val updatedGoal = goalRepository.getGoalById(goalId)
         Assert.assertEquals("Current value should be updated", 8500.0, updatedGoal?.currentValue, 0.01)
@@ -215,14 +215,14 @@ class RepositoryIntegrationTest {
             currentValue = 4.8,
             unit = "km",
             targetDate = Date(System.currentTimeMillis() + 86400000L),
-            status = GoalStatus.ACTIVE
+            status = GoalStatus.ACTIVE,
         )
 
         val goalId = goalRepository.insertGoal(testGoal)
-        
+
         // Mark as achieved
         goalRepository.markGoalAsAchieved(goalId, System.currentTimeMillis())
-        
+
         // Verify achievement
         val achievedGoal = goalRepository.getGoalById(goalId)
         Assert.assertEquals("Status should be completed", GoalStatus.COMPLETED, achievedGoal?.status)
@@ -232,19 +232,31 @@ class RepositoryIntegrationTest {
     fun testGoalRepository_activeGoalsQuery() = runTest {
         // Create multiple goals with different statuses
         val activeGoal1 = Goal(
-            userId = testUserId, title = "Active Goal 1", goalType = GoalType.WEIGHT_LOSS,
-            targetValue = 5.0, unit = "kg", targetDate = Date(System.currentTimeMillis() + 86400000L),
-            status = GoalStatus.ACTIVE
+            userId = testUserId,
+            title = "Active Goal 1",
+            goalType = GoalType.WEIGHT_LOSS,
+            targetValue = 5.0,
+            unit = "kg",
+            targetDate = Date(System.currentTimeMillis() + 86400000L),
+            status = GoalStatus.ACTIVE,
         )
         val activeGoal2 = Goal(
-            userId = testUserId, title = "Active Goal 2", goalType = GoalType.STEP_COUNT,
-            targetValue = 10000.0, unit = "steps", targetDate = Date(System.currentTimeMillis() + 86400000L * 2),
-            status = GoalStatus.ACTIVE
+            userId = testUserId,
+            title = "Active Goal 2",
+            goalType = GoalType.STEP_COUNT,
+            targetValue = 10000.0,
+            unit = "steps",
+            targetDate = Date(System.currentTimeMillis() + 86400000L * 2),
+            status = GoalStatus.ACTIVE,
         )
         val completedGoal = Goal(
-            userId = testUserId, title = "Completed Goal", goalType = GoalType.DISTANCE,
-            targetValue = 5.0, unit = "km", targetDate = Date(System.currentTimeMillis() + 86400000L),
-            status = GoalStatus.COMPLETED
+            userId = testUserId,
+            title = "Completed Goal",
+            goalType = GoalType.DISTANCE,
+            targetValue = 5.0,
+            unit = "km",
+            targetDate = Date(System.currentTimeMillis() + 86400000L),
+            status = GoalStatus.COMPLETED,
         )
 
         goalRepository.insertGoal(activeGoal1)
@@ -279,7 +291,7 @@ class RepositoryIntegrationTest {
             sugarGrams = 19.0,
             sodiumMg = 2.0,
             mealType = MealType.SNACK,
-            dateConsumed = Date()
+            dateConsumed = Date(),
         )
 
         // Test insertion with validation
@@ -289,7 +301,7 @@ class RepositoryIntegrationTest {
         // Test retrieval
         val foodEntries = foodEntryRepository.getFoodEntriesByUserId(testUserId).first()
         Assert.assertEquals("Should have 1 food entry", 1, foodEntries.size)
-        
+
         val retrievedEntry = foodEntries[0]
         Assert.assertEquals("Food name should match", "Apple", retrievedEntry.foodName)
         Assert.assertEquals("Brand name should match", "Red Delicious", retrievedEntry.brandName)
@@ -301,12 +313,12 @@ class RepositoryIntegrationTest {
     fun testFoodEntryRepository_validation() = runTest {
         val invalidFoodEntry = FoodEntry(
             userId = 0L, // Invalid user ID
-            foodName = "",  // Invalid empty name
+            foodName = "", // Invalid empty name
             servingSize = -1.0, // Invalid negative serving size
             servingUnit = "piece",
             caloriesPerServing = -50.0, // Invalid negative calories
             mealType = MealType.BREAKFAST,
-            dateConsumed = Date()
+            dateConsumed = Date(),
         )
 
         // Test validation fails
@@ -333,7 +345,7 @@ class RepositoryIntegrationTest {
             carbsGrams = 27.0, // per banana
             fatGrams = 0.4, // per banana
             mealType = MealType.BREAKFAST,
-            dateConsumed = Date()
+            dateConsumed = Date(),
         )
 
         foodEntryRepository.insertFoodEntry(testFoodEntry)
@@ -349,17 +361,17 @@ class RepositoryIntegrationTest {
     @Test
     fun testFoodEntryRepository_dailyTotals() = runTest {
         val today = Date()
-        
+
         // Insert multiple food entries for today
         val breakfast = FoodEntry(
             userId = testUserId, foodName = "Oatmeal", servingSize = 1.0, servingUnit = "cup",
             caloriesPerServing = 150.0, proteinGrams = 5.0, carbsGrams = 30.0, fatGrams = 2.0,
-            mealType = MealType.BREAKFAST, dateConsumed = today
+            mealType = MealType.BREAKFAST, dateConsumed = today,
         )
         val lunch = FoodEntry(
             userId = testUserId, foodName = "Chicken Salad", servingSize = 1.0, servingUnit = "plate",
             caloriesPerServing = 300.0, proteinGrams = 25.0, carbsGrams = 15.0, fatGrams = 15.0,
-            mealType = MealType.LUNCH, dateConsumed = today
+            mealType = MealType.LUNCH, dateConsumed = today,
         )
 
         foodEntryRepository.insertFoodEntry(breakfast)
@@ -391,7 +403,7 @@ class RepositoryIntegrationTest {
             scheduledTime = Date(System.currentTimeMillis() + 3600000L), // 1 hour from now
             channelId = "workout_reminders",
             relatedEntityType = "workout",
-            relatedEntityId = 1L
+            relatedEntityId = 1L,
         )
 
         // Test insertion with validation
@@ -415,11 +427,11 @@ class RepositoryIntegrationTest {
             title = "Goal Achieved!",
             message = "Congratulations on reaching your goal",
             scheduledTime = Date(),
-            channelId = "achievements"
+            channelId = "achievements",
         )
 
         val notificationId = notificationRepository.insertNotification(testNotification)
-        
+
         // Test status progression
         notificationRepository.markNotificationAsSent(notificationId)
         var updated = notificationRepository.getNotificationById(notificationId)
@@ -441,22 +453,35 @@ class RepositoryIntegrationTest {
     @Test
     fun testNotificationRepository_filtering() = runTest {
         val now = Date()
-        
+
         // Create notifications with different types and statuses
         val workoutReminder = Notification(
-            userId = testUserId, type = NotificationType.WORKOUT_REMINDER, title = "Workout",
-            message = "Time to workout", scheduledTime = now, channelId = "workouts",
-            status = NotificationStatus.PENDING
+            userId = testUserId,
+            type = NotificationType.WORKOUT_REMINDER,
+            title = "Workout",
+            message = "Time to workout",
+            scheduledTime = now,
+            channelId = "workouts",
+            status = NotificationStatus.PENDING,
         )
         val goalAchievement = Notification(
-            userId = testUserId, type = NotificationType.GOAL_ACHIEVEMENT, title = "Goal!",
-            message = "Goal achieved", scheduledTime = now, channelId = "goals",
-            status = NotificationStatus.SENT
+            userId = testUserId,
+            type = NotificationType.GOAL_ACHIEVEMENT,
+            title = "Goal!",
+            message = "Goal achieved",
+            scheduledTime = now,
+            channelId = "goals",
+            status = NotificationStatus.SENT,
         )
         val stepMilestone = Notification(
-            userId = testUserId, type = NotificationType.STEP_MILESTONE, title = "Steps!",
-            message = "10K steps reached", scheduledTime = now, channelId = "steps",
-            status = NotificationStatus.read, isRead = true
+            userId = testUserId,
+            type = NotificationType.STEP_MILESTONE,
+            title = "Steps!",
+            message = "10K steps reached",
+            scheduledTime = now,
+            channelId = "steps",
+            status = NotificationStatus.read,
+            isRead = true,
         )
 
         notificationRepository.insertNotification(workoutReminder)
@@ -487,7 +512,7 @@ class RepositoryIntegrationTest {
             title = "", // Invalid empty title
             message = "", // Invalid empty message
             scheduledTime = Date(),
-            channelId = "" // Invalid empty channel
+            channelId = "", // Invalid empty channel
         )
 
         // Test validation fails
@@ -505,7 +530,7 @@ class RepositoryIntegrationTest {
     @Test
     fun testNotificationRepository_analytics() = runTest {
         val now = Date()
-        
+
         // Create notifications with different outcomes
         val sent1 = Notification(userId = testUserId, type = NotificationType.WORKOUT_REMINDER, title = "Sent 1", message = "Message", scheduledTime = now, channelId = "test", status = NotificationStatus.SENT)
         val clicked1 = Notification(userId = testUserId, type = NotificationType.GOAL_ACHIEVEMENT, title = "Clicked 1", message = "Message", scheduledTime = now, channelId = "test", status = NotificationStatus.CLICKED)
@@ -522,7 +547,7 @@ class RepositoryIntegrationTest {
         Assert.assertEquals("Should have 4 total notifications", 4, stats.totalNotifications)
         Assert.assertEquals("Should have 1 sent notification", 1, stats.sentCount)
         Assert.assertEquals("Should have 1 clicked notification", 1, stats.clickedCount)
-        
+
         // Delivery success rate calculation: (sent + clicked + dismissed) / total * 100
         val expectedSuccessRate = (1 + 1 + 1) / 4.0 * 100 // 75%
         Assert.assertEquals("Delivery success rate should be 75%", expectedSuccessRate, stats.deliverySuccessRate, 0.1)
@@ -550,7 +575,7 @@ class RepositoryIntegrationTest {
             currentValue = 28.0,
             unit = "workouts",
             targetDate = Date(System.currentTimeMillis() + 86400000L * 7), // 1 week
-            status = GoalStatus.ACTIVE
+            status = GoalStatus.ACTIVE,
         )
         val goalId = goalRepository.insertGoal(testGoal)
 
@@ -563,7 +588,7 @@ class RepositoryIntegrationTest {
             scheduledTime = Date(System.currentTimeMillis() + 86400000L * 6), // 6 days from now
             channelId = "goal_reminders",
             relatedEntityType = "goal",
-            relatedEntityId = goalId
+            relatedEntityId = goalId,
         )
         val notificationId = notificationRepository.insertNotification(relatedNotification)
 
@@ -589,7 +614,7 @@ class RepositoryIntegrationTest {
             currentValue = 0.0,
             unit = "steps",
             targetDate = Date(),
-            status = GoalStatus.ACTIVE
+            status = GoalStatus.ACTIVE,
         )
         val goalId = goalRepository.insertGoal(stepGoal)
 
@@ -601,13 +626,13 @@ class RepositoryIntegrationTest {
             date = Date(),
             caloriesBurned = 340.0f,
             distanceMeters = 5100.0f,
-            activeMinutes = 85
+            activeMinutes = 85,
         )
         stepRepository.insertStep(todaysSteps)
 
         // Update goal progress based on step data
         goalRepository.updateGoalProgress(goalId, 8500.0, System.currentTimeMillis())
-        
+
         val updatedGoal = goalRepository.getGoalById(goalId)
         Assert.assertEquals("Goal progress should match step count", 8500.0, updatedGoal?.currentValue, 0.01)
         Assert.assertEquals("Progress should be 85%", 85.0f, updatedGoal?.getProgressPercentage(), 0.1f)
@@ -617,7 +642,7 @@ class RepositoryIntegrationTest {
         val finalSteps = todaysSteps.copy(count = 10500)
         stepRepository.updateStep(finalSteps)
         goalRepository.updateGoalProgress(goalId, 10500.0, System.currentTimeMillis())
-        
+
         val completedGoal = goalRepository.getGoalById(goalId)
         Assert.assertTrue("Goal should be completed", completedGoal?.isCompleted() == true)
     }

@@ -40,7 +40,7 @@ import java.util.*
 fun CreateWorkoutDialog(
     userWeight: Double,
     onDismiss: () -> Unit,
-    onCreate: (WorkoutData) -> Unit
+    onCreate: (WorkoutData) -> Unit,
 ) {
     var workoutType by remember { mutableStateOf(WorkoutType.RUNNING) }
     var title by remember { mutableStateOf("") }
@@ -56,7 +56,7 @@ fun CreateWorkoutDialog(
     // Generate title based on workout type and duration
     LaunchedEffect(workoutType, duration) {
         if (title.isEmpty() || title.matches(Regex("^[A-Z_]+( - \\d+ min)?\$"))) {
-            val durationText = if (duration.isNotBlank()) " - ${duration} min" else ""
+            val durationText = if (duration.isNotBlank()) " - $duration min" else ""
             title = "${workoutType.name.replace("_", " ")}$durationText"
         }
     }
@@ -66,7 +66,7 @@ fun CreateWorkoutDialog(
         val durationInt = duration.toIntOrNull() ?: 0
         val distanceFloat = distance.toFloatOrNull()
         val heartRate = avgHeartRate.toIntOrNull()
-        
+
         if (durationInt > 0) {
             MetTableCalculator.calculateWorkoutCalories(
                 workoutType = workoutType,
@@ -74,9 +74,11 @@ fun CreateWorkoutDialog(
                 weightKg = userWeight,
                 intensity = intensity,
                 distance = distanceFloat,
-                avgHeartRate = heartRate
+                avgHeartRate = heartRate,
             )
-        } else 0
+        } else {
+            0
+        }
     }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -84,18 +86,18 @@ fun CreateWorkoutDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
         ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
             ) {
                 // Header
                 Text(
                     text = "Create Workout",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -111,7 +113,7 @@ fun CreateWorkoutDialog(
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Select workout type")
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -121,7 +123,7 @@ fun CreateWorkoutDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Workout Title") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -129,14 +131,14 @@ fun CreateWorkoutDialog(
                 // Duration and Distance Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OutlinedTextField(
                         value = duration,
                         onValueChange = { duration = it },
                         label = { Text("Duration (min)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
 
                     OutlinedTextField(
@@ -144,7 +146,7 @@ fun CreateWorkoutDialog(
                         onValueChange = { distance = it },
                         label = { Text("Distance (km)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
 
@@ -161,7 +163,7 @@ fun CreateWorkoutDialog(
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Select intensity")
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -169,14 +171,14 @@ fun CreateWorkoutDialog(
                 // Heart Rate Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OutlinedTextField(
                         value = avgHeartRate,
                         onValueChange = { avgHeartRate = it },
                         label = { Text("Avg HR (bpm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
 
                     OutlinedTextField(
@@ -184,7 +186,7 @@ fun CreateWorkoutDialog(
                         onValueChange = { maxHeartRate = it },
                         label = { Text("Max HR (bpm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
 
@@ -197,7 +199,7 @@ fun CreateWorkoutDialog(
                     label = { Text("Notes (optional)") },
                     minLines = 3,
                     maxLines = 5,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -206,33 +208,33 @@ fun CreateWorkoutDialog(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    )
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                    ),
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 Icons.Default.LocalFireDepartment,
                                 contentDescription = null,
-                                tint = Color(0xFFFF5722)
+                                tint = Color(0xFFFF5722),
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "Estimated Calories",
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                         }
                         Text(
                             text = "$estimatedCalories cal",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF5722)
+                            color = Color(0xFFFF5722),
                         )
                     }
                 }
@@ -242,7 +244,7 @@ fun CreateWorkoutDialog(
                 // Action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
@@ -262,12 +264,12 @@ fun CreateWorkoutDialog(
                                         intensity = intensity,
                                         notes = notes,
                                         avgHeartRate = avgHeartRate.toIntOrNull(),
-                                        maxHeartRate = maxHeartRate.toIntOrNull()
-                                    )
+                                        maxHeartRate = maxHeartRate.toIntOrNull(),
+                                    ),
                                 )
                             }
                         },
-                        enabled = title.isNotBlank() && duration.isNotBlank()
+                        enabled = title.isNotBlank() && duration.isNotBlank(),
                     ) {
                         Text("Create")
                     }
@@ -284,7 +286,7 @@ fun CreateWorkoutDialog(
             onSelect = { selectedType ->
                 workoutType = selectedType
                 showWorkoutTypeDialog = false
-            }
+            },
         )
     }
 
@@ -296,7 +298,7 @@ fun CreateWorkoutDialog(
             onSelect = { selectedIntensity ->
                 intensity = selectedIntensity
                 showIntensityDialog = false
-            }
+            },
         )
     }
 }
@@ -307,7 +309,7 @@ fun EditWorkoutDialog(
     workout: Workout,
     userWeight: Double,
     onDismiss: () -> Unit,
-    onUpdate: (Workout) -> Unit
+    onUpdate: (Workout) -> Unit,
 ) {
     var workoutType by remember { mutableStateOf(workout.workoutType) }
     var title by remember { mutableStateOf(workout.title) }
@@ -325,7 +327,7 @@ fun EditWorkoutDialog(
         val durationInt = duration.toIntOrNull() ?: 0
         val distanceFloat = distance.toFloatOrNull()
         val heartRate = avgHeartRate.toIntOrNull()
-        
+
         if (durationInt > 0) {
             MetTableCalculator.calculateWorkoutCalories(
                 workoutType = workoutType,
@@ -333,9 +335,11 @@ fun EditWorkoutDialog(
                 weightKg = userWeight,
                 intensity = intensity,
                 distance = distanceFloat,
-                avgHeartRate = heartRate
+                avgHeartRate = heartRate,
             )
-        } else 0
+        } else {
+            0
+        }
     }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -343,18 +347,18 @@ fun EditWorkoutDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            shape = MaterialTheme.shapes.large
+            shape = MaterialTheme.shapes.large,
         ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
             ) {
                 // Header
                 Text(
                     text = "Edit Workout",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -370,7 +374,7 @@ fun EditWorkoutDialog(
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Select workout type")
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -380,7 +384,7 @@ fun EditWorkoutDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text("Workout Title") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -388,14 +392,14 @@ fun EditWorkoutDialog(
                 // Duration and Distance Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OutlinedTextField(
                         value = duration,
                         onValueChange = { duration = it },
                         label = { Text("Duration (min)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
 
                     OutlinedTextField(
@@ -403,7 +407,7 @@ fun EditWorkoutDialog(
                         onValueChange = { distance = it },
                         label = { Text("Distance (km)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
 
@@ -420,7 +424,7 @@ fun EditWorkoutDialog(
                             Icon(Icons.Default.ArrowDropDown, contentDescription = "Select intensity")
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -428,14 +432,14 @@ fun EditWorkoutDialog(
                 // Heart Rate Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OutlinedTextField(
                         value = avgHeartRate,
                         onValueChange = { avgHeartRate = it },
                         label = { Text("Avg HR (bpm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
 
                     OutlinedTextField(
@@ -443,7 +447,7 @@ fun EditWorkoutDialog(
                         onValueChange = { maxHeartRate = it },
                         label = { Text("Max HR (bpm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                 }
 
@@ -456,7 +460,7 @@ fun EditWorkoutDialog(
                     label = { Text("Notes (optional)") },
                     minLines = 3,
                     maxLines = 5,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -465,50 +469,50 @@ fun EditWorkoutDialog(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    )
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                    ),
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = "Original Calories:",
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                             Text(
                                 text = "${workout.caloriesBurned} cal",
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Medium,
                             )
                         }
-                        
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     Icons.Default.LocalFireDepartment,
                                     contentDescription = null,
                                     tint = Color(0xFFFF5722),
-                                    modifier = Modifier.size(16.dp)
+                                    modifier = Modifier.size(16.dp),
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = "Updated Estimate:",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Medium,
                                 )
                             }
                             Text(
                                 text = "$estimatedCalories cal",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFF5722)
+                                color = Color(0xFFFF5722),
                             )
                         }
                     }
@@ -519,7 +523,7 @@ fun EditWorkoutDialog(
                 // Action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     TextButton(onClick = onDismiss) {
                         Text("Cancel")
@@ -540,12 +544,12 @@ fun EditWorkoutDialog(
                                         notes = notes.takeIf { it.isNotBlank() },
                                         avgHeartRate = avgHeartRate.toIntOrNull(),
                                         maxHeartRate = maxHeartRate.toIntOrNull(),
-                                        updatedAt = Date()
-                                    )
+                                        updatedAt = Date(),
+                                    ),
                                 )
                             }
                         },
-                        enabled = title.isNotBlank() && duration.isNotBlank()
+                        enabled = title.isNotBlank() && duration.isNotBlank(),
                     ) {
                         Text("Update")
                     }
@@ -562,7 +566,7 @@ fun EditWorkoutDialog(
             onSelect = { selectedType ->
                 workoutType = selectedType
                 showWorkoutTypeDialog = false
-            }
+            },
         )
     }
 
@@ -573,7 +577,7 @@ fun EditWorkoutDialog(
             onSelect = { selectedIntensity ->
                 intensity = selectedIntensity
                 showIntensityDialog = false
-            }
+            },
         )
     }
 }
@@ -582,7 +586,7 @@ fun EditWorkoutDialog(
 fun DeleteWorkoutDialog(
     workout: Workout,
     onDismiss: () -> Unit,
-    onDelete: (Workout) -> Unit
+    onDelete: (Workout) -> Unit,
 ) {
     val dateFormat = SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault())
 
@@ -591,53 +595,53 @@ fun DeleteWorkoutDialog(
         title = {
             Text(
                 text = "Delete Workout?",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         },
         text = {
             Column {
                 Text("Are you sure you want to delete this workout?")
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             text = workout.title,
                             style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         )
-                        
+
                         Text(
                             text = workout.workoutType.name.replace("_", " "),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        
+
                         Text(
                             text = dateFormat.format(workout.startTime),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
-                        
+
                         Text(
                             text = "${workout.getFormattedDuration()} • ${workout.caloriesBurned} cal",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(8.dp))
-                
+
                 Text(
                     text = "This action cannot be undone.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         },
@@ -645,8 +649,8 @@ fun DeleteWorkoutDialog(
             Button(
                 onClick = { onDelete(workout) },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
+                    containerColor = MaterialTheme.colorScheme.error,
+                ),
             ) {
                 Text("Delete", color = MaterialTheme.colorScheme.onError)
             }
@@ -655,7 +659,7 @@ fun DeleteWorkoutDialog(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
     )
 }
 
@@ -663,7 +667,7 @@ fun DeleteWorkoutDialog(
 fun WorkoutTypeSelectionDialog(
     currentType: WorkoutType,
     onDismiss: () -> Unit,
-    onSelect: (WorkoutType) -> Unit
+    onSelect: (WorkoutType) -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -678,14 +682,14 @@ fun WorkoutTypeSelectionDialog(
                             .selectable(
                                 selected = workoutType == currentType,
                                 onClick = { onSelect(workoutType) },
-                                role = Role.RadioButton
+                                role = Role.RadioButton,
                             )
                             .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
                             selected = workoutType == currentType,
-                            onClick = null
+                            onClick = null,
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(workoutType.name.replace("_", " "))
@@ -697,7 +701,7 @@ fun WorkoutTypeSelectionDialog(
             TextButton(onClick = onDismiss) {
                 Text("Done")
             }
-        }
+        },
     )
 }
 
@@ -705,7 +709,7 @@ fun WorkoutTypeSelectionDialog(
 fun IntensitySelectionDialog(
     currentIntensity: WorkoutIntensity,
     onDismiss: () -> Unit,
-    onSelect: (WorkoutIntensity) -> Unit
+    onSelect: (WorkoutIntensity) -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -719,25 +723,25 @@ fun IntensitySelectionDialog(
                             .selectable(
                                 selected = intensity == currentIntensity,
                                 onClick = { onSelect(intensity) },
-                                role = Role.RadioButton
+                                role = Role.RadioButton,
                             )
                             .padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
                             selected = intensity == currentIntensity,
-                            onClick = null
+                            onClick = null,
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Column {
                             Text(
                                 text = intensity.name.replace("_", " "),
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Medium,
                             )
                             Text(
                                 text = getIntensityDescription(intensity),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                     }
@@ -748,7 +752,7 @@ fun IntensitySelectionDialog(
             TextButton(onClick = onDismiss) {
                 Text("Done")
             }
-        }
+        },
     )
 }
 

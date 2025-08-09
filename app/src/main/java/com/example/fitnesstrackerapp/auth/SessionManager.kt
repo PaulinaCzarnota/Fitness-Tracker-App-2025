@@ -14,7 +14,7 @@ import java.util.Date
 
 /**
  * Enhanced session manager with encrypted SharedPreferences and automatic login flow.
- * 
+ *
  * This class provides:
  * - Secure storage of session data using EncryptedSharedPreferences
  * - Automatic session restoration on app start
@@ -24,7 +24,7 @@ import java.util.Date
  */
 class SessionManager(
     context: Context,
-    private val userDao: UserDao
+    private val userDao: UserDao,
 ) {
 
     companion object {
@@ -44,10 +44,10 @@ class SessionManager(
     }
 
     private val securePrefs = SecurePrefsManager(context, "user_session")
-    
+
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: Flow<User?> = _currentUser.asStateFlow()
-    
+
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: Flow<Boolean> = _isLoggedIn.asStateFlow()
 
@@ -58,7 +58,7 @@ class SessionManager(
         try {
             val currentTime = System.currentTimeMillis()
             val sessionToken = generateSessionToken()
-            
+
             securePrefs.putLong(KEY_USER_ID, user.id)
             securePrefs.putString(KEY_EMAIL, user.email)
             securePrefs.putString(KEY_USERNAME, user.username)
@@ -68,13 +68,13 @@ class SessionManager(
             securePrefs.putLong(KEY_LOGIN_TIMESTAMP, currentTime)
             securePrefs.putString(KEY_SESSION_TOKEN, sessionToken)
             securePrefs.putBoolean(KEY_REMEMBER_ME, rememberMe)
-            
+
             _currentUser.value = user
             _isLoggedIn.value = true
-            
+
             // Update last login in database
             userDao.updateLastLogin(user.id, Date())
-            
+
             Log.d(TAG, "User session saved securely for: ${user.email}")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to save user session", e)
@@ -117,20 +117,20 @@ class SessionManager(
     fun isLoggedIn(): Boolean {
         return _isLoggedIn.value && isSessionValid()
     }
-    
+
     /**
      * Validates current session including timeout check
      */
     private fun isSessionValid(): Boolean {
         val isLoggedIn = securePrefs.getBoolean(KEY_IS_LOGGED_IN, false)
         if (!isLoggedIn) return false
-        
+
         val loginTimestamp = securePrefs.getLong(KEY_LOGIN_TIMESTAMP, 0L)
         val currentTime = System.currentTimeMillis()
         val sessionTimeoutMs = SESSION_TIMEOUT_HOURS * 60 * 60 * 1000L
-        
+
         val rememberMe = securePrefs.getBoolean(KEY_REMEMBER_ME, false)
-        
+
         return if (rememberMe) {
             // Extended session for remember me (30 days)
             (currentTime - loginTimestamp) < (30 * 24 * 60 * 60 * 1000L)
@@ -165,7 +165,7 @@ class SessionManager(
             0L
         }
     }
-    
+
     /**
      * Attempts to restore user session on app start
      */
@@ -190,7 +190,7 @@ class SessionManager(
             SessionRestoreResult.Failed("Session restore error: ${e.message}")
         }
     }
-    
+
     /**
      * Enables biometric authentication for the current user
      */
@@ -198,7 +198,7 @@ class SessionManager(
         securePrefs.putBoolean(KEY_BIOMETRIC_ENABLED, true)
         Log.d(TAG, "Biometric authentication enabled")
     }
-    
+
     /**
      * Disables biometric authentication
      */
@@ -206,14 +206,14 @@ class SessionManager(
         securePrefs.putBoolean(KEY_BIOMETRIC_ENABLED, false)
         Log.d(TAG, "Biometric authentication disabled")
     }
-    
+
     /**
      * Checks if biometric authentication is enabled
      */
     fun isBiometricAuthEnabled(): Boolean {
         return securePrefs.getBoolean(KEY_BIOMETRIC_ENABLED, false)
     }
-    
+
     /**
      * Enables auto-login functionality
      */
@@ -221,7 +221,7 @@ class SessionManager(
         securePrefs.putBoolean(KEY_AUTO_LOGIN_ENABLED, true)
         Log.d(TAG, "Auto-login enabled")
     }
-    
+
     /**
      * Disables auto-login functionality
      */
@@ -229,14 +229,14 @@ class SessionManager(
         securePrefs.putBoolean(KEY_AUTO_LOGIN_ENABLED, false)
         Log.d(TAG, "Auto-login disabled")
     }
-    
+
     /**
      * Checks if auto-login is enabled
      */
     fun isAutoLoginEnabled(): Boolean {
         return securePrefs.getBoolean(KEY_AUTO_LOGIN_ENABLED, true)
     }
-    
+
     /**
      * Refreshes the session timestamp to extend session
      */
@@ -246,7 +246,7 @@ class SessionManager(
             Log.d(TAG, "Session refreshed")
         }
     }
-    
+
     /**
      * Gets session information for debugging
      */
@@ -254,17 +254,17 @@ class SessionManager(
         val loginTimestamp = securePrefs.getLong(KEY_LOGIN_TIMESTAMP, 0L)
         val currentTime = System.currentTimeMillis()
         val sessionAge = currentTime - loginTimestamp
-        
+
         return SessionInfo(
             isActive = isSessionValid(),
             loginTimestamp = loginTimestamp,
             sessionAge = sessionAge,
             rememberMeEnabled = securePrefs.getBoolean(KEY_REMEMBER_ME, false),
             biometricEnabled = isBiometricAuthEnabled(),
-            autoLoginEnabled = isAutoLoginEnabled()
+            autoLoginEnabled = isAutoLoginEnabled(),
         )
     }
-    
+
     /**
      * Generates a secure session token
      */
@@ -293,7 +293,7 @@ data class SessionInfo(
     val sessionAge: Long,
     val rememberMeEnabled: Boolean,
     val biometricEnabled: Boolean,
-    val autoLoginEnabled: Boolean
+    val autoLoginEnabled: Boolean,
 )
 
 /**

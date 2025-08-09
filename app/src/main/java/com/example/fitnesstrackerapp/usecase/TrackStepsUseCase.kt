@@ -12,7 +12,7 @@ import java.util.Date
  * while keeping ViewModels focused on UI state management.
  */
 class TrackStepsUseCase(
-    private val stepRepository: StepRepository
+    private val stepRepository: StepRepository,
 ) {
 
     /**
@@ -22,7 +22,7 @@ class TrackStepsUseCase(
         userId: Long,
         stepCount: Int,
         date: Date = Date(),
-        goal: Int = 10000
+        goal: Int = 10000,
     ): Result<Step> {
         return try {
             val step = Step(
@@ -31,7 +31,7 @@ class TrackStepsUseCase(
                 date = date,
                 goal = goal,
                 caloriesBurned = calculateCaloriesFromSteps(stepCount),
-                distanceMeters = calculateDistanceFromSteps(stepCount)
+                distanceMeters = calculateDistanceFromSteps(stepCount),
             )
             stepRepository.saveSteps(step)
             Result.success(step)
@@ -100,21 +100,21 @@ class TrackStepsUseCase(
             // Calculate date range for the past week
             val now = Date()
             Date(now.time - (7 * 24 * 60 * 60 * 1000L))
-            
+
             // Get steps for the week (this would need to be implemented as a suspend function
             // or we'd need to collect from the flow - simplified here)
             val totalSteps = 0 // Would be calculated from repository data
             val averageSteps = 0 // Would be calculated from repository data
             val daysActive = 0 // Would be calculated from repository data
-            
+
             val statistics = StepStatistics(
                 totalSteps = totalSteps,
                 averageSteps = averageSteps,
                 daysActive = daysActive,
                 totalDistance = calculateDistanceFromSteps(totalSteps),
-                totalCalories = calculateCaloriesFromSteps(totalSteps)
+                totalCalories = calculateCaloriesFromSteps(totalSteps),
             )
-            
+
             Result.success(statistics)
         } catch (e: Exception) {
             Result.failure(e)
@@ -178,7 +178,7 @@ data class StepStatistics(
     val averageSteps: Int,
     val daysActive: Int,
     val totalDistance: Float, // in meters
-    val totalCalories: Float
+    val totalCalories: Float,
 )
 
 /**
@@ -189,5 +189,5 @@ enum class StepActivityLevel(val displayName: String) {
     LOW_ACTIVE("Low Active"),
     SOMEWHAT_ACTIVE("Somewhat Active"),
     ACTIVE("Active"),
-    HIGHLY_ACTIVE("Highly Active")
+    HIGHLY_ACTIVE("Highly Active"),
 }

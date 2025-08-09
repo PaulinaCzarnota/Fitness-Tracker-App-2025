@@ -134,6 +134,8 @@
     <string name="notification_channel_progress_description">Daily progress summaries and statistics</string>
     <string name="notification_channel_reminders">Reminders</string>
     <string name="notification_channel_reminders_description">General fitness reminders and motivational messages</string>
+    <string name="notification_channel_step_counter">Step Counter</string>
+    <string name="notification_channel_step_counter_description">Shows live step count and daily progress</string>
 
     <string name="notification_workout_complete_title">Workout Complete!</string>
     <string name="notification_workout_complete_message">Great job! You completed %1$s in %2$d minutes and burned %3$d calories.</string>

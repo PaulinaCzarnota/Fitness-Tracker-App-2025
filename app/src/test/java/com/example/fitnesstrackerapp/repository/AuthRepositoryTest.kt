@@ -3,7 +3,7 @@
  *
  * This test class covers:
  * - User registration with password hashing and validation
- * - User login with authentication and session management  
+ * - User login with authentication and session management
  * - Password security and crypto operations
  * - Account locking and failed login attempt tracking
  * - Session persistence and restoration
@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.runner.RunWith
-import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -45,7 +44,7 @@ class AuthRepositoryTest {
         context = ApplicationProvider.getApplicationContext()
         database = Room.inMemoryDatabaseBuilder(
             context,
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -56,16 +55,16 @@ class AuthRepositoryTest {
     fun setup() {
         // Use real CryptoManager for integration testing
         cryptoManager = CryptoManager(context)
-        
+
         // Mock SessionManager for controlled testing
         sessionManager = mockk<SessionManager>(relaxed = true)
-        
+
         // Create repository with real UserDao and CryptoManager
         authRepository = AuthRepository(
             userDao = userDao,
             passwordManager = cryptoManager,
             sessionManager = sessionManager,
-            context = context
+            context = context,
         )
     }
 
@@ -199,7 +198,7 @@ class AuthRepositoryTest {
             email = email,
             username = "Existing User",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
         userDao.insertUser(existingUser)
 
@@ -258,9 +257,14 @@ class AuthRepositoryTest {
         assertEquals("Login successful", (result as AuthResult.Success).message)
 
         // Verify session was saved
-        coVerify { sessionManager.saveUserSession(match { 
-            it.email == email.lowercase() 
-        }, false) }
+        coVerify {
+            sessionManager.saveUserSession(
+                match {
+                    it.email == email.lowercase()
+                },
+                false,
+            )
+        }
 
         // Verify user's last login was updated
         val user = userDao.getUserByEmail(email)
@@ -362,7 +366,7 @@ class AuthRepositoryTest {
             passwordSalt = "salt",
             isActive = true,
             isAccountLocked = true,
-            failedLoginAttempts = 5
+            failedLoginAttempts = 5,
         )
         userDao.insertUser(user)
 
@@ -384,7 +388,7 @@ class AuthRepositoryTest {
             passwordHash = "hash",
             passwordSalt = "salt",
             isActive = false,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
         userDao.insertUser(user)
 
@@ -458,7 +462,7 @@ class AuthRepositoryTest {
             username = "Test User",
             passwordHash = "hash",
             passwordSalt = "salt",
-            failedLoginAttempts = 2
+            failedLoginAttempts = 2,
         )
         userDao.insertUser(user)
 
@@ -483,7 +487,7 @@ class AuthRepositoryTest {
             username = "Test User",
             passwordHash = "hash",
             passwordSalt = "salt",
-            failedLoginAttempts = 4 // One less than max (5)
+            failedLoginAttempts = 4, // One less than max (5)
         )
         userDao.insertUser(user)
 
@@ -511,7 +515,7 @@ class AuthRepositoryTest {
             email = "user@example.com",
             username = "Test User",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
 
         coEvery { sessionManager.restoreSession() } returns SessionRestoreResult.Success(user)
@@ -547,10 +551,10 @@ class AuthRepositoryTest {
             email = "user@example.com",
             username = "Test User",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
         // Simulate logged in state
-        authRepository.currentUser.value?.let { 
+        authRepository.currentUser.value?.let {
             authRepository._currentUser.value = user
             authRepository._isAuthenticated.value = true
         }
@@ -617,7 +621,7 @@ class AuthRepositoryTest {
     @Test
     fun `changePassword fails when user not authenticated`() = runTest {
         // Given - no authenticated user
-        
+
         // When
         val result = authRepository.changePassword("current", "new")
 
@@ -638,7 +642,7 @@ class AuthRepositoryTest {
             email = email,
             username = "Test User",
             passwordHash = "hash",
-            passwordSalt = "salt"
+            passwordSalt = "salt",
         )
         userDao.insertUser(user)
 
@@ -668,7 +672,7 @@ class AuthRepositoryTest {
     fun `repository handles database exceptions gracefully`() = runTest {
         // Given - Create a scenario that would cause database exception
         val email = "test@example.com"
-        
+
         // Close the database to simulate error
         database.close()
 

@@ -39,7 +39,7 @@ data class StepCounterUiState(
     val weeklySteps: List<Step> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
 )
 
 /**
@@ -48,7 +48,7 @@ data class StepCounterUiState(
 class StepCounterViewModel(
     private val stepRepository: StepRepository,
     private val authRepository: AuthRepository,
-    private val userId: Long
+    private val userId: Long,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StepCounterUiState())
@@ -79,14 +79,14 @@ class StepCounterViewModel(
             _stepCount.value = steps
             _uiState.value = _uiState.value.copy(
                 todaysSteps = steps,
-                progressPercentage = (steps.toFloat() / _stepGoal.value) * 100f
+                progressPercentage = (steps.toFloat() / _stepGoal.value) * 100f,
             )
 
             // Save to repository
             val step = Step(
                 userId = userId,
                 count = steps,
-                date = Date()
+                date = Date(),
             )
             stepRepository.saveSteps(step)
         }
@@ -99,20 +99,19 @@ class StepCounterViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(stepGoal = goal)
-                
+
                 // Update progress percentage based on new goal
                 val progressPercentage = (_uiState.value.todaysSteps.toFloat() / goal) * 100f
                 _uiState.value = _uiState.value.copy(
                     progressPercentage = progressPercentage.coerceAtMost(100f),
-                    successMessage = "Step goal updated to $goal steps"
+                    successMessage = "Step goal updated to $goal steps",
                 )
 
                 // Update step goal in StateFlow
                 _stepGoal.value = goal
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to update step goal: ${e.message}"
+                    error = "Failed to update step goal: ${e.message}",
                 )
             }
         }
@@ -126,7 +125,7 @@ class StepCounterViewModel(
             _stepCount.value = 0
             _uiState.value = _uiState.value.copy(
                 todaysSteps = 0,
-                progressPercentage = 0f
+                progressPercentage = 0f,
             )
         }
     }
@@ -158,7 +157,7 @@ class StepCounterViewModel(
                         progressPercentage = progressPercentage.coerceAtMost(100f),
                         distanceWalked = (todaysStep?.distanceMeters ?: 0f) / 1000f,
                         caloriesBurned = todaysStep?.caloriesBurned ?: 0f,
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
 
@@ -170,14 +169,13 @@ class StepCounterViewModel(
 
                 stepRepository.getStepsInDateRange(userId, weekStart, weekEnd).collect { weeklySteps ->
                     _uiState.value = _uiState.value.copy(
-                        weeklySteps = weeklySteps
+                        weeklySteps = weeklySteps,
                     )
                 }
-
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Failed to load step data: ${e.message}"
+                    error = "Failed to load step data: ${e.message}",
                 )
             }
         }

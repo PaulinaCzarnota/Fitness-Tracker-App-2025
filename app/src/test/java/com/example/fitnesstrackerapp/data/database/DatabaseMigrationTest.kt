@@ -2,7 +2,6 @@ package com.example.fitnesstrackerapp.data.database
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -42,7 +41,7 @@ class DatabaseMigrationTest {
     @get:Rule
     val migrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
-        AppDatabase::class.java
+        AppDatabase::class.java,
     )
 
     private lateinit var context: Context
@@ -73,10 +72,12 @@ class DatabaseMigrationTest {
         val db = migrationTestHelper.createDatabase(testDatabaseName, 1)
 
         // Insert test data in version 1
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO users (id, email, username, password_hash, password_salt, created_at, updated_at)
             VALUES (1, 'test@example.com', 'testuser', 'hash', 'salt', ${System.currentTimeMillis()}, ${System.currentTimeMillis()})
-        """)
+        """,
+        )
 
         db.close()
 
@@ -85,14 +86,14 @@ class DatabaseMigrationTest {
             testDatabaseName,
             2,
             true,
-            AppDatabase.MIGRATION_1_2
+            AppDatabase.MIGRATION_1_2,
         )
 
         // Verify notifications table exists with correct schema
         val cursor = migratedDb.query("SELECT sql FROM sqlite_master WHERE type='table' AND name='notifications'")
         Assert.assertTrue("Notifications table should exist", cursor.moveToFirst())
         val createTableSql = cursor.getString(0)
-        
+
         // Verify essential columns exist
         Assert.assertTrue("Should have user_id column", createTableSql.contains("user_id"))
         Assert.assertTrue("Should have type column", createTableSql.contains("type"))
@@ -100,13 +101,13 @@ class DatabaseMigrationTest {
         Assert.assertTrue("Should have message column", createTableSql.contains("message"))
         Assert.assertTrue("Should have status column", createTableSql.contains("status"))
         Assert.assertTrue("Should have scheduled_time column", createTableSql.contains("scheduled_time"))
-        
+
         cursor.close()
 
         // Verify foreign key constraint exists
         Assert.assertTrue(
             "Should have foreign key reference to users",
-            createTableSql.contains("FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)")
+            createTableSql.contains("FOREIGN KEY(`user_id`) REFERENCES `users`(`id`)"),
         )
 
         // Verify indices were created
@@ -122,10 +123,12 @@ class DatabaseMigrationTest {
         Assert.assertTrue("Should have status index", indices.any { it.contains("status") })
 
         // Test insertion into new table
-        migratedDb.execSQL("""
+        migratedDb.execSQL(
+            """
             INSERT INTO notifications (user_id, type, title, message, priority, status, scheduled_time, channel_id, created_at, updated_at)
             VALUES (1, 'WORKOUT_REMINDER', 'Test Notification', 'Test Message', 'DEFAULT', 'PENDING', ${System.currentTimeMillis()}, 'default', ${System.currentTimeMillis()}, ${System.currentTimeMillis()})
-        """)
+        """,
+        )
 
         // Verify data was inserted successfully
         val notificationCursor = migratedDb.query("SELECT COUNT(*) FROM notifications")
@@ -147,10 +150,12 @@ class DatabaseMigrationTest {
 
         // Create database with version 1 and insert test data
         val db = migrationTestHelper.createDatabase(testDatabaseName, 1)
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO users (email, username, password_hash, password_salt, created_at, updated_at)
             VALUES ('$testEmail', '$testUsername', 'hash', 'salt', $currentTime, $currentTime)
-        """)
+        """,
+        )
         db.close()
 
         // Run migration to version 2
@@ -158,7 +163,7 @@ class DatabaseMigrationTest {
             testDatabaseName,
             2,
             true,
-            AppDatabase.MIGRATION_1_2
+            AppDatabase.MIGRATION_1_2,
         )
 
         // Verify user data is preserved
@@ -184,16 +189,20 @@ class DatabaseMigrationTest {
         val db = migrationTestHelper.createDatabase(testDatabaseName, 2)
 
         // Insert test data
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO users (id, email, username, password_hash, password_salt, created_at, updated_at)
             VALUES (1, 'test@example.com', 'testuser', 'hash', 'salt', ${System.currentTimeMillis()}, ${System.currentTimeMillis()})
-        """)
+        """,
+        )
 
         val workoutStartTime = System.currentTimeMillis()
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO workouts (id, userId, workoutType, title, startTime, created_at, updated_at)
             VALUES (1, 1, 'RUNNING', 'Test Workout', $workoutStartTime, ${System.currentTimeMillis()}, ${System.currentTimeMillis()})
-        """)
+        """,
+        )
 
         db.close()
 
@@ -202,56 +211,60 @@ class DatabaseMigrationTest {
             testDatabaseName,
             3,
             true,
-            AppDatabase.MIGRATION_2_3
+            AppDatabase.MIGRATION_2_3,
         )
 
         // Verify exercises table exists
         val exercisesCursor = migratedDb.query("SELECT sql FROM sqlite_master WHERE type='table' AND name='exercises'")
         Assert.assertTrue("Exercises table should exist", exercisesCursor.moveToFirst())
         val exercisesTableSql = exercisesCursor.getString(0)
-        
+
         // Verify essential exercise columns
         Assert.assertTrue("Should have name column", exercisesTableSql.contains("name"))
         Assert.assertTrue("Should have muscleGroup column", exercisesTableSql.contains("muscleGroup"))
         Assert.assertTrue("Should have equipmentType column", exercisesTableSql.contains("equipmentType"))
         Assert.assertTrue("Should have difficulty column", exercisesTableSql.contains("difficulty"))
-        
+
         exercisesCursor.close()
 
         // Verify workout_sets table exists
         val workoutSetsCursor = migratedDb.query("SELECT sql FROM sqlite_master WHERE type='table' AND name='workout_sets'")
         Assert.assertTrue("WorkoutSets table should exist", workoutSetsCursor.moveToFirst())
         val workoutSetsTableSql = workoutSetsCursor.getString(0)
-        
+
         // Verify essential workout set columns
         Assert.assertTrue("Should have workoutId column", workoutSetsTableSql.contains("workoutId"))
         Assert.assertTrue("Should have exerciseId column", workoutSetsTableSql.contains("exerciseId"))
         Assert.assertTrue("Should have repetitions column", workoutSetsTableSql.contains("repetitions"))
         Assert.assertTrue("Should have weight column", workoutSetsTableSql.contains("weight"))
-        
+
         workoutSetsCursor.close()
 
         // Verify foreign key constraints
         Assert.assertTrue(
             "Should have foreign key to workouts",
-            workoutSetsTableSql.contains("FOREIGN KEY(`workoutId`) REFERENCES `workouts`(`id`)")
+            workoutSetsTableSql.contains("FOREIGN KEY(`workoutId`) REFERENCES `workouts`(`id`)"),
         )
         Assert.assertTrue(
             "Should have foreign key to exercises",
-            workoutSetsTableSql.contains("FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`)")
+            workoutSetsTableSql.contains("FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`)"),
         )
 
         // Test data insertion into new tables
         val exerciseInsertTime = System.currentTimeMillis()
-        migratedDb.execSQL("""
+        migratedDb.execSQL(
+            """
             INSERT INTO exercises (name, description, muscleGroup, equipmentType, exerciseType, difficulty, createdAt, updatedAt)
             VALUES ('Push-up', 'Basic push-up exercise', 'CHEST', 'BODYWEIGHT', 'STRENGTH', 'BEGINNER', $exerciseInsertTime, $exerciseInsertTime)
-        """)
+        """,
+        )
 
-        migratedDb.execSQL("""
+        migratedDb.execSQL(
+            """
             INSERT INTO workout_sets (workoutId, exerciseId, setNumber, repetitions, weight, createdAt, updatedAt)
             VALUES (1, 1, 1, 10, 0.0, ${System.currentTimeMillis()}, ${System.currentTimeMillis()})
-        """)
+        """,
+        )
 
         // Verify insertions were successful
         val exerciseCountCursor = migratedDb.query("SELECT COUNT(*) FROM exercises")
@@ -278,21 +291,27 @@ class DatabaseMigrationTest {
 
         // Create database with version 2 and insert test data
         val db = migrationTestHelper.createDatabase(testDatabaseName, 2)
-        
-        db.execSQL("""
+
+        db.execSQL(
+            """
             INSERT INTO users (id, email, username, password_hash, password_salt, created_at, updated_at)
             VALUES (1, '$testEmail', 'testuser', 'hash', 'salt', $currentTime, $currentTime)
-        """)
+        """,
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO workouts (id, userId, workoutType, title, startTime, created_at, updated_at)
             VALUES (1, 1, 'STRENGTH_TRAINING', '$workoutTitle', $currentTime, $currentTime, $currentTime)
-        """)
+        """,
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO notifications (user_id, type, title, message, status, scheduled_time, channel_id, created_at, updated_at)
             VALUES (1, 'WORKOUT_REMINDER', 'Test Notification', 'Test Message', 'PENDING', $currentTime, 'default', $currentTime, $currentTime)
-        """)
+        """,
+        )
 
         db.close()
 
@@ -301,7 +320,7 @@ class DatabaseMigrationTest {
             testDatabaseName,
             3,
             true,
-            AppDatabase.MIGRATION_2_3
+            AppDatabase.MIGRATION_2_3,
         )
 
         // Verify all existing data is preserved
@@ -337,10 +356,12 @@ class DatabaseMigrationTest {
 
         // Create database with version 1
         val db = migrationTestHelper.createDatabase(testDatabaseName, 1)
-        db.execSQL("""
+        db.execSQL(
+            """
             INSERT INTO users (id, email, username, password_hash, password_salt, created_at, updated_at)
             VALUES (1, '$testEmail', 'fullpathuser', 'hash', 'salt', $currentTime, $currentTime)
-        """)
+        """,
+        )
         db.close()
 
         // Run all migrations to current version
@@ -349,7 +370,7 @@ class DatabaseMigrationTest {
             AppDatabase.getCurrentVersion(),
             true,
             AppDatabase.MIGRATION_1_2,
-            AppDatabase.MIGRATION_2_3
+            AppDatabase.MIGRATION_2_3,
         )
 
         // Verify final schema has all expected tables
@@ -375,22 +396,28 @@ class DatabaseMigrationTest {
         val insertTime = System.currentTimeMillis()
 
         // Test workout insertion
-        migratedDb.execSQL("""
+        migratedDb.execSQL(
+            """
             INSERT INTO workouts (userId, workoutType, title, startTime, created_at, updated_at)
             VALUES (1, 'RUNNING', 'Full Path Test Workout', $insertTime, $insertTime, $insertTime)
-        """)
+        """,
+        )
 
         // Test notification insertion
-        migratedDb.execSQL("""
+        migratedDb.execSQL(
+            """
             INSERT INTO notifications (user_id, type, title, message, status, scheduled_time, channel_id, created_at, updated_at)
             VALUES (1, 'GOAL_ACHIEVEMENT', 'Full Path Test', 'Test Message', 'PENDING', $insertTime, 'default', $insertTime, $insertTime)
-        """)
+        """,
+        )
 
         // Test exercise insertion
-        migratedDb.execSQL("""
+        migratedDb.execSQL(
+            """
             INSERT INTO exercises (name, muscleGroup, equipmentType, exerciseType, difficulty, createdAt, updatedAt)
             VALUES ('Full Path Exercise', 'LEGS', 'BODYWEIGHT', 'CARDIO', 'INTERMEDIATE', $insertTime, $insertTime)
-        """)
+        """,
+        )
 
         // Verify all insertions were successful
         val workoutCount = migratedDb.query("SELECT COUNT(*) FROM workouts").use { cursor ->
@@ -439,7 +466,7 @@ class DatabaseMigrationTest {
 
             // Test basic CRUD operations on all entities
             val currentTime = Date()
-            
+
             // Test User entity
             val testUser = User(
                 email = "schema@example.com",
@@ -447,7 +474,7 @@ class DatabaseMigrationTest {
                 passwordHash = "hash",
                 passwordSalt = "salt",
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val userId = db.userDao().insertUser(testUser)
             Assert.assertTrue("User ID should be positive", userId > 0)
@@ -459,7 +486,7 @@ class DatabaseMigrationTest {
                 title = "Schema Test Workout",
                 startTime = currentTime,
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val workoutId = db.workoutDao().insertWorkout(testWorkout)
             Assert.assertTrue("Workout ID should be positive", workoutId > 0)
@@ -471,7 +498,7 @@ class DatabaseMigrationTest {
                 goal = 10000,
                 date = currentTime,
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val stepId = db.stepDao().insertStep(testStep)
             Assert.assertTrue("Step ID should be positive", stepId > 0)
@@ -485,7 +512,7 @@ class DatabaseMigrationTest {
                 unit = "kg",
                 targetDate = Date(currentTime.time + 86400000), // Tomorrow
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val goalId = db.goalDao().insertGoal(testGoal)
             Assert.assertTrue("Goal ID should be positive", goalId > 0)
@@ -500,7 +527,7 @@ class DatabaseMigrationTest {
                 mealType = MealType.BREAKFAST,
                 dateConsumed = currentTime,
                 createdAt = currentTime,
-                loggedAt = currentTime
+                loggedAt = currentTime,
             )
             val foodEntryId = db.foodEntryDao().insertFoodEntry(testFoodEntry)
             Assert.assertTrue("FoodEntry ID should be positive", foodEntryId > 0)
@@ -514,7 +541,7 @@ class DatabaseMigrationTest {
                 scheduledTime = currentTime,
                 channelId = "test_channel",
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val notificationId = db.notificationDao().insertNotification(testNotification)
             Assert.assertTrue("Notification ID should be positive", notificationId > 0)
@@ -528,7 +555,7 @@ class DatabaseMigrationTest {
                 exerciseType = ExerciseType.STRENGTH,
                 difficulty = Difficulty.INTERMEDIATE,
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val exerciseId = db.exerciseDao().insertExercise(testExercise)
             Assert.assertTrue("Exercise ID should be positive", exerciseId > 0)
@@ -541,11 +568,10 @@ class DatabaseMigrationTest {
                 repetitions = 10,
                 weight = 50.0f,
                 createdAt = currentTime,
-                updatedAt = currentTime
+                updatedAt = currentTime,
             )
             val workoutSetId = db.workoutSetDao().insertWorkoutSet(testWorkoutSet)
             Assert.assertTrue("WorkoutSet ID should be positive", workoutSetId > 0)
-
         } finally {
             db.close()
         }
@@ -557,11 +583,11 @@ class DatabaseMigrationTest {
     @Test
     fun testDatabaseIntegrityValidation() = runTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        
+
         // Test integrity validation method
         val isValid = AppDatabase.validateDatabaseIntegrity(context)
         Assert.assertTrue("Database integrity should be valid", isValid)
-        
+
         // Test current version retrieval
         val currentVersion = AppDatabase.getCurrentVersion()
         Assert.assertTrue("Current version should be positive", currentVersion > 0)
@@ -581,39 +607,41 @@ class DatabaseMigrationTest {
 
         // Create database with version 1 and insert test data
         val db = migrationTestHelper.createDatabase(testDatabaseName, 1)
-        
+
         // Insert multiple users
         for (i in 1..testRecords) {
-            db.execSQL("""
+            db.execSQL(
+                """
                 INSERT INTO users (email, username, password_hash, password_salt, created_at, updated_at)
                 VALUES ('test$i@example.com', 'user$i', 'hash$i', 'salt$i', ${System.currentTimeMillis()}, ${System.currentTimeMillis()})
-            """)
+            """,
+            )
         }
-        
+
         db.close()
 
         val startTime = System.currentTimeMillis()
-        
+
         // Run all migrations
         val migratedDb = migrationTestHelper.runMigrationsAndValidate(
             testDatabaseName,
             AppDatabase.getCurrentVersion(),
             true,
             AppDatabase.MIGRATION_1_2,
-            AppDatabase.MIGRATION_2_3
+            AppDatabase.MIGRATION_2_3,
         )
 
         val migrationTime = System.currentTimeMillis() - startTime
-        
+
         // Verify all data is preserved
         val userCount = migratedDb.query("SELECT COUNT(*) FROM users").use { cursor ->
             cursor.moveToFirst()
             cursor.getInt(0)
         }
-        
+
         Assert.assertEquals("All users should be preserved", testRecords, userCount)
         Assert.assertTrue("Migration should complete within 5 seconds", migrationTime < 5000)
-        
+
         migratedDb.close()
     }
 
@@ -627,16 +655,16 @@ class DatabaseMigrationTest {
     private fun verifyTableSchema(db: SupportSQLiteDatabase, tableName: String, expectedColumns: List<String>) {
         val cursor = db.query("PRAGMA table_info($tableName)")
         val actualColumns = mutableListOf<String>()
-        
+
         while (cursor.moveToNext()) {
             actualColumns.add(cursor.getString(1)) // Column name is at index 1
         }
         cursor.close()
-        
+
         for (expectedColumn in expectedColumns) {
             Assert.assertTrue(
                 "Table $tableName should have column $expectedColumn",
-                actualColumns.contains(expectedColumn)
+                actualColumns.contains(expectedColumn),
             )
         }
     }
@@ -647,16 +675,16 @@ class DatabaseMigrationTest {
     private fun verifyIndices(db: SupportSQLiteDatabase, tableName: String, expectedIndices: List<String>) {
         val cursor = db.query("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='$tableName'")
         val actualIndices = mutableListOf<String>()
-        
+
         while (cursor.moveToNext()) {
             actualIndices.add(cursor.getString(0))
         }
         cursor.close()
-        
+
         for (expectedIndex in expectedIndices) {
             Assert.assertTrue(
                 "Table $tableName should have index containing $expectedIndex",
-                actualIndices.any { it.contains(expectedIndex) }
+                actualIndices.any { it.contains(expectedIndex) },
             )
         }
     }
@@ -672,7 +700,8 @@ class DatabaseMigrationTest {
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // This should match the actual migration logic in AppDatabase
-                db.execSQL("""
+                db.execSQL(
+                    """
                     CREATE TABLE IF NOT EXISTS `notifications` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         `user_id` INTEGER NOT NULL,
@@ -700,8 +729,9 @@ class DatabaseMigrationTest {
                         `updated_at` INTEGER NOT NULL,
                         FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
                     )
-                """.trimIndent())
-                
+                    """.trimIndent(),
+                )
+
                 // Create indices
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_notifications_user_id` ON `notifications` (`user_id`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_notifications_type` ON `notifications` (`type`)")
@@ -715,7 +745,8 @@ class DatabaseMigrationTest {
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Create exercises table
-                db.execSQL("""
+                db.execSQL(
+                    """
                     CREATE TABLE IF NOT EXISTS `exercises` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         `name` TEXT NOT NULL,
@@ -733,10 +764,12 @@ class DatabaseMigrationTest {
                         `createdAt` INTEGER NOT NULL,
                         `updatedAt` INTEGER NOT NULL
                     )
-                """.trimIndent())
-                
+                    """.trimIndent(),
+                )
+
                 // Create workout_sets table
-                db.execSQL("""
+                db.execSQL(
+                    """
                     CREATE TABLE IF NOT EXISTS `workout_sets` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         `workoutId` INTEGER NOT NULL,
@@ -759,8 +792,9 @@ class DatabaseMigrationTest {
                         FOREIGN KEY(`workoutId`) REFERENCES `workouts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
                         FOREIGN KEY(`exerciseId`) REFERENCES `exercises`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
                     )
-                """.trimIndent())
-                
+                    """.trimIndent(),
+                )
+
                 // Create indices
                 db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_exercises_name` ON `exercises` (`name`)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS `index_workout_sets_workoutId` ON `workout_sets` (`workoutId`)")

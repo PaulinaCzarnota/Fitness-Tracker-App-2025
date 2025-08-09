@@ -223,7 +223,12 @@ class AppDatabaseTest {
         val retrievedGoal = appDatabase.goalDao().getGoalById(goalId)
         Assert.assertNotNull("Retrieved goal should not be null", retrievedGoal)
         Assert.assertEquals("Title should match", "Lose Weight", retrievedGoal?.title)
-        Assert.assertEquals("Target value should match", 10.0, retrievedGoal?.targetValue, 0.01)
+        Assert.assertEquals(
+            "Target value should match",
+            10.0,
+            retrievedGoal?.targetValue,
+            0.01,
+        )
     }
 
     @Test

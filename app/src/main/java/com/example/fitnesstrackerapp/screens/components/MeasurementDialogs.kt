@@ -31,21 +31,21 @@ fun HeightInputDialog(
     isVisible: Boolean,
     currentHeight: Float,
     onHeightChange: (Float) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     if (isVisible) {
         var heightText by remember { mutableStateOf(currentHeight.toString()) }
 
         Dialog(onDismissRequest = onDismiss) {
             Card(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 ) {
                     Text(
                         text = "Enter Height",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -55,14 +55,14 @@ fun HeightInputDialog(
                         onValueChange = { heightText = it },
                         label = { Text("Height (cm)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         TextButton(onClick = onDismiss) {
                             Text("Cancel")
@@ -73,7 +73,7 @@ fun HeightInputDialog(
                                     onHeightChange(height)
                                     onDismiss()
                                 }
-                            }
+                            },
                         ) {
                             Text("Save")
                         }
@@ -89,21 +89,21 @@ fun WeightInputDialog(
     isVisible: Boolean,
     currentWeight: Float,
     onWeightChange: (Float) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     if (isVisible) {
         var weightText by remember { mutableStateOf(currentWeight.toString()) }
 
         Dialog(onDismissRequest = onDismiss) {
             Card(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
                 ) {
                     Text(
                         text = "Enter Weight",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -113,14 +113,14 @@ fun WeightInputDialog(
                         onValueChange = { weightText = it },
                         label = { Text("Weight (kg)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         TextButton(onClick = onDismiss) {
                             Text("Cancel")
@@ -131,7 +131,7 @@ fun WeightInputDialog(
                                     onWeightChange(weight)
                                     onDismiss()
                                 }
-                            }
+                            },
                         ) {
                             Text("Save")
                         }

@@ -76,7 +76,7 @@ class AuthViewModelTest {
         val password = TestData.STRONG_PASSWORD
         val successResult = AuthResult.Success("Login successful")
 
-        coEvery { authRepository.login(email, password) } returns successResult
+        coEvery { authRepository.login(email, password, false) } returns successResult
 
         // When
         viewModel.login(email, password)
@@ -88,7 +88,7 @@ class AuthViewModelTest {
         assertThat(uiState.successMessage).isEqualTo("Login successful")
         assertThat(uiState.error).isNull()
 
-        coVerify { authRepository.login(email, password) }
+        coVerify { authRepository.login(email, password, false) }
     }
 
     @Test
@@ -98,7 +98,7 @@ class AuthViewModelTest {
         val password = "wrongpassword"
         val errorResult = AuthResult.Error("Invalid email or password")
 
-        coEvery { authRepository.login(email, password) } returns errorResult
+        coEvery { authRepository.login(email, password, false) } returns errorResult
 
         // When
         viewModel.login(email, password)
@@ -110,7 +110,7 @@ class AuthViewModelTest {
         assertThat(uiState.error).isEqualTo("Invalid email or password")
         assertThat(uiState.successMessage).isNull()
 
-        coVerify { authRepository.login(email, password) }
+        coVerify { authRepository.login(email, password, false) }
     }
 
     @Test
@@ -120,7 +120,7 @@ class AuthViewModelTest {
         val password = TestData.STRONG_PASSWORD
         val successResult = AuthResult.Success("Login successful")
 
-        coEvery { authRepository.login(email, password) } returns successResult
+        coEvery { authRepository.login(email, password, false) } returns successResult
 
         // When
         viewModel.login(email, password)
@@ -138,7 +138,7 @@ class AuthViewModelTest {
         val name = "Test User"
         val successResult = AuthResult.Success("Registration successful")
 
-        coEvery { authRepository.register(email, password, name) } returns successResult
+        coEvery { authRepository.register(email, password, name, false) } returns successResult
 
         // When
         viewModel.register(email, password, name)
@@ -150,7 +150,7 @@ class AuthViewModelTest {
         assertThat(uiState.successMessage).isEqualTo("Registration successful")
         assertThat(uiState.error).isNull()
 
-        coVerify { authRepository.register(email, password, name) }
+        coVerify { authRepository.register(email, password, name, false) }
     }
 
     @Test
@@ -161,7 +161,7 @@ class AuthViewModelTest {
         val name = "Test User"
         val errorResult = AuthResult.Error("User with this email already exists")
 
-        coEvery { authRepository.register(email, password, name) } returns errorResult
+        coEvery { authRepository.register(email, password, name, false) } returns errorResult
 
         // When
         viewModel.register(email, password, name)
@@ -173,7 +173,7 @@ class AuthViewModelTest {
         assertThat(uiState.error).isEqualTo("User with this email already exists")
         assertThat(uiState.successMessage).isNull()
 
-        coVerify { authRepository.register(email, password, name) }
+        coVerify { authRepository.register(email, password, name, false) }
     }
 
     @Test
@@ -181,7 +181,7 @@ class AuthViewModelTest {
         // Given - start with authenticated state
         every { authRepository.isAuthenticated } returns flowOf(true)
         every { authRepository.currentUser } returns flowOf(TestHelper.createTestUser())
-        every { authRepository.logout() } just Runs
+        coEvery { authRepository.logout() } just Runs
 
         viewModel = AuthViewModel(authRepository)
 
@@ -196,14 +196,14 @@ class AuthViewModelTest {
         assertThat(uiState.error).isNull()
         assertThat(uiState.successMessage).isNull()
 
-        verify { authRepository.logout() }
+        coVerify { authRepository.logout() }
     }
 
     @Test
     fun `clearMessages clears error and success messages`() = runTest {
         // Given - viewModel with error message
         val errorResult = AuthResult.Error("Some error")
-        coEvery { authRepository.login(any(), any()) } returns errorResult
+        coEvery { authRepository.login(any(), any(), any()) } returns errorResult
 
         viewModel.login(TestData.VALID_EMAIL, "wrongpassword")
 
@@ -366,7 +366,7 @@ class AuthViewModelTest {
         val password = TestData.STRONG_PASSWORD
         val successResult = AuthResult.Success("Login successful")
 
-        coEvery { authRepository.login(email, password) } returns successResult
+        coEvery { authRepository.login(email, password, false) } returns successResult
 
         // When - simulate multiple rapid login attempts
         viewModel.login(email, password)
@@ -378,7 +378,7 @@ class AuthViewModelTest {
         assertThat(uiState.isAuthenticated).isTrue()
 
         // Repository should be called for each attempt
-        coVerify(exactly = 2) { authRepository.login(email, password) }
+        coVerify(exactly = 2) { authRepository.login(email, password, false) }
     }
 
     @Test
@@ -387,7 +387,7 @@ class AuthViewModelTest {
         val email = TestData.VALID_EMAIL
         val password = TestData.STRONG_PASSWORD
 
-        coEvery { authRepository.login(email, password) } throws RuntimeException("Network error")
+        coEvery { authRepository.login(email, password, false) } throws RuntimeException("Network error")
 
         // When
         viewModel.login(email, password)
@@ -406,7 +406,7 @@ class AuthViewModelTest {
         val emptyPassword = ""
         val errorResult = AuthResult.Error("Email and password are required")
 
-        coEvery { authRepository.login(emptyEmail, emptyPassword) } returns errorResult
+        coEvery { authRepository.login(emptyEmail, emptyPassword, false) } returns errorResult
 
         // When
         viewModel.login(emptyEmail, emptyPassword)
@@ -417,7 +417,7 @@ class AuthViewModelTest {
         assertThat(uiState.isAuthenticated).isFalse()
         assertThat(uiState.error).isEqualTo("Email and password are required")
 
-        coVerify { authRepository.login(emptyEmail, emptyPassword) }
+        coVerify { authRepository.login(emptyEmail, emptyPassword, false) }
     }
 
     @Test
@@ -427,7 +427,7 @@ class AuthViewModelTest {
         val password = TestData.STRONG_PASSWORD
         val errorResult = AuthResult.Error("Invalid email format")
 
-        coEvery { authRepository.register(invalidEmail, password, any()) } returns errorResult
+        coEvery { authRepository.register(invalidEmail, password, "Test User", false) } returns errorResult
 
         // When
         viewModel.register(invalidEmail, password, "Test User")
@@ -438,7 +438,7 @@ class AuthViewModelTest {
         assertThat(uiState.isAuthenticated).isFalse()
         assertThat(uiState.error).isEqualTo("Invalid email format")
 
-        coVerify { authRepository.register(invalidEmail, password, "Test User") }
+        coVerify { authRepository.register(invalidEmail, password, "Test User", false) }
     }
 
     @Test
@@ -467,7 +467,7 @@ class AuthViewModelTest {
 
         // When - perform successful operation
         val successResult = AuthResult.Success("Login successful")
-        coEvery { authRepository.login(any(), any()) } returns successResult
+        coEvery { authRepository.login(any(), any(), any()) } returns successResult
 
         viewModel.login(TestData.VALID_EMAIL, TestData.STRONG_PASSWORD)
 

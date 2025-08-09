@@ -103,7 +103,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
      */
     suspend fun insertAllNotifications(notifications: List<Notification>): List<Long> {
         require(notifications.isNotEmpty()) { "Notifications list cannot be empty" }
-        
+
         notifications.forEachIndexed { index, notification ->
             require(notification.isValid()) { "Notification at index $index is invalid" }
         }
@@ -216,7 +216,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     fun getRecentNotifications(userId: Long, limit: Int = 20): Flow<List<Notification>> {
         require(userId > 0) { "User ID must be positive" }
         require(limit > 0) { "Limit must be positive" }
-        
+
         return notificationDao.getRecentNotifications(userId, limit)
     }
 
@@ -231,7 +231,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     fun getNotificationsInDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<Notification>> {
         require(userId > 0) { "User ID must be positive" }
         require(!startDate.after(endDate)) { "Start date cannot be after end date" }
-        
+
         return notificationDao.getNotificationsInDateRange(userId, startDate, endDate)
     }
 
@@ -246,7 +246,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     fun getTodaysNotifications(userId: Long, startOfDay: Date, endOfDay: Date): Flow<List<Notification>> {
         require(userId > 0) { "User ID must be positive" }
         require(!startOfDay.after(endOfDay)) { "Start of day cannot be after end of day" }
-        
+
         return notificationDao.getTodaysNotifications(userId, startOfDay, endOfDay)
     }
 
@@ -407,7 +407,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
         require(userId > 0) { "User ID must be positive" }
         require(entityType.isNotBlank()) { "Entity type cannot be blank" }
         require(entityId > 0) { "Entity ID must be positive" }
-        
+
         return notificationDao.getNotificationsByRelatedEntity(userId, entityType, entityId)
     }
 
@@ -423,7 +423,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
         require(userId > 0) { "User ID must be positive" }
         require(entityType.isNotBlank()) { "Entity type cannot be blank" }
         require(entityId > 0) { "Entity ID must be positive" }
-        
+
         notificationDao.cancelNotificationsForEntity(userId, entityType, entityId, currentTime)
     }
 
@@ -525,7 +525,7 @@ class NotificationRepository(private val notificationDao: NotificationDao) {
     fun searchNotifications(userId: Long, searchQuery: String): Flow<List<Notification>> {
         require(userId > 0) { "User ID must be positive" }
         require(searchQuery.isNotBlank()) { "Search query cannot be blank" }
-        
+
         return notificationDao.searchNotifications(userId, searchQuery.trim())
     }
 

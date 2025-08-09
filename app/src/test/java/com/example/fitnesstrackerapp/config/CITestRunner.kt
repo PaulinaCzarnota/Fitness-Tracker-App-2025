@@ -14,7 +14,8 @@ import org.junit.runners.BlockJUnit4ClassRunner
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.InitializationError
 
-class CITestRunner @Throws(InitializationError::class)
+class CITestRunner
+@Throws(InitializationError::class)
 constructor(klass: Class<*>) : BlockJUnit4ClassRunner(klass) {
 
     override fun runChild(method: FrameworkMethod, notifier: RunNotifier) {
@@ -48,7 +49,7 @@ constructor(klass: Class<*>) : BlockJUnit4ClassRunner(klass) {
             "android.permission.BODY_SENSORS",
             "android.permission.INTERNET",
             "android.permission.POST_NOTIFICATIONS",
-            "android.permission.FOREGROUND_SERVICE"
+            "android.permission.FOREGROUND_SERVICE",
         )
     }
 }

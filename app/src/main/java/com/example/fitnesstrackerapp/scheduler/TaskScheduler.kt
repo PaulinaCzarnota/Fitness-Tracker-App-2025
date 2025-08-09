@@ -9,12 +9,9 @@
 package com.example.fitnesstrackerapp.scheduler
 
 import android.content.Context
-import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.fitnesstrackerapp.worker.DataSyncWorker
 import com.example.fitnesstrackerapp.worker.GoalReminderWorker
 import com.example.fitnesstrackerapp.worker.WorkoutReminderWorker
 import java.util.concurrent.TimeUnit
@@ -30,31 +27,18 @@ class TaskScheduler(context: Context) {
      * Schedules all periodic background tasks
      */
     fun schedulePeriodicTasks() {
-        scheduleDataSync()
+        // scheduleDataSync() // Disabled for now
         scheduleWorkoutReminders()
         scheduleGoalReminders()
     }
 
     /**
      * Schedules periodic data synchronization
+     * TODO: Implement DataSyncWorker class
      */
     private fun scheduleDataSync() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val dataSyncRequest = PeriodicWorkRequestBuilder<DataSyncWorker>(
-            repeatInterval = 24,
-            repeatIntervalTimeUnit = TimeUnit.HOURS
-        )
-            .setConstraints(constraints)
-            .build()
-
-        workManager.enqueueUniquePeriodicWork(
-            "DataSyncWork",
-            ExistingPeriodicWorkPolicy.KEEP,
-            dataSyncRequest
-        )
+        // TODO: Implement data sync worker
+        // This would handle periodic data synchronization
     }
 
     /**
@@ -63,13 +47,13 @@ class TaskScheduler(context: Context) {
     private fun scheduleWorkoutReminders() {
         val workoutReminderRequest = PeriodicWorkRequestBuilder<WorkoutReminderWorker>(
             repeatInterval = 1,
-            repeatIntervalTimeUnit = TimeUnit.DAYS
+            repeatIntervalTimeUnit = TimeUnit.DAYS,
         ).build()
 
         workManager.enqueueUniquePeriodicWork(
             "WorkoutReminderWork",
             ExistingPeriodicWorkPolicy.KEEP,
-            workoutReminderRequest
+            workoutReminderRequest,
         )
     }
 
@@ -79,13 +63,13 @@ class TaskScheduler(context: Context) {
     private fun scheduleGoalReminders() {
         val goalReminderRequest = PeriodicWorkRequestBuilder<GoalReminderWorker>(
             repeatInterval = 1,
-            repeatIntervalTimeUnit = TimeUnit.DAYS
+            repeatIntervalTimeUnit = TimeUnit.DAYS,
         ).build()
 
         workManager.enqueueUniquePeriodicWork(
             "GoalReminderWork",
             ExistingPeriodicWorkPolicy.KEEP,
-            goalReminderRequest
+            goalReminderRequest,
         )
     }
 

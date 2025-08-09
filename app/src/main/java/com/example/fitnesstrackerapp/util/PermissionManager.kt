@@ -34,7 +34,7 @@ import androidx.lifecycle.LifecycleOwner
 class PermissionManager(
     private val activity: ComponentActivity,
     private val onPermissionResult: (PermissionRequestResult) -> Unit = {},
-    private val onAllPermissionsHandled: (List<PermissionRequestResult>) -> Unit = {}
+    private val onAllPermissionsHandled: (List<PermissionRequestResult>) -> Unit = {},
 ) : DefaultLifecycleObserver {
 
     companion object {
@@ -66,7 +66,7 @@ class PermissionManager(
      */
     private fun initializePermissionLauncher() {
         permissionLauncher = activity.registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 handlePermissionResults(permissions)
@@ -80,24 +80,24 @@ class PermissionManager(
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun handlePermissionResults(permissions: Map<String, Boolean>) {
         currentResults.clear()
-        
+
         permissions.forEach { (permission, isGranted) ->
             val result = PermissionRequestResult(
                 permission = permission,
                 isGranted = isGranted,
-                description = PermissionUtils.getPermissionDescription(permission)
+                description = PermissionUtils.getPermissionDescription(permission),
             )
-            
+
             currentResults.add(result)
             onPermissionResult(result)
-            
+
             if (isGranted) {
                 Log.d(TAG, "${result.friendlyName} permission granted")
             } else {
                 Log.w(TAG, "${result.friendlyName} permission denied")
             }
         }
-        
+
         pendingPermissions.clear()
         onAllPermissionsHandled(currentResults.toList())
     }
@@ -107,7 +107,7 @@ class PermissionManager(
      */
     fun requestPermission(
         permission: String,
-        showEducation: Boolean = true
+        showEducation: Boolean = true,
     ) {
         requestPermissions(arrayOf(permission), showEducation)
     }
@@ -117,7 +117,7 @@ class PermissionManager(
      */
     fun requestPermissions(
         permissions: Array<String>,
-        showEducation: Boolean = true
+        showEducation: Boolean = true,
     ) {
         val permissionsToRequest = permissions.filter { permission ->
             !PermissionUtils.isPermissionGranted(activity, permission)
@@ -131,10 +131,15 @@ class PermissionManager(
                     PermissionRequestResult(
                         permission = permission,
                         isGranted = true,
-                        description = PermissionUtils.getPermissionDescription(permission)
+                        description = PermissionUtils.getPermissionDescription(permission),
                     )
                 } else {
-                    TODO("VERSION.SDK_INT < Q")
+                    // For API < Q, create a simplified result
+                    PermissionRequestResult(
+                        permission = permission,
+                        isGranted = true,
+                        description = null,
+                    )
                 }
             }
             onAllPermissionsHandled(grantedResults)
@@ -176,7 +181,7 @@ class PermissionManager(
      */
     private fun showPermissionEducation(
         permissions: List<String>,
-        onProceed: () -> Unit
+        onProceed: () -> Unit,
     ) {
         // For now, just proceed directly
         // In a real app, you might show a dialog explaining the permissions
@@ -214,7 +219,8 @@ class PermissionManager(
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             PermissionUtils.getMissingPermissions(activity, PermissionConstants.ESSENTIAL_PERMISSIONS)
         } else {
-            TODO("VERSION.SDK_INT < Q")
+            // For API < Q, return empty list as most permissions are granted at install time
+            emptyList()
         }
     }
 
@@ -241,11 +247,12 @@ class PermissionManager(
         val essential = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             PermissionConstants.ESSENTIAL_PERMISSIONS
         } else {
-            TODO("VERSION.SDK_INT < Q")
+            // For API < Q, use a smaller set of essential permissions
+            emptyArray<String>()
         }
         val grantedEssential = essential.filter { PermissionUtils.isPermissionGranted(activity, it) }
         val deniedEssential = essential.filter { !PermissionUtils.isPermissionGranted(activity, it) }
-        
+
         val optional = PermissionConstants.RUNTIME_PERMISSIONS.filterNot { it in essential }
         val grantedOptional = optional.filter { PermissionUtils.isPermissionGranted(activity, it) }
         val deniedOptional = optional.filter { !PermissionUtils.isPermissionGranted(activity, it) }
@@ -256,7 +263,7 @@ class PermissionManager(
             grantedOptional = grantedOptional,
             deniedOptional = deniedOptional,
             isFullyFunctional = deniedEssential.isEmpty(),
-            hasNotifications = PermissionUtils.isNotificationPermissionGranted(activity)
+            hasNotifications = PermissionUtils.isNotificationPermissionGranted(activity),
         )
     }
 }
@@ -270,10 +277,13 @@ data class PermissionStatusSummary(
     val grantedOptional: List<String>,
     val deniedOptional: List<String>,
     val isFullyFunctional: Boolean,
-    val hasNotifications: Boolean
+    val hasNotifications: Boolean,
 ) {
     val totalGranted: Int = grantedEssential.size + grantedOptional.size
     val totalDenied: Int = deniedEssential.size + deniedOptional.size
-    val grantedPercentage: Float = if (totalGranted + totalDenied == 0) 100f 
-        else (totalGranted.toFloat() / (totalGranted + totalDenied)) * 100f
+    val grantedPercentage: Float = if (totalGranted + totalDenied == 0) {
+        100f
+    } else {
+        (totalGranted.toFloat() / (totalGranted + totalDenied)) * 100f
+    }
 }

@@ -16,18 +16,18 @@ import kotlin.math.round
 object FitnessUtils {
     // Distance Conversions
     fun convertDistance(value: Double, from: MeasurementUnit, to: MeasurementUnit): Double {
-        return when {
-            from == to -> value
-            from == MeasurementUnit.METRIC -> value * 0.621371 // km to miles
+        return when (from) {
+            to -> value
+            MeasurementUnit.METRIC -> value * 0.621371 // km to miles
             else -> value * 1.60934 // miles to km
         }.roundToDecimals(2)
     }
 
     // Weight Conversions
     fun convertWeight(value: Double, from: MeasurementUnit, to: MeasurementUnit): Double {
-        return when {
-            from == to -> value
-            from == MeasurementUnit.METRIC -> value * 2.20462 // kg to lbs
+        return when (from) {
+            to -> value
+            MeasurementUnit.METRIC -> value * 2.20462 // kg to lbs
             else -> value * 0.453592 // lbs to kg
         }.roundToDecimals(1)
     }
@@ -36,7 +36,7 @@ object FitnessUtils {
     fun calculateCaloriesBurned(
         durationMinutes: Int,
         weightKg: Double,
-        metValue: Double
+        metValue: Double,
     ): Int {
         return ((metValue * 3.5 * weightKg * durationMinutes) / 200.0).toInt()
     }
@@ -48,7 +48,7 @@ object FitnessUtils {
             (maxHeartRate * 0.6).toInt()..(maxHeartRate * 0.7).toInt(), // Zone 2
             (maxHeartRate * 0.7).toInt()..(maxHeartRate * 0.8).toInt(), // Zone 3
             (maxHeartRate * 0.8).toInt()..(maxHeartRate * 0.9).toInt(), // Zone 4
-            (maxHeartRate * 0.9).toInt()..maxHeartRate                   // Zone 5
+            (maxHeartRate * 0.9).toInt()..maxHeartRate, // Zone 5
         )
     }
 

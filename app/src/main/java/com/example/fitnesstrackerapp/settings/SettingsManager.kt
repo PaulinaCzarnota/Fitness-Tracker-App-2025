@@ -39,7 +39,7 @@ class SettingsManager(private val context: Context) {
         .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
         .map { preferences ->
             MeasurementUnit.valueOf(
-                preferences[PreferencesKeys.MEASUREMENT_UNIT] ?: MeasurementUnit.METRIC.name
+                preferences[PreferencesKeys.MEASUREMENT_UNIT] ?: MeasurementUnit.METRIC.name,
             )
         }
 
@@ -139,5 +139,5 @@ class SettingsManager(private val context: Context) {
 
 enum class MeasurementUnit {
     METRIC,
-    IMPERIAL
+    IMPERIAL,
 }

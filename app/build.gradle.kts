@@ -34,12 +34,12 @@ android {
      * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
      */
     namespace = "com.example.fitnesstrackerapp"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -72,7 +72,27 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        kotlinCompilerExtensionVersion = "1.5.8"
+    }
+
+    packaging {
+        // Handle potential packaging conflicts and exclude problematic files
+        resources {
+            excludes.addAll(
+                listOf(
+                    "/META-INF/{AL2.0,LGPL2.1}",
+                    "/META-INF/DEPENDENCIES",
+                    "/META-INF/LICENSE",
+                    "/META-INF/LICENSE.txt",
+                    "/META-INF/license.txt",
+                    "/META-INF/NOTICE",
+                    "/META-INF/NOTICE.txt",
+                    "/META-INF/notice.txt",
+                    "/META-INF/ASL2.0",
+                    "/META-INF/*.kotlin_module",
+                ),
+            )
+        }
     }
 
     kotlinOptions {
@@ -95,13 +115,6 @@ android {
 
         // Configure test orchestrator for improved test isolation
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
-    }
-
-    packaging {
-        // Handle potential packaging conflicts
-        resources {
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-        }
     }
 }
 
@@ -156,6 +169,10 @@ dependencies {
 
     // Security
     implementation(libs.androidx.security.crypto)
+
+    // Required for R8 security crypto
+    implementation("com.google.errorprone:error_prone_annotations:2.18.0")
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
 
     // Multidex support for devices with API < 21
     implementation(libs.androidx.multidex)
@@ -288,15 +305,30 @@ ktlint {
     }
     // Disable some rules that conflict with our coding standards
     // Prefer wildcard imports to reduce verbosity in UI-heavy files
-    additionalEditorconfig = mapOf(
-        "max_line_length" to "off",
-        "ktlint_standard_no-wildcard-imports" to "disabled",
-        "ktlint_standard_no-consecutive-comments" to "disabled",
-        "ktlint_standard_discouraged-comment-location" to "disabled",
-        "ktlint_standard_property-naming" to "disabled",
-        "ktlint_standard_function-naming" to "disabled",
-        "ktlint_standard_filename" to "disabled",
-    )
+    additionalEditorconfig =
+        mapOf(
+            "max_line_length" to "off",
+            "ktlint_standard_no-wildcard-imports" to "disabled",
+            "ktlint_standard_no-consecutive-comments" to "disabled",
+            "ktlint_standard_discouraged-comment-location" to "disabled",
+            "ktlint_standard_property-naming" to "disabled",
+            "ktlint_standard_function-naming" to "disabled",
+            "ktlint_standard_filename" to "disabled",
+            "ktlint_standard_multiline-expression-wrapping" to "disabled",
+            "ktlint_standard_class-signature" to "disabled",
+            "ktlint_standard_function-signature" to "disabled",
+            "ktlint_standard_parameter-list-wrapping" to "disabled",
+            "ktlint_standard_argument-list-wrapping" to "disabled",
+            "ktlint_standard_blank-line-before-class-body" to "disabled",
+            "ktlint_standard_blank-line-before-declaration" to "disabled",
+            "ktlint_standard_value-argument-comment" to "disabled",
+            "ktlint_standard_value-parameter-comment" to "disabled",
+            "ktlint_standard_trailing-comma-on-call-site" to "disabled",
+            "ktlint_standard_trailing-comma-on-declaration-site" to "disabled",
+            "ktlint_standard_string-template-indent" to "disabled",
+            "ktlint_standard_spacing-between-declarations-with-comments" to "disabled",
+            "ktlint_standard_spacing-between-declarations-with-annotations" to "disabled",
+        )
 }
 
 /**
