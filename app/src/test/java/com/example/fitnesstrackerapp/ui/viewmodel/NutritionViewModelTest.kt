@@ -119,7 +119,7 @@ class NutritionViewModelTest {
             val userId = 1L
             val foodEntries = listOf(
                 createTestFoodEntry(id = 1L, mealType = MealType.BREAKFAST),
-                createTestFoodEntry(id = 2L, mealType = MealType.LUNCH)
+                createTestFoodEntry(id = 2L, mealType = MealType.LUNCH),
             )
             every { foodEntryRepository.getFoodEntriesForDate(userId, date) } returns flowOf(foodEntries)
 
@@ -149,7 +149,7 @@ class NutritionViewModelTest {
                 totalCarbs = 250.0,
                 totalFats = 80.0,
                 totalFiber = 25.0,
-                totalSugar = 50.0
+                totalSugar = 50.0,
             )
             every { nutritionRepository.getDailyNutritionSummary(userId, date) } returns flowOf(nutritionSummary)
 
@@ -199,7 +199,7 @@ class NutritionViewModelTest {
             val mealType = MealType.BREAKFAST
             val breakfastEntries = listOf(
                 createTestFoodEntry(id = 1L, foodName = "Oatmeal", mealType = MealType.BREAKFAST),
-                createTestFoodEntry(id = 2L, foodName = "Orange Juice", mealType = MealType.BREAKFAST)
+                createTestFoodEntry(id = 2L, foodName = "Orange Juice", mealType = MealType.BREAKFAST),
             )
 
             every {
@@ -250,7 +250,7 @@ class NutritionViewModelTest {
             val searchQuery = "banana"
             val searchResults = listOf(
                 createTestFoodEntry(id = 1L, foodName = "Banana"),
-                createTestFoodEntry(id = 2L, foodName = "Banana Smoothie")
+                createTestFoodEntry(id = 2L, foodName = "Banana Smoothie"),
             )
 
             every {
@@ -276,7 +276,7 @@ class NutritionViewModelTest {
             val limit = 10
             val recentEntries = listOf(
                 createTestFoodEntry(id = 1L, foodName = "Apple"),
-                createTestFoodEntry(id = 2L, foodName = "Chicken Breast")
+                createTestFoodEntry(id = 2L, foodName = "Chicken Breast"),
             )
 
             every {
@@ -403,7 +403,7 @@ class NutritionViewModelTest {
             // Given
             val invalidEntry = createTestFoodEntry(
                 foodName = "", // Empty name
-                calories = -100.0 // Negative calories
+                calories = -100.0, // Negative calories
             )
 
             // When
@@ -421,7 +421,7 @@ class NutritionViewModelTest {
                 calories = 95.0,
                 protein = 0.5,
                 carbs = 25.0,
-                fats = 0.3
+                fats = 0.3,
             )
 
             // When
@@ -447,7 +447,7 @@ class NutritionViewModelTest {
         fiber: Double = 3.0,
         sugar: Double = 15.0,
         mealType: MealType = MealType.BREAKFAST,
-        date: Date = Date()
+        date: Date = Date(),
     ): FoodEntry {
         return FoodEntry(
             id = id,
@@ -465,7 +465,7 @@ class NutritionViewModelTest {
             mealType = mealType,
             date = date,
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
     }
 
@@ -473,7 +473,7 @@ class NutritionViewModelTest {
     data class MacroPercentages(
         val proteinPercent: Double,
         val carbsPercent: Double,
-        val fatsPercent: Double
+        val fatsPercent: Double,
     )
 
     // Extension functions for ViewModel testing
@@ -481,7 +481,7 @@ class NutritionViewModelTest {
         totalCalories: Double,
         protein: Double,
         carbs: Double,
-        fats: Double
+        fats: Double,
     ): MacroPercentages {
         val proteinCalories = protein * 4
         val carbsCalories = carbs * 4
@@ -490,13 +490,13 @@ class NutritionViewModelTest {
         return MacroPercentages(
             proteinPercent = (proteinCalories / totalCalories) * 100,
             carbsPercent = (carbsCalories / totalCalories) * 100,
-            fatsPercent = (fatsCalories / totalCalories) * 100
+            fatsPercent = (fatsCalories / totalCalories) * 100,
         )
     }
 
     private fun NutritionViewModel.calculateCalorieDeficit(
         consumedCalories: Double,
-        dailyGoal: Double
+        dailyGoal: Double,
     ): Double {
         return dailyGoal - consumedCalories
     }
@@ -504,7 +504,7 @@ class NutritionViewModelTest {
     private fun NutritionViewModel.isGoalMet(
         consumedAmount: Double,
         goalAmount: Double,
-        tolerance: Double = 0.1
+        tolerance: Double = 0.1,
     ): Boolean {
         return consumedAmount >= (goalAmount * (1.0 - tolerance))
     }

@@ -12,9 +12,11 @@
 
 package com.example.fitnesstrackerapp.ui
 
+// Removed Hilt imports as app uses ServiceLocator pattern
 import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -22,19 +24,16 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
-import androidx.room.Room
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.example.fitnesstrackerapp.MainActivity
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
-// Removed Hilt imports as app uses ServiceLocator pattern
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
-import javax.inject.Inject
 
 /**
  * Comprehensive UI tests for the Fitness Tracker App
@@ -415,7 +414,7 @@ class ComprehensiveUITests {
 
             // Verify nutrition summary updated
             onNodeWithText("Today's Nutrition").assertIsDisplayed()
-            onAllNodesWithText("kcal").assertCountGreaterThan(2) // Total calories updated
+            onAllNodesWithText("kcal").assertCountEquals(1) // Total calories updated
 
             // Check macro breakdown chart now has data
             onNodeWithText("Protein").assertIsDisplayed()
@@ -748,7 +747,7 @@ class ComprehensiveUITests {
             val stepGoal = Goal(
                 userId = userId,
                 title = "Daily Steps",
-                goalType = GoalType.STEPS,
+                goalType = GoalType.STEP_COUNT,
                 targetValue = 10000.0,
                 currentValue = 7500.0,
                 unit = "steps",

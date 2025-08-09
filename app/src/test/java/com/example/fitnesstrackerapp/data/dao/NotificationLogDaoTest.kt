@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
-import com.example.fitnesstrackerapp.util.test.TestHelper
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -20,12 +19,13 @@ import java.util.*
  * Comprehensive unit tests for NotificationLogDao.
  *
  * Tests all notification logging database operations including:
- * - CRUD operations for notification logs
+ * - CRUD operations for notification logs with all enum combinations
  * - Event type filtering and categorization
  * - Performance metrics and delivery analytics
  * - Error tracking and retry logic
  * - User interaction analytics
  * - System health monitoring queries
+ * - Room enum serialization validation
  */
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -36,6 +36,7 @@ class NotificationLogDaoTest {
     private lateinit var database: AppDatabase
     private lateinit var notificationLogDao: NotificationLogDao
     private lateinit var userDao: UserDao
+    private lateinit var notificationDao: NotificationDao
 
     @Before
     fun createDb() {
@@ -48,12 +49,56 @@ class NotificationLogDaoTest {
 
         notificationLogDao = database.notificationLogDao()
         userDao = database.userDao()
+        notificationDao = database.notificationDao()
     }
 
     @After
     @Throws(IOException::class)
     fun closeDb() {
         database.close()
+    }
+
+    private fun createTestUser(): User {
+        return User(
+            username = "testuser_${System.currentTimeMillis()}",
+            email = "test_${System.currentTimeMillis()}@example.com",
+            passwordHash = "hashedpassword",
+            firstName = "Test",
+            lastName = "User"
+        )
+    }
+
+    private fun createTestNotification(userId: Long): Notification {
+        return Notification(
+            userId = userId,
+            type = NotificationType.WORKOUT_REMINDER,
+            title = "Test Notification",
+            message = "Test Message",
+            scheduledTime = Date(),
+            channelId = "test_channel"
+        )
+    }
+
+    private fun createTestNotificationLog(
+        userId: Long,
+        notificationId: Long,
+        eventType: NotificationLogEvent = NotificationLogEvent.SENT,
+        deliveryChannel: NotificationDeliveryChannel = NotificationDeliveryChannel.PUSH,
+        isSuccess: Boolean = true,
+        errorCode: String? = null,
+        errorMessage: String? = null,
+        retryCount: Int = 0
+    ): NotificationLog {
+        return NotificationLog(
+            userId = userId,
+            notificationId = notificationId,
+            eventType = eventType,
+            deliveryChannel = deliveryChannel,
+            isSuccess = isSuccess,
+            errorCode = errorCode,
+            errorMessage = errorMessage,
+            retryCount = retryCount
+        )
     }
 
     @Test

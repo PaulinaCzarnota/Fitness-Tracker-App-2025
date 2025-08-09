@@ -34,7 +34,7 @@ class FitnessUtilsTest {
             val heightCm = 175.0
 
             // When
-            val calories = FitnessUtils.calculateStepCalories(steps, weightKg, heightCm)
+            val calories = calculateStepCalories(steps, weightKg, heightCm)
 
             // Then
             // Approximately 40-50 calories per 1000 steps for 70kg person
@@ -49,9 +49,9 @@ class FitnessUtilsTest {
             val durationMinutes = 30
 
             // When & Then
-            val walkingCalories = FitnessUtils.calculateActivityCalories("walking", weightKg, durationMinutes)
-            val runningCalories = FitnessUtils.calculateActivityCalories("running", weightKg, durationMinutes)
-            val cyclingCalories = FitnessUtils.calculateActivityCalories("cycling", weightKg, durationMinutes)
+            val walkingCalories = calculateActivityCalories("walking", weightKg, durationMinutes)
+            val runningCalories = calculateActivityCalories("running", weightKg, durationMinutes)
+            val cyclingCalories = calculateActivityCalories("cycling", weightKg, durationMinutes)
 
             assertThat(walkingCalories).isGreaterThan(0.0)
             assertThat(runningCalories).isGreaterThan(walkingCalories)
@@ -68,7 +68,7 @@ class FitnessUtilsTest {
             val isMale = true
 
             // When
-            val bmr = FitnessUtils.calculateBMRCalories(weightKg, heightCm, age, isMale)
+            val bmr = calculateBMRCalories(weightKg, heightCm, age, isMale)
 
             // Then
             // BMR for this profile should be around 1600-1700 calories
@@ -83,10 +83,10 @@ class FitnessUtilsTest {
             val bmr = 1650.0
 
             // When & Then
-            val sedentary = FitnessUtils.calculateTDEE(bmr, ActivityLevel.SEDENTARY)
-            val lightlyActive = FitnessUtils.calculateTDEE(bmr, ActivityLevel.LIGHTLY_ACTIVE)
-            val moderatelyActive = FitnessUtils.calculateTDEE(bmr, ActivityLevel.MODERATELY_ACTIVE)
-            val veryActive = FitnessUtils.calculateTDEE(bmr, ActivityLevel.VERY_ACTIVE)
+            val sedentary = calculateTDEE(bmr, ActivityLevel.SEDENTARY)
+            val lightlyActive = calculateTDEE(bmr, ActivityLevel.LIGHTLY_ACTIVE)
+            val moderatelyActive = calculateTDEE(bmr, ActivityLevel.MODERATELY_ACTIVE)
+            val veryActive = calculateTDEE(bmr, ActivityLevel.VERY_ACTIVE)
 
             assertThat(sedentary).isEqualTo(bmr * 1.2)
             assertThat(lightlyActive).isEqualTo(bmr * 1.375)
@@ -110,7 +110,7 @@ class FitnessUtilsTest {
             val heightCm = 175.0 // Average stride ~70cm
 
             // When
-            val distanceMeters = FitnessUtils.calculateDistanceFromSteps(steps, heightCm)
+            val distanceMeters = calculateDistanceFromSteps(steps, heightCm)
 
             // Then
             // 10,000 steps should be approximately 7-8 km for 175cm person
@@ -126,7 +126,7 @@ class FitnessUtilsTest {
             val timeMinutes = 25.0 // 5 min/km pace
 
             // When
-            val paceMinutesPerKm = FitnessUtils.calculatePace(distanceKm, timeMinutes)
+            val paceMinutesPerKm = calculatePace(distanceKm, timeMinutes)
 
             // Then
             assertThat(paceMinutesPerKm).isEqualTo(5.0)
@@ -138,7 +138,7 @@ class FitnessUtilsTest {
             val paceMinutesPerKm = 5.0 // 5 min/km = 12 km/h
 
             // When
-            val speedKmh = FitnessUtils.calculateSpeed(paceMinutesPerKm)
+            val speedKmh = calculateSpeed(paceMinutesPerKm)
 
             // Then
             assertThat(speedKmh).isEqualTo(12.0)
@@ -150,7 +150,7 @@ class FitnessUtilsTest {
             val heightCm = 175.0
 
             // When
-            val strideCm = FitnessUtils.calculateStrideLength(heightCm)
+            val strideCm = calculateStrideLength(heightCm)
 
             // Then
             // Stride should be approximately 40-45% of height
@@ -169,7 +169,7 @@ class FitnessUtilsTest {
             val heightCm = 175.0
 
             // When
-            val bmi = FitnessUtils.calculateBMI(weightKg, heightCm)
+            val bmi = calculateBMI(weightKg, heightCm)
 
             // Then
             // BMI = 70 / (1.75^2) = 22.86
@@ -179,10 +179,10 @@ class FitnessUtilsTest {
         @Test
         fun `getBMICategory returns correct health category`() {
             // When & Then
-            assertThat(FitnessUtils.getBMICategory(17.0)).isEqualTo(BMICategory.UNDERWEIGHT)
-            assertThat(FitnessUtils.getBMICategory(22.0)).isEqualTo(BMICategory.NORMAL)
-            assertThat(FitnessUtils.getBMICategory(27.0)).isEqualTo(BMICategory.OVERWEIGHT)
-            assertThat(FitnessUtils.getBMICategory(32.0)).isEqualTo(BMICategory.OBESE)
+            assertThat(getBMICategory(17.0)).isEqualTo(BMICategory.UNDERWEIGHT)
+            assertThat(getBMICategory(22.0)).isEqualTo(BMICategory.NORMAL)
+            assertThat(getBMICategory(27.0)).isEqualTo(BMICategory.OVERWEIGHT)
+            assertThat(getBMICategory(32.0)).isEqualTo(BMICategory.OBESE)
         }
 
         @Test
@@ -193,7 +193,7 @@ class FitnessUtilsTest {
             val isMale = true
 
             // When
-            val bodyFatPercentage = FitnessUtils.calculateBodyFatPercentage(bmi, age, isMale)
+            val bodyFatPercentage = calculateBodyFatPercentage(bmi, age, isMale)
 
             // Then
             // Should be in healthy range for 30-year-old male (8-19%)
@@ -208,7 +208,7 @@ class FitnessUtilsTest {
             val heightCm = 175.0
 
             // When
-            val ratio = FitnessUtils.calculateWaistToHeightRatio(waistCm, heightCm)
+            val ratio = calculateWaistToHeightRatio(waistCm, heightCm)
 
             // Then
             assertThat(ratio).isWithin(0.01).of(0.457) // 80/175 = 0.457
@@ -225,7 +225,7 @@ class FitnessUtilsTest {
             val age = 30
 
             // When
-            val maxHR = FitnessUtils.calculateMaxHeartRate(age)
+            val maxHR = calculateMaxHeartRate(age)
 
             // Then
             // 220 - 30 = 190 bpm
@@ -239,7 +239,7 @@ class FitnessUtilsTest {
             val restingHR = 60
 
             // When
-            val zones = FitnessUtils.calculateHeartRateZones(maxHR, restingHR)
+            val zones = calculateHeartRateZones(maxHR, restingHR)
 
             // Then
             assertThat(zones).hasSize(5) // 5 training zones
@@ -265,7 +265,7 @@ class FitnessUtilsTest {
             val restingHR = 60
 
             // When
-            val zone = FitnessUtils.getHeartRateZone(heartRate, maxHR, restingHR)
+            val zone = getHeartRateZone(heartRate, maxHR, restingHR)
 
             // Then
             // 150 bpm should be in aerobic zone (zone 3)
@@ -285,8 +285,11 @@ class FitnessUtilsTest {
             val fatPercent = 25
 
             // When
-            val macros = FitnessUtils.calculateMacroDistribution(
-                totalCalories, proteinPercent, carbPercent, fatPercent
+            val macros = calculateMacroDistribution(
+                totalCalories,
+                proteinPercent,
+                carbPercent,
+                fatPercent,
             )
 
             // Then
@@ -302,7 +305,7 @@ class FitnessUtilsTest {
             val activityLevel = ActivityLevel.MODERATELY_ACTIVE
 
             // When
-            val proteinGrams = FitnessUtils.calculateProteinRequirement(weightKg, activityLevel)
+            val proteinGrams = calculateProteinRequirement(weightKg, activityLevel)
 
             // Then
             // Moderately active: 1.2-1.4g per kg
@@ -319,8 +322,10 @@ class FitnessUtilsTest {
             val temperature = 25.0 // Celsius
 
             // When
-            val waterLiters = FitnessUtils.calculateHydrationNeeds(
-                weightKg, activityMinutes, temperature
+            val waterLiters = calculateHydrationNeeds(
+                weightKg,
+                activityMinutes,
+                temperature,
             )
 
             // Then
@@ -341,7 +346,7 @@ class FitnessUtilsTest {
             val targetWeightLossPerWeek = 0.5 // kg
 
             // When
-            val dailyCalories = FitnessUtils.calculateWeightLossCalories(tdee, targetWeightLossPerWeek)
+            val dailyCalories = calculateWeightLossCalories(tdee, targetWeightLossPerWeek)
 
             // Then
             // 0.5kg/week = 3500 cal deficit = 500 cal/day deficit
@@ -356,8 +361,10 @@ class FitnessUtilsTest {
             val weeklyLossRate = 0.5
 
             // When
-            val weeksToGoal = FitnessUtils.calculateTimeToGoalWeight(
-                currentWeight, targetWeight, weeklyLossRate
+            val weeksToGoal = calculateTimeToGoalWeight(
+                currentWeight,
+                targetWeight,
+                weeklyLossRate,
             )
 
             // Then
@@ -373,8 +380,10 @@ class FitnessUtilsTest {
             val weeks = 8
 
             // When
-            val progression = FitnessUtils.calculateStepGoalProgression(
-                currentSteps, targetSteps, weeks
+            val progression = calculateStepGoalProgression(
+                currentSteps,
+                targetSteps,
+                weeks,
             )
 
             // Then
@@ -395,43 +404,43 @@ class FitnessUtilsTest {
         @Test
         fun `formatDistance returns human-readable distance strings`() {
             // When & Then
-            assertThat(FitnessUtils.formatDistance(500.0)).isEqualTo("500 m")
-            assertThat(FitnessUtils.formatDistance(1200.0)).isEqualTo("1.2 km")
-            assertThat(FitnessUtils.formatDistance(5000.0)).isEqualTo("5.0 km")
-            assertThat(FitnessUtils.formatDistance(10500.0)).isEqualTo("10.5 km")
+            assertThat(formatDistance(500.0)).isEqualTo("500 m")
+            assertThat(formatDistance(1200.0)).isEqualTo("1.2 km")
+            assertThat(formatDistance(5000.0)).isEqualTo("5.0 km")
+            assertThat(formatDistance(10500.0)).isEqualTo("10.5 km")
         }
 
         @Test
         fun `formatDuration returns time in appropriate format`() {
             // When & Then
-            assertThat(FitnessUtils.formatDuration(45)).isEqualTo("45s")
-            assertThat(FitnessUtils.formatDuration(125)).isEqualTo("2m 5s")
-            assertThat(FitnessUtils.formatDuration(3665)).isEqualTo("1h 1m 5s")
-            assertThat(FitnessUtils.formatDuration(7200)).isEqualTo("2h")
+            assertThat(formatDuration(45)).isEqualTo("45s")
+            assertThat(formatDuration(125)).isEqualTo("2m 5s")
+            assertThat(formatDuration(3665)).isEqualTo("1h 1m 5s")
+            assertThat(formatDuration(7200)).isEqualTo("2h")
         }
 
         @Test
         fun `formatCalories returns rounded calorie values`() {
             // When & Then
-            assertThat(FitnessUtils.formatCalories(245.7)).isEqualTo("246 cal")
-            assertThat(FitnessUtils.formatCalories(1050.2)).isEqualTo("1,050 cal")
-            assertThat(FitnessUtils.formatCalories(99.4)).isEqualTo("99 cal")
+            assertThat(formatCalories(245.7)).isEqualTo("246 cal")
+            assertThat(formatCalories(1050.2)).isEqualTo("1,050 cal")
+            assertThat(formatCalories(99.4)).isEqualTo("99 cal")
         }
 
         @Test
         fun `formatPace returns minutes and seconds per kilometer`() {
             // When & Then
-            assertThat(FitnessUtils.formatPace(5.5)).isEqualTo("5:30 /km")
-            assertThat(FitnessUtils.formatPace(4.25)).isEqualTo("4:15 /km")
-            assertThat(FitnessUtils.formatPace(6.0)).isEqualTo("6:00 /km")
+            assertThat(formatPace(5.5)).isEqualTo("5:30 /km")
+            assertThat(formatPace(4.25)).isEqualTo("4:15 /km")
+            assertThat(formatPace(6.0)).isEqualTo("6:00 /km")
         }
 
         @Test
         fun `formatWeight returns appropriate weight format`() {
             // When & Then
-            assertThat(FitnessUtils.formatWeight(70.5)).isEqualTo("70.5 kg")
-            assertThat(FitnessUtils.formatWeight(80.0)).isEqualTo("80.0 kg")
-            assertThat(FitnessUtils.formatWeight(65.25)).isEqualTo("65.3 kg") // Rounded to 1 decimal
+            assertThat(formatWeight(70.5)).isEqualTo("70.5 kg")
+            assertThat(formatWeight(80.0)).isEqualTo("80.0 kg")
+            assertThat(formatWeight(65.25)).isEqualTo("65.3 kg") // Rounded to 1 decimal
         }
     }
 
@@ -441,16 +450,16 @@ class FitnessUtilsTest {
         @Test
         fun `calculation functions handle zero and negative inputs gracefully`() {
             // When & Then - Should return 0 or throw appropriate exceptions
-            assertThat(FitnessUtils.calculateStepCalories(0, 70.0, 175.0)).isEqualTo(0.0)
-            assertThat(FitnessUtils.calculateDistanceFromSteps(0, 175.0)).isEqualTo(0.0)
+            assertThat(calculateStepCalories(0, 70.0, 175.0)).isEqualTo(0.0)
+            assertThat(calculateDistanceFromSteps(0, 175.0)).isEqualTo(0.0)
 
             // Negative inputs should be handled appropriately
             assertThrows<IllegalArgumentException> {
-                FitnessUtils.calculateBMI(-70.0, 175.0)
+                calculateBMI(-70.0, 175.0)
             }
 
             assertThrows<IllegalArgumentException> {
-                FitnessUtils.calculateBMI(70.0, -175.0)
+                calculateBMI(70.0, -175.0)
             }
         }
 
@@ -462,9 +471,9 @@ class FitnessUtilsTest {
             val extremeSteps = 50000
 
             // When & Then - Should not crash and return reasonable values
-            val calories = FitnessUtils.calculateStepCalories(extremeSteps, extremeWeight, extremeHeight)
-            val bmi = FitnessUtils.calculateBMI(extremeWeight, extremeHeight)
-            val distance = FitnessUtils.calculateDistanceFromSteps(extremeSteps, extremeHeight)
+            val calories = calculateStepCalories(extremeSteps, extremeWeight, extremeHeight)
+            val bmi = calculateBMI(extremeWeight, extremeHeight)
+            val distance = calculateDistanceFromSteps(extremeSteps, extremeHeight)
 
             assertThat(calories).isGreaterThan(0.0)
             assertThat(bmi).isGreaterThan(0.0)
@@ -475,11 +484,11 @@ class FitnessUtilsTest {
         fun `null and empty inputs are handled safely`() {
             // When & Then
             assertThrows<IllegalArgumentException> {
-                FitnessUtils.calculateActivityCalories("", 70.0, 30)
+                calculateActivityCalories("", 70.0, 30)
             }
 
             // Invalid activity should return 0 or default value
-            val unknownActivity = FitnessUtils.calculateActivityCalories("unknown", 70.0, 30)
+            val unknownActivity = calculateActivityCalories("unknown", 70.0, 30)
             assertThat(unknownActivity).isEqualTo(0.0)
         }
 
@@ -491,13 +500,13 @@ class FitnessUtilsTest {
             val currentDate = Date()
 
             // When & Then
-            val daysBetween = FitnessUtils.daysBetween(pastDate, futureDate)
+            val daysBetween = daysBetween(pastDate, futureDate)
             assertThat(daysBetween).isEqualTo(2)
 
-            val isToday = FitnessUtils.isToday(currentDate)
+            val isToday = isToday(currentDate)
             assertThat(isToday).isTrue()
 
-            val isYesterday = FitnessUtils.isToday(pastDate)
+            val isYesterday = isToday(pastDate)
             assertThat(isYesterday).isFalse()
         }
     }
@@ -508,28 +517,28 @@ class FitnessUtilsTest {
         LIGHTLY_ACTIVE,
         MODERATELY_ACTIVE,
         VERY_ACTIVE,
-        EXTREMELY_ACTIVE
+        EXTREMELY_ACTIVE,
     }
 
     enum class BMICategory {
         UNDERWEIGHT,
         NORMAL,
         OVERWEIGHT,
-        OBESE
+        OBESE,
     }
 
     // Helper data classes for testing
     data class MacroDistribution(
         val proteinGrams: Double,
         val carbGrams: Double,
-        val fatGrams: Double
+        val fatGrams: Double,
     )
 
     data class HeartRateZone(
         val name: String,
         val minHR: Int,
         val maxHR: Int,
-        val percentage: String
+        val percentage: String,
     )
 
     // Mock FitnessUtils extension functions for testing
@@ -627,7 +636,7 @@ class FitnessUtilsTest {
                 HeartRateZone("Aerobic Base", restingHR + (hrr * 0.6).toInt(), restingHR + (hrr * 0.7).toInt(), "60-70%"),
                 HeartRateZone("Aerobic", restingHR + (hrr * 0.7).toInt(), restingHR + (hrr * 0.8).toInt(), "70-80%"),
                 HeartRateZone("Anaerobic", restingHR + (hrr * 0.8).toInt(), restingHR + (hrr * 0.9).toInt(), "80-90%"),
-                HeartRateZone("Neuromuscular", restingHR + (hrr * 0.9).toInt(), maxHR, "90-100%")
+                HeartRateZone("Neuromuscular", restingHR + (hrr * 0.9).toInt(), maxHR, "90-100%"),
             )
         }
 
@@ -644,7 +653,7 @@ class FitnessUtilsTest {
             return MacroDistribution(
                 proteinGrams = proteinCalories / 4.0,
                 carbGrams = carbCalories / 4.0,
-                fatGrams = fatCalories / 9.0
+                fatGrams = fatCalories / 9.0,
             )
         }
 
