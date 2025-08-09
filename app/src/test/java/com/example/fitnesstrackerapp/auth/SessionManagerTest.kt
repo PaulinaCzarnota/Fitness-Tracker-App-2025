@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config
 
 /**
  * Comprehensive unit tests for SessionManager with enhanced security features.
- * 
+ *
  * Tests include:
  * - Session save/restore functionality
  * - Encrypted storage verification
@@ -55,7 +55,7 @@ class SessionManagerTest {
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
         mockUserDao = mockk()
-        
+
         // Create SessionManager with mocked UserDao
         sessionManager = SessionManager(context, mockUserDao)
     }
@@ -71,7 +71,7 @@ class SessionManagerTest {
         val user = TestHelper.createTestUser(
             id = 123L,
             email = TestData.VALID_EMAIL,
-            username = "testuser"
+            username = "testuser",
         )
         val rememberMe = true
 
@@ -83,7 +83,7 @@ class SessionManagerTest {
         // Then
         assertThat(sessionManager.isLoggedIn()).isTrue()
         assertThat(sessionManager.getCurrentUserId()).isEqualTo(123L)
-        
+
         coVerify { mockUserDao.updateLastLogin(123L, any()) }
     }
 
@@ -108,7 +108,7 @@ class SessionManagerTest {
     @Test
     fun `getCurrentUser returns null when session invalid`() = runTest {
         // Given - no saved session
-        
+
         // When
         val retrievedUser = sessionManager.getCurrentUser()
 
@@ -119,7 +119,7 @@ class SessionManagerTest {
     @Test
     fun `isLoggedIn returns false when no session exists`() = runTest {
         // Given - no saved session
-        
+
         // When & Then
         assertThat(sessionManager.isLoggedIn()).isFalse()
     }
@@ -147,7 +147,7 @@ class SessionManagerTest {
         val user = TestHelper.createTestUser(
             id = 789L,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
         coEvery { mockUserDao.updateLastLogin(any(), any()) } just Runs
         coEvery { mockUserDao.getUserById(789L) } returns user
@@ -168,7 +168,7 @@ class SessionManagerTest {
         // Given
         val inactiveUser = TestHelper.createTestUser(
             id = 101L,
-            isActive = false
+            isActive = false,
         )
         coEvery { mockUserDao.updateLastLogin(any(), any()) } just Runs
         coEvery { mockUserDao.getUserById(101L) } returns inactiveUser
@@ -190,7 +190,7 @@ class SessionManagerTest {
         val lockedUser = TestHelper.createTestUser(
             id = 102L,
             isActive = true,
-            isAccountLocked = true
+            isAccountLocked = true,
         )
         coEvery { mockUserDao.updateLastLogin(any(), any()) } just Runs
         coEvery { mockUserDao.getUserById(102L) } returns lockedUser
@@ -303,7 +303,7 @@ class SessionManagerTest {
 
         // Then - session should be valid initially
         assertThat(sessionManager.isLoggedIn()).isTrue()
-        
+
         // Note: Real timeout testing would require manipulating system time
         // or using a time provider interface for better testability
     }
@@ -380,7 +380,7 @@ class SessionManagerTest {
     @Test
     fun `getCurrentUserId returns 0 for invalid session`() = runTest {
         // Given - no session or invalid session
-        
+
         // When
         val userId = sessionManager.getCurrentUserId()
 
@@ -393,7 +393,7 @@ class SessionManagerTest {
         // Given
         val user1 = TestHelper.createTestUser(id = 100L, email = "user1@test.com")
         val user2 = TestHelper.createTestUser(id = 200L, email = "user2@test.com")
-        
+
         coEvery { mockUserDao.updateLastLogin(any(), any()) } just Runs
         coEvery { mockUserDao.getUserById(100L) } returns user1
         coEvery { mockUserDao.getUserById(200L) } returns user2
