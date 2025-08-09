@@ -1,81 +1,42 @@
 /**
  * Task Scheduler for Background Operations
  *
- * Responsibilities:
- * - Schedule periodic workout reminders
- * - Manage background data sync operations
- * - Handle notification scheduling
+ * This class has been superseded by WorkManagerScheduler.
+ * Kept for backward compatibility.
+ *
+ * @deprecated Use WorkManagerScheduler instead
  */
 package com.example.fitnesstrackerapp.scheduler
 
 import android.content.Context
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.fitnesstrackerapp.worker.GoalReminderWorker
-import com.example.fitnesstrackerapp.worker.WorkoutReminderWorker
-import java.util.concurrent.TimeUnit
 
 /**
- * Manages scheduling of background tasks using WorkManager
+ * Legacy task scheduler - delegates to WorkManagerScheduler
+ * @deprecated Use WorkManagerScheduler directly
  */
-class TaskScheduler(context: Context) {
-    private val workManager = WorkManager.getInstance(context)
+@Deprecated(
+    "Use WorkManagerScheduler instead",
+    ReplaceWith("WorkManagerScheduler")
+)
+class TaskScheduler(private val context: Context) {
+    private val workManagerScheduler = WorkManagerScheduler.getInstance(context)
 
     /**
      * Schedules all periodic background tasks
+     * @deprecated Use WorkManagerScheduler.initializeAllWork() instead
      */
+    @Deprecated("Use WorkManagerScheduler.initializeAllWork() instead")
     fun schedulePeriodicTasks() {
-        // scheduleDataSync() // Disabled for now
-        scheduleWorkoutReminders()
-        scheduleGoalReminders()
-    }
-
-    /**
-     * Schedules periodic data synchronization
-     * TODO: Implement DataSyncWorker class
-     */
-    private fun scheduleDataSync() {
-        // TODO: Implement data sync worker
-        // This would handle periodic data synchronization
-    }
-
-    /**
-     * Schedules workout reminder notifications
-     */
-    private fun scheduleWorkoutReminders() {
-        val workoutReminderRequest = PeriodicWorkRequestBuilder<WorkoutReminderWorker>(
-            repeatInterval = 1,
-            repeatIntervalTimeUnit = TimeUnit.DAYS,
-        ).build()
-
-        workManager.enqueueUniquePeriodicWork(
-            "WorkoutReminderWork",
-            ExistingPeriodicWorkPolicy.KEEP,
-            workoutReminderRequest,
-        )
-    }
-
-    /**
-     * Schedules goal reminder notifications
-     */
-    private fun scheduleGoalReminders() {
-        val goalReminderRequest = PeriodicWorkRequestBuilder<GoalReminderWorker>(
-            repeatInterval = 1,
-            repeatIntervalTimeUnit = TimeUnit.DAYS,
-        ).build()
-
-        workManager.enqueueUniquePeriodicWork(
-            "GoalReminderWork",
-            ExistingPeriodicWorkPolicy.KEEP,
-            goalReminderRequest,
-        )
+        // Delegate to WorkManagerScheduler with a default user ID
+        workManagerScheduler.initializeAllWork(1L) // Default user ID for compatibility
     }
 
     /**
      * Cancels all scheduled tasks
+     * @deprecated Use WorkManagerScheduler.cancelAllWork() instead
      */
+    @Deprecated("Use WorkManagerScheduler.cancelAllWork() instead")
     fun cancelAllTasks() {
-        workManager.cancelAllWork()
+        workManagerScheduler.cancelAllWork()
     }
 }

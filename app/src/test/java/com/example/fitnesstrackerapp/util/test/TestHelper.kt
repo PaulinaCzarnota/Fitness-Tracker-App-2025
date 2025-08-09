@@ -191,6 +191,41 @@ object TestHelper {
     )
 
     /**
+     * Creates a test NotificationLog entity with customizable parameters.
+     */
+    fun createTestNotificationLog(
+        id: Long = 0,
+        userId: Long = TEST_USER_ID,
+        notificationId: Long = 1L,
+        eventType: com.example.fitnesstrackerapp.data.entity.NotificationLogEvent = com.example.fitnesstrackerapp.data.entity.NotificationLogEvent.SENT,
+        deliveryChannel: com.example.fitnesstrackerapp.data.entity.NotificationDeliveryChannel = com.example.fitnesstrackerapp.data.entity.NotificationDeliveryChannel.PUSH,
+        isSuccess: Boolean = true,
+        errorCode: String? = null,
+        errorMessage: String? = null,
+        retryCount: Int = 0,
+        processingDurationMs: Long = 0L,
+        deliveryDurationMs: Long? = null,
+        priorityLevel: Int = 2,
+        eventTimestamp: java.util.Date = java.util.Date(),
+        createdAt: java.util.Date = java.util.Date()
+    ) = com.example.fitnesstrackerapp.data.entity.NotificationLog(
+        id = id,
+        userId = userId,
+        notificationId = notificationId,
+        eventType = eventType,
+        deliveryChannel = deliveryChannel,
+        isSuccess = isSuccess,
+        errorCode = errorCode,
+        errorMessage = errorMessage,
+        retryCount = retryCount,
+        processingDurationMs = processingDurationMs,
+        deliveryDurationMs = deliveryDurationMs,
+        priorityLevel = priorityLevel,
+        eventTimestamp = eventTimestamp,
+        createdAt = createdAt
+    )
+
+    /**
      * Creates a test Step entity with customizable parameters.
      */
     fun createTestStep(

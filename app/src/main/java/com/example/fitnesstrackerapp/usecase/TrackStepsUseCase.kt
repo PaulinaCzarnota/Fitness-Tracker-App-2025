@@ -277,7 +277,7 @@ class TrackStepsUseCase(
             val startDate = Date(endDate.time - (days * 24 * 60 * 60 * 1000L))
 
             // This would collect from flow in real implementation
-            val stepHistory = stepRepository.getStepsInDateRange(userId, startDate, endDate)
+            stepRepository.getStepsInDateRange(userId, startDate, endDate)
 
             // Calculate consistency based on how many days user was active
             // Implementation would analyze the flow data
