@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 5,
-    "identityHash": "ae733fde70258e80df87047987577b64",
+    "identityHash": "128b2f61ccffd240159dfa9daf568319",
     "entities": [
       {
         "tableName": "users",
@@ -1640,6 +1640,112 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_is_success_event_type` ON `${TABLE_NAME}` (`is_success`, `event_type`)"
+          },
+          {
+            "name": "index_notification_logs_priority_level_event_timestamp",
+            "unique": false,
+            "columnNames": [
+              "priority_level",
+              "event_timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_priority_level_event_timestamp` ON `${TABLE_NAME}` (`priority_level`, `event_timestamp`)"
+          },
+          {
+            "name": "index_notification_logs_processing_duration_ms",
+            "unique": false,
+            "columnNames": [
+              "processing_duration_ms"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_processing_duration_ms` ON `${TABLE_NAME}` (`processing_duration_ms`)"
+          },
+          {
+            "name": "index_notification_logs_delivery_duration_ms",
+            "unique": false,
+            "columnNames": [
+              "delivery_duration_ms"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_delivery_duration_ms` ON `${TABLE_NAME}` (`delivery_duration_ms`)"
+          },
+          {
+            "name": "index_notification_logs_user_id_priority_level",
+            "unique": false,
+            "columnNames": [
+              "user_id",
+              "priority_level"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_user_id_priority_level` ON `${TABLE_NAME}` (`user_id`, `priority_level`)"
+          },
+          {
+            "name": "index_notification_logs_created_at",
+            "unique": false,
+            "columnNames": [
+              "created_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_created_at` ON `${TABLE_NAME}` (`created_at`)"
+          },
+          {
+            "name": "index_notification_logs_retry_count",
+            "unique": false,
+            "columnNames": [
+              "retry_count"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_retry_count` ON `${TABLE_NAME}` (`retry_count`)"
+          },
+          {
+            "name": "index_notification_logs_experiment_id",
+            "unique": false,
+            "columnNames": [
+              "experiment_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_experiment_id` ON `${TABLE_NAME}` (`experiment_id`)"
+          },
+          {
+            "name": "index_notification_logs_batch_id",
+            "unique": false,
+            "columnNames": [
+              "batch_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_batch_id` ON `${TABLE_NAME}` (`batch_id`)"
+          },
+          {
+            "name": "index_notification_logs_user_id_delivery_channel_event_timestamp",
+            "unique": false,
+            "columnNames": [
+              "user_id",
+              "delivery_channel",
+              "event_timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_user_id_delivery_channel_event_timestamp` ON `${TABLE_NAME}` (`user_id`, `delivery_channel`, `event_timestamp`)"
+          },
+          {
+            "name": "index_notification_logs_event_type_is_success_event_timestamp",
+            "unique": false,
+            "columnNames": [
+              "event_type",
+              "is_success",
+              "event_timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_event_type_is_success_event_timestamp` ON `${TABLE_NAME}` (`event_type`, `is_success`, `event_timestamp`)"
+          },
+          {
+            "name": "index_notification_logs_priority_level_delivery_channel",
+            "unique": false,
+            "columnNames": [
+              "priority_level",
+              "delivery_channel"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_notification_logs_priority_level_delivery_channel` ON `${TABLE_NAME}` (`priority_level`, `delivery_channel`)"
           }
         ],
         "foreignKeys": [
@@ -2005,7 +2111,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ae733fde70258e80df87047987577b64')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '128b2f61ccffd240159dfa9daf568319')"
     ]
   }
 }
