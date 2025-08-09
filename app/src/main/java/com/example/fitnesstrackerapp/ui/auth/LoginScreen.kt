@@ -208,7 +208,8 @@ fun LoginScreen(
                 if (validation.isValid) {
                     authViewModel.login(email, password, rememberMe)
                 } else {
-                    // Handle validation error - this should be shown in UI
+                    // Set the validation error message in the ViewModel
+                    authViewModel.setError(validation.message)
                 }
             },
             modifier = Modifier

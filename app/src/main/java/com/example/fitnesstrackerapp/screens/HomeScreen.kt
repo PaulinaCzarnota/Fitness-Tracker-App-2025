@@ -99,12 +99,12 @@ fun HomeScreen(
     LocalContext.current
 
     // Step Dashboard ViewModel for real-time step tracking
-    val stepDashboardViewModel: com.example.fitnesstrackerapp.ui.viewmodel.StepDashboardViewModel = 
+    val stepDashboardViewModel: com.example.fitnesstrackerapp.ui.viewmodel.StepDashboardViewModel =
         androidx.lifecycle.viewmodel.compose.viewModel()
 
     // Observe user state using StateFlow
     val authState by authViewModel.uiState.collectAsStateWithLifecycle()
-    
+
     // Observe real-time step data
     val stepData by stepDashboardViewModel.stepData.collectAsStateWithLifecycle()
     val isServiceConnected by stepDashboardViewModel.isServiceConnected.collectAsStateWithLifecycle()
