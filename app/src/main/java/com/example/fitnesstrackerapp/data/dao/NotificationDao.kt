@@ -297,6 +297,15 @@ interface NotificationDao {
     suspend fun getUnreadNotificationCount(userId: Long): Int
 
     /**
+     * Gets total clicked notification count.
+     *
+     * @param userId User ID
+     * @return Number of clicked notifications
+     */
+    @Query("SELECT COUNT(*) FROM notifications WHERE user_id = :userId AND status = 'CLICKED'")
+    suspend fun getClickedNotificationCount(userId: Long): Int
+
+    /**
      * Gets notification delivery success rate for analytics.
      *
      * @param userId User ID

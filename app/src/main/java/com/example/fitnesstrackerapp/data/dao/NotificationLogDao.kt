@@ -546,6 +546,16 @@ interface NotificationLogDao {
     suspend fun deleteOldNotificationLogs(userId: Long, olderThan: Date)
 
     /**
+     * Deletes notification log entries older than specified date (global cleanup).
+     * This method is referenced by NotificationRepository for cleanup operations.
+     *
+     * @param cutoffDate Cutoff date - logs older than this will be deleted
+     * @return Number of deleted log entries
+     */
+    @Query("DELETE FROM notification_logs WHERE event_timestamp < :cutoffDate")
+    suspend fun deleteLogsOlderThan(cutoffDate: Date): Int
+
+    /**
      * Deletes all notification log entries for a specific notification.
      *
      * @param notificationId Notification ID
@@ -780,4 +790,23 @@ interface NotificationLogDao {
     """,
     )
     fun getDismissedNotifications(userId: Long): Flow<List<NotificationLog>>
+    
+    /**
+     * Gets the count of clicked notifications for a user in a date range.
+     * Used by NotificationRepository for interaction rate calculations.
+     *
+     * @param userId User ID
+     * @param startDate Start date for analysis
+     * @param endDate End date for analysis
+     * @return Number of clicked notifications
+     */
+    @Query(
+        """
+        SELECT COUNT(*) FROM notification_logs
+        WHERE user_id = :userId
+        AND event_timestamp BETWEEN :startDate AND :endDate
+        AND event_type = 'OPENED'
+    """,
+    )
+    suspend fun getClickedNotificationCount(userId: Long, startDate: Date, endDate: Date): Int
 }
