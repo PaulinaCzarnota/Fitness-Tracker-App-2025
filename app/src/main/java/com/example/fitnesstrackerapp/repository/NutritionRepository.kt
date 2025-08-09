@@ -244,10 +244,10 @@ class NutritionRepository(
      * Gets average daily calories for a user.
      *
      * @param userId The unique identifier of the user
-     * @return Average daily calorie intake, or 0.0 if no data available
+     * @return Average daily calorie intake, or null if no data available
      */
-    suspend fun getAverageDailyCalories(userId: Long): Double {
-        return nutritionEntryDao.getAverageDailyCalories(userId) ?: 0.0
+    suspend fun getAverageDailyCalories(userId: Long): Double? {
+        return nutritionEntryDao.getAverageDailyCalories(userId)
     }
 
     // MARK: - Food Analysis and Insights
@@ -529,12 +529,12 @@ class NutritionRepository(
 
         return mapOf(
             "totalEntries" to totalEntries,
-            "avgDailyCalories" to avgCalories,
+            "avgDailyCalories" to (avgCalories ?: 0.0),
             "topFoods" to mostConsumed,
-            "weeklyCalories" to weeklyStats.weeklyCalories,
-            "weeklyProtein" to weeklyStats.weeklyProtein,
-            "weeklyCarbs" to weeklyStats.weeklyCarbs,
-            "weeklyFat" to weeklyStats.weeklyFat,
+            "weeklyCalories" to (weeklyStats.weeklyCalories ?: 0.0),
+            "weeklyProtein" to (weeklyStats.weeklyProtein ?: 0.0),
+            "weeklyCarbs" to (weeklyStats.weeklyCarbs ?: 0.0),
+            "weeklyFat" to (weeklyStats.weeklyFat ?: 0.0),
         )
     }
 

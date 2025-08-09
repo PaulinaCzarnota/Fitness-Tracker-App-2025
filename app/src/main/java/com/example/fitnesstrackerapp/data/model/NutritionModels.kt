@@ -56,14 +56,6 @@ data class NotificationPerformanceMetrics(
     }
 }
 
-/**
- * Data model for error frequency tracking.
- * Used for identifying the most common error types in notification delivery.
- */
-data class ErrorFrequency(
-    @ColumnInfo(name = "error_code") val errorCode: String,
-    @ColumnInfo(name = "frequency") val frequency: Int,
-)
 
 /**
  * Data model for user interaction patterns by hour.
@@ -176,69 +168,4 @@ data class SystemHealthMetrics(
     }
 }
 
-/**
- * Data model for notification delivery statistics.
- * Used for tracking delivery performance and success rates.
- */
-data class NotificationDeliveryStats(
-    @ColumnInfo(name = "total_sent") val totalSent: Int,
-    @ColumnInfo(name = "total_delivered") val totalDelivered: Int,
-    @ColumnInfo(name = "total_failed") val totalFailed: Int,
-    @ColumnInfo(name = "total_clicked") val totalClicked: Int,
-    @ColumnInfo(name = "total_dismissed") val totalDismissed: Int,
-    @ColumnInfo(name = "avg_delivery_time") val avgDeliveryTime: Double?,
-) {
-    /**
-     * Calculates the delivery success rate as a percentage.
-     */
-    fun getDeliverySuccessRate(): Double {
-        return if (totalSent > 0) (totalDelivered.toDouble() / totalSent) * 100 else 0.0
-    }
 
-    /**
-     * Calculates the click-through rate as a percentage.
-     */
-    fun getClickThroughRate(): Double {
-        return if (totalDelivered > 0) (totalClicked.toDouble() / totalDelivered) * 100 else 0.0
-    }
-
-    /**
-     * Calculates the failure rate as a percentage.
-     */
-    fun getFailureRate(): Double {
-        return if (totalSent > 0) (totalFailed.toDouble() / totalSent) * 100 else 0.0
-    }
-}
-
-/**
- * Comprehensive notification analytics data class for repository usage.
- * Used for detailed notification performance and engagement analysis.
- */
-data class NotificationInsights(
-    val totalSent: Int,
-    val totalDelivered: Int,
-    val totalFailed: Int,
-    val totalClicked: Int,
-    val totalDismissed: Int,
-    val averageDeliveryLatencyMs: Double,
-    val deliverySuccessRate: Double,
-    val clickThroughRate: Double,
-    val maxRetryCount: Int,
-    val commonErrors: List<ErrorFrequency>,
-    val weeklyTrend: Double,
-)
-
-/**
- * Notification performance metrics data class for repository usage.
- * Used for monitoring and optimizing notification system performance.
- */
-data class NotificationSystemMetrics(
-    val dailyVolume: Int,
-    val weeklyVolume: Int,
-    val averageLatencyMs: Double,
-    val errorRate: Double,
-    val retryRate: Double,
-    val maxRetryCount: Int,
-    val topErrors: List<String>,
-    val healthScore: Double,
-)
