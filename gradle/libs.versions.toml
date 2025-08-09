@@ -24,9 +24,6 @@ room = "2.6.1"
 # Coroutines
 coroutines = "1.7.3"
 coroutinesTest = "1.7.3"
-# Hilt Dependency Injection
-hilt = "2.48"
-hiltWork = "1.1.0"
 # DataStore
 datastore = "1.0.0"
 # WorkManager
@@ -88,12 +85,6 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 # Security
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security" }
 
-# Hilt Dependency Injection
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
-hilt-compiler-androidx = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
-
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxTestExt" }
@@ -126,7 +117,7 @@ androidx-multidex = { group = "androidx.multidex", name = "multidex", version.re
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
 # Code quality and documentation plugins
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
