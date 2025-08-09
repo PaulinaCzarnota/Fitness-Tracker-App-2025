@@ -31,9 +31,4 @@ plugins {
     
     // Gradle Versions plugin for dependency updates
     alias(libs.plugins.versions) apply false
-    
-    // Note: Firebase plugin removed as it's non-standard
-    
-    // Dagger Hilt plugin
-    alias(libs.plugins.hilt) apply false
 }
