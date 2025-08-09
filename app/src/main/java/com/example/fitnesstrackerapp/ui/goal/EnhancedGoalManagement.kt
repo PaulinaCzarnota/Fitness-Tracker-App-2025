@@ -13,7 +13,20 @@ package com.example.fitnesstrackerapp.ui.goal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -23,9 +36,49 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Loyalty
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,12 +89,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.work.*
-import com.example.fitnesstrackerapp.data.entity.*
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import com.example.fitnesstrackerapp.data.entity.Goal
+import com.example.fitnesstrackerapp.data.entity.GoalType
+import com.example.fitnesstrackerapp.data.entity.isCompleted
 import com.example.fitnesstrackerapp.ui.progress.AnimatedCircularProgress
 import com.example.fitnesstrackerapp.worker.GoalReminderWorker
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -169,7 +229,7 @@ fun EnhancedGoalManagementScreen(
             // Active goals
             GoalsSection(
                 title = "Active Goals",
-                goals = uiState.goals.filter { !it.isCompleted },
+                goals = uiState.goals.filter { !it.isCompleted() },
                 onGoalClick = { selectedGoalForEdit = it },
                 onToggleReminder = { goal, enabled ->
                     goalViewModel.toggleGoalReminder(goal.id, enabled)
@@ -186,10 +246,10 @@ fun EnhancedGoalManagementScreen(
             )
 
             // Completed goals
-            if (uiState.goals.any { it.isCompleted }) {
+            if (uiState.goals.any { it.isCompleted() }) {
                 GoalsSection(
                     title = "Completed Goals",
-                    goals = uiState.goals.filter { it.isCompleted },
+                    goals = uiState.goals.filter { it.isCompleted() },
                     onGoalClick = { selectedGoalForEdit = it },
                     onToggleReminder = { _, _ -> },
                     onMarkComplete = { },
@@ -226,14 +286,14 @@ fun EnhancedGoalManagementScreen(
                     title = title,
                     description = description,
                     goalType = when (selectedCategory!!) {
-                        GoalCategory.STEPS -> GoalType.STEPS
-                        GoalCategory.WORKOUTS -> GoalType.WORKOUTS
+                        GoalCategory.STEPS -> GoalType.STEP_COUNT
+                        GoalCategory.WORKOUTS -> GoalType.WORKOUT_FREQUENCY
                         GoalCategory.WEIGHT_LOSS -> GoalType.WEIGHT_LOSS
-                        GoalCategory.MUSCLE_GAIN -> GoalType.MUSCLE_GAIN
+                        GoalCategory.MUSCLE_GAIN -> GoalType.MUSCLE_BUILDING
                         GoalCategory.ENDURANCE -> GoalType.ENDURANCE
-                        GoalCategory.STRENGTH -> GoalType.STRENGTH
+                        GoalCategory.STRENGTH -> GoalType.STRENGTH_TRAINING
                         GoalCategory.FLEXIBILITY -> GoalType.FLEXIBILITY
-                        GoalCategory.CALORIES_BURNED -> GoalType.CALORIES_BURNED
+                        GoalCategory.CALORIES_BURNED -> GoalType.CALORIE_BURN
                     },
                     targetValue = targetValue,
                     unit = selectedCategory!!.defaultUnit,
@@ -352,20 +412,20 @@ fun GoalCard(
     modifier: Modifier = Modifier,
 ) {
     val progress = (goal.currentValue / goal.targetValue).toFloat().coerceIn(0f, 1f)
-    val isOverdue = !goal.isCompleted && goal.targetDate.before(Date())
+    val isOverdue = !goal.isCompleted() && goal.targetDate.before(Date())
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = when {
-                goal.isCompleted -> MaterialTheme.colorScheme.tertiaryContainer
-                isOverdue -> MaterialTheme.colorScheme.errorContainer
-                else -> MaterialTheme.colorScheme.surface
-            },
-        ),
+            colors = CardDefaults.cardColors(
+                containerColor = when {
+                    goal.isCompleted() -> MaterialTheme.colorScheme.tertiaryContainer
+                    isOverdue -> MaterialTheme.colorScheme.errorContainer
+                    else -> MaterialTheme.colorScheme.surface
+                },
+            ),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -407,7 +467,7 @@ fun GoalCard(
 
                 // Status indicator
                 when {
-                    goal.isCompleted -> {
+                    goal.isCompleted() -> {
                         Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = "Completed",
@@ -445,7 +505,7 @@ fun GoalCard(
                             .fillMaxWidth()
                             .padding(top = 4.dp),
                         color = when {
-                            goal.isCompleted -> MaterialTheme.colorScheme.primary
+                            goal.isCompleted() -> MaterialTheme.colorScheme.primary
                             isOverdue -> MaterialTheme.colorScheme.error
                             else -> MaterialTheme.colorScheme.secondary
                         },
@@ -499,7 +559,7 @@ fun GoalCard(
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Quick progress buttons (only for active goals)
-                if (!goal.isCompleted && !isOverdue) {
+                if (!goal.isCompleted() && !isOverdue) {
                     val quickIncrements = listOf(0.1f, 0.25f, 0.5f)
                     quickIncrements.forEach { increment ->
                         val incrementValue = goal.targetValue * increment
@@ -521,7 +581,7 @@ fun GoalCard(
                 }
 
                 // Mark complete button
-                if (!goal.isCompleted && progress >= 0.95f) {
+                if (!goal.isCompleted() && progress >= 0.95f) {
                     Button(
                         onClick = onMarkComplete,
                         modifier = Modifier.height(32.dp),
@@ -940,7 +1000,7 @@ fun GoalDetailsDialog(
                     InfoRow("Target Date", dateFormat.format(goal.targetDate))
                     InfoRow("Created", dateFormat.format(goal.createdAt))
                     InfoRow("Type", goal.goalType.name.replace("_", " "))
-                    InfoRow("Status", if (goal.isCompleted) "Completed" else "Active")
+                    InfoRow("Status", if (goal.isCompleted()) "Completed" else "Active")
                 }
 
                 // Buttons
@@ -1046,7 +1106,7 @@ fun GoalStatsCard(
     modifier: Modifier = Modifier,
 ) {
     val totalGoals = goals.size
-    val completedGoals = goals.count { it.isCompleted }
+    val completedGoals = goals.count { it.isCompleted() }
     val activeGoals = totalGoals - completedGoals
     val completionRate = if (totalGoals > 0) (completedGoals * 100) / totalGoals else 0
 

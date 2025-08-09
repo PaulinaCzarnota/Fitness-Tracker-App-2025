@@ -34,12 +34,13 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.fitnesstrackerapp.MainActivity
-import com.example.fitnesstrackerapp.R
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.Step
+import com.example.fitnesstrackerapp.data.model.StepData
 import com.example.fitnesstrackerapp.repository.GoalRepository
 import com.example.fitnesstrackerapp.repository.StepRepository
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
+import com.example.fitnesstrackerapp.util.StepUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -194,12 +195,10 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
         // Tertiary: Accelerometer for custom pedometer algorithm (fallback)
         accelerometerSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
-        // Check for sensor batching support
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            sensorBatchingSupported = stepCounterSensor?.let { sensor ->
-                sensorManager?.getFifoMaxEventCount(sensor) ?: 0 > 0
-            } ?: false
-        }
+        // Check for sensor batching support (always available on our min SDK 24)
+        sensorBatchingSupported = stepCounterSensor?.let { sensor ->
+            sensor.fifoMaxEventCount > 0
+        } ?: false
 
         Log.d(
             TAG,
@@ -213,22 +212,18 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
     private fun setupBatteryOptimization() {
         powerManager = getSystemService(POWER_SERVICE) as PowerManager
 
-        // Check initial doze state
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            isDozeMode = powerManager.isDeviceIdleMode
-        }
+        // Check initial doze state (always available on our min SDK 24)
+        isDozeMode = powerManager.isDeviceIdleMode
 
         Log.d(TAG, "Battery optimization setup - Doze mode: $isDozeMode")
     }
 
     private fun registerDozeReceiver() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val filter = IntentFilter().apply {
-                addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
-                addAction(Intent.ACTION_BATTERY_CHANGED)
-            }
-            registerReceiver(dozeReceiver, filter)
+        val filter = IntentFilter().apply {
+            addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
+            addAction(Intent.ACTION_BATTERY_CHANGED)
         }
+        registerReceiver(dozeReceiver, filter)
     }
 
     private fun loadTodayStepsFromDatabase() {
@@ -405,8 +400,8 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
         val stepDataPoint = StepDataPoint(
             timestamp = currentTime,
             stepCount = steps,
-            calories = calculateCalories(steps),
-            distance = calculateDistance(steps),
+            calories = StepUtils.calculateCalories(steps),
+            distance = StepUtils.calculateDistance(steps),
         )
 
         stepDataBatch.add(stepDataPoint)
@@ -422,13 +417,9 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
     private fun updateStepData(steps: Int) {
         _currentSteps.value = steps
 
-        val distance = calculateDistance(steps)
-        val calories = calculateCalories(steps)
-        val progress = if (_dailyGoal.value > 0) {
-            (steps.toFloat() / _dailyGoal.value * 100).coerceIn(0f, 100f)
-        } else {
-            0f
-        }
+        val distance = StepUtils.calculateDistance(steps)
+        val calories = StepUtils.calculateCalories(steps)
+        val progress = StepUtils.calculateProgress(steps, _dailyGoal.value)
 
         _distanceMeters.value = distance
         _caloriesBurned.value = calories
@@ -445,7 +436,7 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
     private fun syncWithWorkoutsAndGoals(steps: Int, calories: Float, distance: Float) {
         serviceScope.launch {
             try {
-                val userId = getCurrentUserId()
+                getCurrentUserId()
 
                 // Update active workout with step data if available
                 // This would integrate with any running workout sessions
@@ -479,7 +470,7 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
                         date = today,
                         caloriesBurned = latestData.calories,
                         distanceMeters = latestData.distance,
-                        activeMinutes = estimateActiveMinutes(latestData.stepCount),
+                        activeMinutes = StepUtils.estimateActiveMinutes(latestData.stepCount),
                         createdAt = currentTime,
                         updatedAt = currentTime,
                     )
@@ -506,10 +497,6 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
             set(Calendar.MILLISECOND, 0)
         }
         return calendar.time
-    }
-
-    private fun estimateActiveMinutes(steps: Int): Int {
-        return (steps / 100).coerceAtMost(1440)
     }
 
     private fun updateNotification(steps: Int, goal: Int) {
@@ -565,14 +552,6 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
 
     private fun getCurrentUserId(): Long {
         return sharedPreferences.getLong("current_user_id", 1L)
-    }
-
-    private fun calculateDistance(steps: Int): Float {
-        return steps * STEP_LENGTH_METERS
-    }
-
-    private fun calculateCalories(steps: Int): Float {
-        return steps * CALORIES_PER_STEP
     }
 
     private fun createNotification(steps: Int, goal: Int): Notification {
@@ -676,21 +655,19 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        val wasDozeMode = isDozeMode
-                        isDozeMode = powerManager.isDeviceIdleMode
+                    val wasDozeMode = isDozeMode
+                    isDozeMode = powerManager.isDeviceIdleMode
 
-                        if (wasDozeMode != isDozeMode) {
-                            Log.d(TAG, "Doze mode changed: $isDozeMode")
+                    if (wasDozeMode != isDozeMode) {
+                        Log.d(TAG, "Doze mode changed: $isDozeMode")
 
-                            // Re-register sensors with appropriate settings
-                            sensorManager?.unregisterListener(this@BatteryOptimizedStepService)
-                            registerSensorListeners()
+                        // Re-register sensors with appropriate settings
+                        sensorManager?.unregisterListener(this@BatteryOptimizedStepService)
+                        registerSensorListeners()
 
-                            // Save any pending data before entering doze
-                            if (isDozeMode) {
-                                saveStepsBatch()
-                            }
+                        // Save any pending data before entering doze
+                        if (isDozeMode) {
+                            saveStepsBatch()
                         }
                     }
                 }
@@ -712,14 +689,3 @@ data class StepDataPoint(
     val distance: Float,
 )
 
-/**
- * Data class for UI integration
- */
-data class StepData(
-    val steps: Int,
-    val goal: Int,
-    val progress: Float,
-    val distance: Float,
-    val calories: Float,
-    val isTracking: Boolean,
-)

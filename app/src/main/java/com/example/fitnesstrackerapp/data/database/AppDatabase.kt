@@ -58,7 +58,7 @@ import java.util.concurrent.Executors
         Exercise::class,
         WorkoutSet::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -171,7 +171,7 @@ abstract class AppDatabase : RoomDatabase() {
                             DATABASE_NAME,
                         )
                             .setQueryExecutor(Executors.newFixedThreadPool(4))
-                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3) // Add migrations
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // Add migrations
                             .fallbackToDestructiveMigration() // Only for development
                             .build()
 
@@ -361,6 +361,87 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
+         * Migration from version 3 to 4: Placeholder migration.
+         *
+         * This migration acts as a placeholder for version 4.
+         */
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                try {
+                    // Placeholder migration - no schema changes needed
+                    Log.i(TAG, "Successfully migrated from version 3 to 4 - no schema changes")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to migrate from version 3 to 4", e)
+                    throw e
+                }
+            }
+        }
+
+        /**
+         * Migration from version 4 to 5: Adds NotificationLog table.
+         *
+         * This migration adds the comprehensive notification log table for tracking
+         * notification delivery analytics, performance monitoring, and user interactions.
+         */
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                try {
+                    // Create notification_logs table
+                    db.execSQL(
+                        """
+                        CREATE TABLE IF NOT EXISTS `notification_logs` (
+                            `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                            `user_id` INTEGER NOT NULL,
+                            `notification_id` INTEGER NOT NULL,
+                            `event_type` TEXT NOT NULL,
+                            `event_timestamp` INTEGER NOT NULL,
+                            `delivery_channel` TEXT NOT NULL,
+                            `is_success` INTEGER NOT NULL DEFAULT 1,
+                            `error_code` TEXT,
+                            `error_message` TEXT,
+                            `retry_count` INTEGER NOT NULL DEFAULT 0,
+                            `device_token` TEXT,
+                            `platform_response` TEXT,
+                            `user_agent` TEXT,
+                            `ip_address` TEXT,
+                            `app_version` TEXT,
+                            `os_version` TEXT,
+                            `processing_duration_ms` INTEGER NOT NULL DEFAULT 0,
+                            `delivery_duration_ms` INTEGER,
+                            `interaction_data` TEXT,
+                            `action_taken` TEXT,
+                            `session_id` TEXT,
+                            `batch_id` TEXT,
+                            `priority_level` INTEGER NOT NULL DEFAULT 0,
+                            `experiment_id` TEXT,
+                            `created_at` INTEGER NOT NULL,
+                            FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE,
+                            FOREIGN KEY(`notification_id`) REFERENCES `notifications`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+                        )
+                        """.trimIndent(),
+                    )
+
+                    // Create indices for notification_logs table
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_user_id` ON `notification_logs` (`user_id`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_notification_id` ON `notification_logs` (`notification_id`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_event_type` ON `notification_logs` (`event_type`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_delivery_channel` ON `notification_logs` (`delivery_channel`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_event_timestamp` ON `notification_logs` (`event_timestamp`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_user_id_event_type` ON `notification_logs` (`user_id`, `event_type`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_notification_id_event_type` ON `notification_logs` (`notification_id`, `event_type`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_user_id_event_timestamp` ON `notification_logs` (`user_id`, `event_timestamp`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_delivery_channel_event_type` ON `notification_logs` (`delivery_channel`, `event_type`)")
+                    db.execSQL("CREATE INDEX IF NOT EXISTS `index_notification_logs_is_success_event_type` ON `notification_logs` (`is_success`, `event_type`)")
+
+                    Log.i(TAG, "Successfully migrated from version 4 to 5 - added notification_logs table")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to migrate from version 4 to 5", e)
+                    throw e
+                }
+            }
+        }
+
+        /**
          * Creates database instance for testing with in-memory storage.
          *
          * This method is specifically designed for unit tests to provide
@@ -389,7 +470,7 @@ abstract class AppDatabase : RoomDatabase() {
          *
          * @return Current database version number
          */
-        fun getCurrentVersion(): Int = 3
+        fun getCurrentVersion(): Int = 5
 
         /**
          * Validates database integrity and checks for corruption.

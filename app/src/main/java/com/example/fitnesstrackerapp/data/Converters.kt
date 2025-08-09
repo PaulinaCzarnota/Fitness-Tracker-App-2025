@@ -25,6 +25,10 @@ import com.example.fitnesstrackerapp.data.entity.GoalStatus
 import com.example.fitnesstrackerapp.data.entity.GoalType
 import com.example.fitnesstrackerapp.data.entity.MealType
 import com.example.fitnesstrackerapp.data.entity.MuscleGroup
+import com.example.fitnesstrackerapp.data.entity.NotificationChannel
+import com.example.fitnesstrackerapp.data.entity.NotificationDeliveryChannel
+import com.example.fitnesstrackerapp.data.entity.NotificationEventType
+import com.example.fitnesstrackerapp.data.entity.NotificationLogEvent
 import com.example.fitnesstrackerapp.data.entity.NotificationPriority
 import com.example.fitnesstrackerapp.data.entity.NotificationStatus
 import com.example.fitnesstrackerapp.data.entity.NotificationType
@@ -426,5 +430,113 @@ class Converters {
     @TypeConverter
     fun fromSetType(setType: SetType?): String? {
         return setType?.name
+    }
+
+    // ================================
+    // Notification-related TypeConverters
+    // ================================
+
+    /**
+     * Converts string to NotificationEventType enum.
+     * @param value String representation of NotificationEventType
+     * @return NotificationEventType enum or null if value is null/invalid
+     */
+    @TypeConverter
+    fun toNotificationEventType(value: String?): NotificationEventType? {
+        return value?.let {
+            try {
+                NotificationEventType.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+    }
+
+    /**
+     * Converts NotificationEventType enum to string.
+     * @param notificationEventType NotificationEventType enum to convert
+     * @return String representation or null if notificationEventType is null
+     */
+    @TypeConverter
+    fun fromNotificationEventType(notificationEventType: NotificationEventType?): String? {
+        return notificationEventType?.name
+    }
+
+    /**
+     * Converts string to NotificationChannel enum.
+     * @param value String representation of NotificationChannel
+     * @return NotificationChannel enum or null if value is null/invalid
+     */
+    @TypeConverter
+    fun toNotificationChannel(value: String?): NotificationChannel? {
+        return value?.let {
+            try {
+                NotificationChannel.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+    }
+
+    /**
+     * Converts NotificationChannel enum to string.
+     * @param notificationChannel NotificationChannel enum to convert
+     * @return String representation or null if notificationChannel is null
+     */
+    @TypeConverter
+    fun fromNotificationChannel(notificationChannel: NotificationChannel?): String? {
+        return notificationChannel?.name
+    }
+
+    /**
+     * Converts string to NotificationLogEvent enum.
+     * @param value String representation of NotificationLogEvent
+     * @return NotificationLogEvent enum or null if value is null/invalid
+     */
+    @TypeConverter
+    fun toNotificationLogEvent(value: String?): NotificationLogEvent? {
+        return value?.let {
+            try {
+                NotificationLogEvent.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+    }
+
+    /**
+     * Converts NotificationLogEvent enum to string.
+     * @param notificationLogEvent NotificationLogEvent enum to convert
+     * @return String representation or null if notificationLogEvent is null
+     */
+    @TypeConverter
+    fun fromNotificationLogEvent(notificationLogEvent: NotificationLogEvent?): String? {
+        return notificationLogEvent?.name
+    }
+
+    /**
+     * Converts string to NotificationDeliveryChannel enum.
+     * @param value String representation of NotificationDeliveryChannel
+     * @return NotificationDeliveryChannel enum or null if value is null/invalid
+     */
+    @TypeConverter
+    fun toNotificationDeliveryChannel(value: String?): NotificationDeliveryChannel? {
+        return value?.let {
+            try {
+                NotificationDeliveryChannel.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
+        }
+    }
+
+    /**
+     * Converts NotificationDeliveryChannel enum to string.
+     * @param notificationDeliveryChannel NotificationDeliveryChannel enum to convert
+     * @return String representation or null if notificationDeliveryChannel is null
+     */
+    @TypeConverter
+    fun fromNotificationDeliveryChannel(notificationDeliveryChannel: NotificationDeliveryChannel?): String? {
+        return notificationDeliveryChannel?.name
     }
 }

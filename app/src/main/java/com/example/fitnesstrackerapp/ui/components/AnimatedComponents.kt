@@ -12,17 +12,53 @@
 
 package com.example.fitnesstrackerapp.ui.components
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,8 +66,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
@@ -39,8 +79,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.*
-import com.example.fitnesstrackerapp.ui.theme.*
+import com.example.fitnesstrackerapp.ui.theme.AchievementGold
+import com.example.fitnesstrackerapp.ui.theme.GradientEnd
+import com.example.fitnesstrackerapp.ui.theme.GradientMiddle
+import com.example.fitnesstrackerapp.ui.theme.GradientStart
 
 /**
  * Animated circular progress indicator with gradient colors
@@ -183,7 +225,7 @@ fun AnimatedStepCounter(
     color: Color = MaterialTheme.colorScheme.primary,
     animationDuration: Int = 800,
 ) {
-    var animatedSteps by remember { mutableStateOf(0) }
+    var animatedSteps by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(currentSteps) {
         val animator = Animatable(animatedSteps.toFloat())
@@ -223,7 +265,7 @@ fun MorphingFAB(
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
 ) {
-    val density = LocalDensity.current
+    LocalDensity.current
 
     val width by animateDpAsState(
         targetValue = if (expanded) 120.dp else 56.dp,
@@ -394,8 +436,8 @@ fun AnimatedWorkoutProgressBar(
 
 /**
  * Motion layout-based card with constraint animations
+ * Simplified version using standard Compose animations instead of MotionLayout
  */
-@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun MotionCard(
     expanded: Boolean,
@@ -405,72 +447,13 @@ fun MotionCard(
     subtitle: String,
     content: @Composable () -> Unit,
 ) {
-    val motionScene = remember {
-        MotionScene {
-            val titleRef = createRefFor("title")
-            val subtitleRef = createRefFor("subtitle")
-            val contentRef = createRefFor("content")
-            val cardRef = createRefFor("card")
-
-            defaultTransition(
-                from = constraintSet {
-                    constrain(titleRef) {
-                        top.linkTo(parent.top, margin = 16.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                    }
-                    constrain(subtitleRef) {
-                        top.linkTo(titleRef.bottom, margin = 4.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                    }
-                    constrain(contentRef) {
-                        top.linkTo(subtitleRef.bottom, margin = 8.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                        end.linkTo(parent.end, margin = 16.dp)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.value(0.dp)
-                    }
-                },
-                to = constraintSet {
-                    constrain(titleRef) {
-                        top.linkTo(parent.top, margin = 16.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                    }
-                    constrain(subtitleRef) {
-                        top.linkTo(titleRef.bottom, margin = 4.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                    }
-                    constrain(contentRef) {
-                        top.linkTo(subtitleRef.bottom, margin = 16.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
-                        end.linkTo(parent.end, margin = 16.dp)
-                        bottom.linkTo(parent.bottom, margin = 16.dp)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.wrapContent
-                    }
-                },
-            ) {
-                keyAttributes(titleRef, subtitleRef, contentRef) {
-                    frame(0) {
-                        alpha(1f)
-                    }
-                    frame(50) {
-                        alpha(0.5f)
-                    }
-                    frame(100) {
-                        alpha(1f)
-                    }
-                }
-            }
-        }
-    }
-
-    val progress by animateFloatAsState(
+    val contentAlpha by animateFloatAsState(
         targetValue = if (expanded) 1f else 0f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium,
         ),
-        label = "Motion Card Progress",
+        label = "Content Alpha Animation",
     )
 
     Card(
@@ -481,30 +464,35 @@ fun MotionCard(
                 shape = MaterialTheme.shapes.medium,
             ),
     ) {
-        MotionLayout(
-            motionScene = motionScene,
-            progress = progress,
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(16.dp)
                 .animateContentSize(),
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.layoutId("title"),
             )
+            
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.layoutId("subtitle"),
             )
-
-            Box(
-                modifier = Modifier.layoutId("content"),
-            ) {
-                content()
+            
+            if (expanded) {
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .graphicsLayer { alpha = contentAlpha },
+                ) {
+                    content()
+                }
             }
         }
     }

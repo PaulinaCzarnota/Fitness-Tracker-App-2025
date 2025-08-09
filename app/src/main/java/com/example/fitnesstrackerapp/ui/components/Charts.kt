@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -85,7 +84,7 @@ fun AnimatedLineChart(
     val onSurface = MaterialTheme.colorScheme.onSurface
     MaterialTheme.colorScheme.outline
 
-    var animationProgress by remember { mutableStateOf(0f) }
+    var animationProgress by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(data) {
         animationProgress = 0f
@@ -433,7 +432,7 @@ fun AnimatedPieChart(
     ),
 ) {
     val total = data.sumOf { it.value.toDouble() }.toFloat()
-    var animationProgress by remember { mutableStateOf(0f) }
+    var animationProgress by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(data) {
         animationProgress = 0f

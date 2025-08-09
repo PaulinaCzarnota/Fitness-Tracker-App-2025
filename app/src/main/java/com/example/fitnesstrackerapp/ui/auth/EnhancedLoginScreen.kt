@@ -46,17 +46,15 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.example.fitnesstrackerapp.auth.BiometricAuthManager
-import com.example.fitnesstrackerapp.auth.FirebaseAuthManager
+// Note: Firebase removed as per assignment requirements
 import com.example.fitnesstrackerapp.auth.ValidationUtils
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.ApiException
+// Note: Google Sign-In removed as it's non-standard
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun EnhancedLoginScreen(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
-    firebaseAuthManager: FirebaseAuthManager,
     onLoginSuccess: () -> Unit,
     onNavigateToSignUp: () -> Unit = {},
     onNavigateToForgotPassword: () -> Unit = {},
@@ -86,26 +84,7 @@ fun EnhancedLoginScreen(
     val biometricAuthManager = remember { BiometricAuthManager(context) }
     val isBiometricAvailable = biometricAuthManager.isBiometricAvailable()
 
-    // Google Sign-In launcher
-    rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            // Handle Google Sign-In result with Firebase
-            LaunchedEffect(account) {
-                val authResult = firebaseAuthManager.handleGoogleSignInResult(account)
-                if (authResult is com.example.fitnesstrackerapp.repository.AuthResult.Success) {
-                    onLoginSuccess()
-                } else {
-                    errorMessage = (authResult as com.example.fitnesstrackerapp.repository.AuthResult.Error).message
-                }
-            }
-        } catch (e: ApiException) {
-            errorMessage = "Google Sign-In failed: ${e.message}"
-        }
-    }
+    // Local authentication only - no Google Sign-In
 
     // Observe ViewModel state
     val uiState by authViewModel.uiState.collectAsState()

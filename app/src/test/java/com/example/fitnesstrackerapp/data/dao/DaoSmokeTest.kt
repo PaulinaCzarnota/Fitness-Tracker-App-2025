@@ -64,7 +64,7 @@ class DaoSmokeTest {
             activityLevel = ActivityLevel.MODERATELY_ACTIVE,
             createdAt = Date(),
             updatedAt = Date(),
-            isActive = true
+            isActive = true,
         )
         val userId = userDao.insertUser(user)
 
@@ -82,7 +82,7 @@ class DaoSmokeTest {
             sodiumMg = 300.0,
             mealType = MealType.LUNCH,
             dateConsumed = Date(),
-            servingUnit = "piece"
+            servingUnit = "piece",
         )
 
         // Insert the food entry
@@ -120,7 +120,7 @@ class DaoSmokeTest {
             activityLevel = ActivityLevel.MODERATELY_ACTIVE,
             createdAt = Date(),
             updatedAt = Date(),
-            isActive = true
+            isActive = true,
         )
         val userId = userDao.insertUser(user)
 
@@ -150,7 +150,7 @@ class DaoSmokeTest {
             mealType = MealType.BREAKFAST,
             dateConsumed = Date(),
             isHomemade = false,
-            confidenceLevel = 0.9
+            confidenceLevel = 0.9,
         )
 
         // Insert the nutrition entry
