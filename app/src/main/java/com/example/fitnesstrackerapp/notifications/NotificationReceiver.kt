@@ -22,6 +22,7 @@ import android.content.Intent
 import android.util.Log
 import com.example.fitnesstrackerapp.ServiceLocator
 import com.example.fitnesstrackerapp.notification.SimpleNotificationManager
+import com.example.fitnesstrackerapp.util.PermissionUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -94,8 +95,13 @@ class NotificationReceiver : BroadcastReceiver() {
                 val title = "Daily Fitness Reminder"
                 val message = "Don't forget to log your workouts and track your progress today!"
 
-                notificationManager.showGeneralReminder(title, message)
-                Log.d(TAG, "Daily reminder notification sent")
+                if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                    @Suppress("MissingPermission")
+                    notificationManager.showGeneralReminder(title, message)
+                    Log.d(TAG, "Daily reminder notification sent")
+                } else {
+                    Log.w(TAG, "Notification permission not granted, cannot show daily reminder")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error sending daily reminder", e)
             }
@@ -118,12 +124,16 @@ class NotificationReceiver : BroadcastReceiver() {
 
         coroutineScope.launch {
             try {
-                if (goalId != -1L) {
-                    notificationManager.showGoalReminder(title, message, goalId)
+                if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                    if (goalId != -1L) {
+                        notificationManager.showGoalReminder(title, message, goalId)
+                    } else {
+                        notificationManager.showGoalReminder(title, message)
+                    }
+                    Log.d(TAG, "Goal reminder notification sent for goal: $goalId")
                 } else {
-                    notificationManager.showGoalReminder(title, message)
+                    Log.w(TAG, "Notification permission not granted, cannot show goal reminder")
                 }
-                Log.d(TAG, "Goal reminder notification sent for goal: $goalId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error sending goal reminder", e)
             }
@@ -143,8 +153,13 @@ class NotificationReceiver : BroadcastReceiver() {
         val message = intent.getStringExtra(EXTRA_MESSAGE) ?: "Time for your scheduled workout!"
 
         try {
-            notificationManager.showGeneralReminder(title, message)
-            Log.d(TAG, "Workout reminder notification sent")
+            if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                @Suppress("MissingPermission")
+                notificationManager.showGeneralReminder(title, message)
+                Log.d(TAG, "Workout reminder notification sent")
+            } else {
+                Log.w(TAG, "Notification permission not granted, cannot show workout reminder")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error sending workout reminder", e)
         }
@@ -170,12 +185,17 @@ class NotificationReceiver : BroadcastReceiver() {
                 val caloriesBurned = 200 // Placeholder
                 val workoutsCompleted = 1 // Placeholder
 
-                notificationManager.showDailyProgress(
-                    todaySteps,
-                    caloriesBurned,
-                    workoutsCompleted,
-                )
-                Log.d(TAG, "Progress update notification sent")
+                if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                    @Suppress("MissingPermission")
+                    notificationManager.showDailyProgress(
+                        todaySteps,
+                        caloriesBurned,
+                        workoutsCompleted,
+                    )
+                    Log.d(TAG, "Progress update notification sent")
+                } else {
+                    Log.w(TAG, "Notification permission not granted, cannot show progress update")
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error sending progress update", e)
             }

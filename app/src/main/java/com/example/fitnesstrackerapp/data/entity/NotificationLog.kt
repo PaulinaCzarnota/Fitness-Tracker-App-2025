@@ -28,6 +28,9 @@ import java.util.Date
  *
  * Tracks the different types of events that can occur in the
  * notification lifecycle for analytics and debugging purposes.
+ *
+ * Room stores enum values as text by default using enum.name.
+ * This ensures consistency and readability in the database.
  */
 enum class NotificationLogEvent {
     SCHEDULED, // Notification was scheduled
@@ -49,6 +52,9 @@ enum class NotificationLogEvent {
  *
  * Tracks which delivery channel was used for the notification
  * to help optimize delivery strategies.
+ *
+ * Room stores enum values as text by default using enum.name.
+ * This ensures consistency and readability in the database.
  */
 enum class NotificationDeliveryChannel {
     SYSTEM, // Android system notification
@@ -99,6 +105,19 @@ enum class NotificationDeliveryChannel {
         Index(value = ["user_id", "event_timestamp"]),
         Index(value = ["delivery_channel", "event_type"]),
         Index(value = ["is_success", "event_type"]),
+        // Performance indices for analytics queries
+        Index(value = ["priority_level", "event_timestamp"]),
+        Index(value = ["processing_duration_ms"]),
+        Index(value = ["delivery_duration_ms"]),
+        Index(value = ["user_id", "priority_level"]),
+        Index(value = ["created_at"]),
+        Index(value = ["retry_count"]),
+        Index(value = ["experiment_id"], name = "index_notification_logs_experiment_id"),
+        Index(value = ["batch_id"], name = "index_notification_logs_batch_id"),
+        // Compound indices for complex queries
+        Index(value = ["user_id", "delivery_channel", "event_timestamp"]),
+        Index(value = ["event_type", "is_success", "event_timestamp"]),
+        Index(value = ["priority_level", "delivery_channel"]),
     ],
 )
 data class NotificationLog(

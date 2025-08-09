@@ -23,6 +23,7 @@ import android.content.Intent
 import android.util.Log
 import com.example.fitnesstrackerapp.ServiceLocator
 import com.example.fitnesstrackerapp.notification.SimpleNotificationManager
+import com.example.fitnesstrackerapp.util.PermissionUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -124,7 +125,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 // Show completion confirmation
                 val title = "Goal Completed! 🎉"
                 val message = "Great job! You've made progress on your fitness goal."
-                notificationManager.showGeneralReminder(title, message)
+                if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                    @Suppress("MissingPermission")
+                    notificationManager.showGeneralReminder(title, message)
+                } else {
+                    Log.w(TAG, "Notification permission not granted, cannot show completion confirmation")
+                }
 
                 Log.d(TAG, "Goal $goalId marked as complete")
             } catch (e: Exception) {
@@ -158,7 +164,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
             // Optionally show confirmation
             val title = "Reminder Snoozed"
             val message = "We'll remind you again in $snoozeMinutes minutes."
-            notificationManager.showGeneralReminder(title, message)
+            if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                @Suppress("MissingPermission")
+                notificationManager.showGeneralReminder(title, message)
+            } else {
+                Log.w(TAG, "Notification permission not granted, cannot show snooze confirmation")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error snoozing reminder", e)
         }
@@ -193,7 +204,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
             // Show workout started confirmation
             val title = "Workout Started! 💪"
             val message = "Let's get moving with your $workoutType!"
-            notificationManager.showGeneralReminder(title, message)
+            if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                @Suppress("MissingPermission")
+                notificationManager.showGeneralReminder(title, message)
+            } else {
+                Log.w(TAG, "Notification permission not granted, cannot show workout confirmation")
+            }
 
             Log.d(TAG, "Workout started: $workoutType")
         } catch (e: Exception) {
@@ -225,7 +241,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 // Show confirmation
                 val title = "Hydration Logged! 💧"
                 val message = "Good job staying hydrated! Keep it up throughout the day."
-                notificationManager.showGeneralReminder(title, message)
+                if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                    @Suppress("MissingPermission")
+                    notificationManager.showGeneralReminder(title, message)
+                } else {
+                    Log.w(TAG, "Notification permission not granted, cannot show hydration confirmation")
+                }
 
                 Log.d(TAG, "Hydration logged from notification")
             } catch (e: Exception) {
@@ -262,7 +283,12 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 // Show completion confirmation
                 val title = "Exercise Completed! 🏃‍♀️"
                 val message = "Great job completing $duration minutes of $exerciseName!"
-                notificationManager.showGeneralReminder(title, message)
+                if (PermissionUtils.isNotificationPermissionGranted(context)) {
+                    @Suppress("MissingPermission")
+                    notificationManager.showGeneralReminder(title, message)
+                } else {
+                    Log.w(TAG, "Notification permission not granted, cannot show exercise confirmation")
+                }
 
                 Log.d(TAG, "Quick exercise logged: $exerciseName for $duration minutes")
             } catch (e: Exception) {

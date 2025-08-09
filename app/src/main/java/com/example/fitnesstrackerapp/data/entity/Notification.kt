@@ -28,6 +28,9 @@ import java.util.Date
  *
  * Each type corresponds to specific app functionality and has different
  * priority levels and handling requirements.
+ *
+ * Room stores enum values as text by default using enum.name.
+ * This ensures consistency and readability in the database.
  */
 enum class NotificationType {
     WORKOUT_REMINDER,
@@ -44,23 +47,14 @@ enum class NotificationType {
     INACTIVE_USER_ENGAGEMENT,
 }
 
-/**
- * Enumeration representing notification priority levels.
- *
- * Priority affects how notifications are displayed and whether they
- * interrupt the user's current activity.
- */
-enum class NotificationPriority {
-    LOW, // Background notifications, tips
-    DEFAULT, // Standard reminders
-    HIGH, // Important deadlines, achievements
-    URGENT, // Critical health or safety notifications
-}
 
 /**
  * Enumeration representing notification delivery status.
  *
  * Tracks the lifecycle of notifications from creation to user interaction.
+ *
+ * Room stores enum values as text by default using enum.name.
+ * This ensures consistency and readability in the database.
  */
 enum class NotificationStatus {
     PENDING, // Scheduled but not yet sent
@@ -117,7 +111,7 @@ data class Notification(
     @ColumnInfo(name = "message")
     val message: String,
     @ColumnInfo(name = "priority")
-    val priority: NotificationPriority = NotificationPriority.DEFAULT,
+    val priority: NotificationPriority = NotificationPriority.MEDIUM,
     @ColumnInfo(name = "status")
     val status: NotificationStatus = NotificationStatus.PENDING,
     @ColumnInfo(name = "scheduled_time")
