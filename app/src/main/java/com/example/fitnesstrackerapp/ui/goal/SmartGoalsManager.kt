@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnesstrackerapp.data.entity.Goal
 import com.example.fitnesstrackerapp.data.entity.GoalStatus
 import com.example.fitnesstrackerapp.data.entity.GoalType
+import com.example.fitnesstrackerapp.data.entity.isCompleted
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

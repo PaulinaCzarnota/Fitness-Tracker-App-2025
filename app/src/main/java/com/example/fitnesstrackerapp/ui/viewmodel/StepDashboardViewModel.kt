@@ -11,12 +11,13 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fitnesstrackerapp.data.model.StepData
 import com.example.fitnesstrackerapp.sensors.StepCounterService
-import com.example.fitnesstrackerapp.sensors.StepData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -89,7 +90,11 @@ class StepDashboardViewModel(application: Application) : AndroidViewModel(applic
         try {
             // Start the service
             val serviceIntent = Intent(context, StepCounterService::class.java)
-            context.startForegroundService(serviceIntent)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(serviceIntent)
+            } else {
+                context.startService(serviceIntent)
+            }
 
             // Bind to the service
             val bindIntent = Intent(context, StepCounterService::class.java)

@@ -19,7 +19,7 @@ import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.entity.MealType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.util.*
+import java.util.Date
 
 /**
  * Simple repository implementation for nutrition tracking functionality.

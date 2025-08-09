@@ -29,10 +29,11 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.fitnesstrackerapp.MainActivity
-import com.example.fitnesstrackerapp.R
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.Step
+import com.example.fitnesstrackerapp.data.model.StepData
 import com.example.fitnesstrackerapp.repository.StepRepository
+import com.example.fitnesstrackerapp.util.StepUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -312,13 +313,9 @@ class StepCounterService : Service(), SensorEventListener {
         // Update StateFlows for UI binding
         _currentSteps.value = steps
 
-        val distance = calculateDistance(steps)
-        val calories = calculateCalories(steps)
-        val progress = if (_dailyGoal.value > 0) {
-            (steps.toFloat() / _dailyGoal.value * 100).coerceIn(0f, 100f)
-        } else {
-            0f
-        }
+        val distance = StepUtils.calculateDistance(steps)
+        val calories = StepUtils.calculateCalories(steps)
+        val progress = StepUtils.calculateProgress(steps, _dailyGoal.value)
 
         _distanceMeters.value = distance
         _caloriesBurned.value = calories
@@ -348,7 +345,7 @@ class StepCounterService : Service(), SensorEventListener {
                         date = today,
                         caloriesBurned = _caloriesBurned.value,
                         distanceMeters = _distanceMeters.value,
-                        activeMinutes = estimateActiveMinutes(todaySteps),
+                        activeMinutes = StepUtils.estimateActiveMinutes(todaySteps),
                         createdAt = Date(),
                         updatedAt = Date(),
                     )
@@ -370,11 +367,6 @@ class StepCounterService : Service(), SensorEventListener {
             set(Calendar.MILLISECOND, 0)
         }
         return calendar.time
-    }
-
-    private fun estimateActiveMinutes(steps: Int): Int {
-        // Rough estimate: 100 steps = 1 minute of activity
-        return (steps / 100).coerceAtMost(1440) // Max 24 hours
     }
 
     private fun updateNotification(steps: Int, goal: Int) {
@@ -431,14 +423,6 @@ class StepCounterService : Service(), SensorEventListener {
 
     private fun getCurrentUserId(): Long {
         return sharedPreferences.getLong("current_user_id", 1L)
-    }
-
-    private fun calculateDistance(steps: Int): Float {
-        return steps * STEP_LENGTH_METERS
-    }
-
-    private fun calculateCalories(steps: Int): Float {
-        return steps * CALORIES_PER_STEP
     }
 
     private fun createNotification(steps: Int, goal: Int): Notification {
@@ -542,14 +526,3 @@ class StepCounterService : Service(), SensorEventListener {
     }
 }
 
-/**
- * Data class for UI Dashboard integration
- */
-data class StepData(
-    val steps: Int,
-    val goal: Int,
-    val progress: Float,
-    val distance: Float,
-    val calories: Float,
-    val isTracking: Boolean,
-)
