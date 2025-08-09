@@ -102,7 +102,7 @@
 
         <!--
             /**
-             * StepCounterService
+             * StepCounterService (Legacy)
              *
              * - Background service for continuous step counting.
              * - Runs as foreground service for persistent tracking.
@@ -110,6 +110,21 @@
         -->
         <service
             android:name=".sensors.StepCounterService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="health" />
+
+        <!--
+            /**
+             * BatteryOptimizedStepService
+             *
+             * - Enhanced battery-optimized step counting service.
+             * - Includes doze-mode awareness and sensor batching.
+             * - Integrates with workouts and goals for comprehensive tracking.
+             */
+        -->
+        <service
+            android:name=".sensors.BatteryOptimizedStepService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="health" />

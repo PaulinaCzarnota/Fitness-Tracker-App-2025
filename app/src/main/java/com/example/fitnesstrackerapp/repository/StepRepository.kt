@@ -1,9 +1,11 @@
 /**
- * StepRepository
+ * Enhanced StepRepository
  *
  * Purpose:
- * - Manages step data for the FitnessTrackerApp
- * - Provides a clean API for interacting with step data, abstracting the Room database
+ * - Manages step data for the FitnessTrackerApp with enhanced functionality
+ * - Provides integration with workouts and goals for comprehensive fitness tracking
+ * - Supports batch operations for battery optimization
+ * - Offers advanced analytics and statistics for step data
  */
 
 package com.example.fitnesstrackerapp.repository
@@ -94,4 +96,190 @@ class StepRepository(private val stepDao: StepDao) {
      * Saves a step entry and returns its ID.
      */
     suspend fun saveSteps(step: Step): Long = stepDao.insert(step)
+
+    // Enhanced methods for battery optimization and analytics
+
+    /**
+     * Batch inserts or updates step records for better database performance.
+     */
+    suspend fun batchUpsertSteps(steps: List<Step>): List<Long> {
+        return stepDao.insertAll(steps)
+    }
+
+    /**
+     * Gets step statistics for analytics and progress tracking.
+     */
+    suspend fun getStepStatistics(userId: Long): StepAnalytics? {
+        return try {
+            val totalSteps = stepDao.getTotalStepsForUser(userId)
+            val averageSteps = stepDao.getAverageStepsForUser(userId) ?: 0f
+            val maxSteps = stepDao.getMaxStepsForUser(userId) ?: 0
+            val goalAchievedDays = stepDao.getGoalAchievedDays(userId)
+            val goalAchievementRate = stepDao.getGoalAchievementRate(userId) ?: 0f
+            val totalCalories = stepDao.getTotalCaloriesBurnedFromSteps(userId) ?: 0f
+            val totalDistance = stepDao.getTotalDistanceFromSteps(userId) ?: 0f
+            val bestDay = stepDao.getBestStepDay(userId)
+
+            StepAnalytics(
+                totalSteps = totalSteps,
+                averageSteps = averageSteps,
+                maxSteps = maxSteps,
+                goalAchievedDays = goalAchievedDays,
+                goalAchievementRate = goalAchievementRate,
+                totalCaloriesBurned = totalCalories,
+                totalDistanceMeters = totalDistance,
+                bestDay = bestDay,
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Gets weekly step statistics.
+     */
+    suspend fun getWeeklyStatistics(userId: Long, weekStart: Date, weekEnd: Date): WeeklyStepStats? {
+        return try {
+            val totalSteps = stepDao.getWeeklyTotalSteps(userId, weekStart, weekEnd) ?: 0
+            val averageSteps = stepDao.getWeeklyAverageSteps(userId, weekStart, weekEnd) ?: 0f
+            val goalAchievedDays = stepDao.getWeeklyGoalAchievedDays(userId, weekStart, weekEnd)
+
+            WeeklyStepStats(
+                totalSteps = totalSteps,
+                averageSteps = averageSteps,
+                goalAchievedDays = goalAchievedDays,
+                weekStart = weekStart,
+                weekEnd = weekEnd,
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Gets monthly step statistics.
+     */
+    suspend fun getMonthlyStatistics(userId: Long, year: String, month: String): MonthlyStepStats? {
+        return try {
+            val totalSteps = stepDao.getMonthlyTotalSteps(userId, year, month) ?: 0
+            val averageSteps = stepDao.getMonthlyAverageSteps(userId, year, month) ?: 0f
+            val goalAchievedDays = stepDao.getMonthlyGoalAchievedDays(userId, year, month)
+
+            MonthlyStepStats(
+                totalSteps = totalSteps,
+                averageSteps = averageSteps,
+                goalAchievedDays = goalAchievedDays,
+                year = year,
+                month = month,
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Gets recent step records with a limit.
+     */
+    fun getRecentSteps(userId: Long, limit: Int = 30): Flow<List<Step>> {
+        return stepDao.getRecentSteps(userId, limit)
+    }
+
+    /**
+     * Gets all steps where the goal was achieved.
+     */
+    fun getGoalAchievedSteps(userId: Long): Flow<List<Step>> {
+        return stepDao.getStepsWithGoalAchieved(userId)
+    }
+
+    /**
+     * Updates step count for today.
+     */
+    suspend fun updateTodaySteps(
+        userId: Long,
+        stepCount: Int,
+        caloriesBurned: Float,
+        distanceMeters: Float,
+        goal: Int = 10000,
+    ): Long {
+        val today = getCurrentDateAtMidnight()
+        val currentTime = Date()
+
+        return stepDao.insertOrUpdateSteps(
+            userId = userId,
+            stepCount = stepCount,
+            goal = goal,
+            date = today,
+            caloriesBurned = caloriesBurned,
+            distanceMeters = distanceMeters,
+            activeMinutes = estimateActiveMinutes(stepCount),
+            createdAt = currentTime,
+        ).let { today.time } // Return date as ID placeholder
+    }
+
+    /**
+     * Cleans up old step records to maintain database performance.
+     */
+    suspend fun cleanupOldSteps(userId: Long, daysToKeep: Int = 365) {
+        val cutoffDate = Date(System.currentTimeMillis() - (daysToKeep * 24 * 60 * 60 * 1000L))
+        stepDao.deleteOldSteps(userId, cutoffDate)
+    }
+
+    /**
+     * Gets step record count for a user.
+     */
+    suspend fun getStepRecordCount(userId: Long): Int {
+        return stepDao.getStepRecordCount(userId)
+    }
+
+    // Helper methods
+
+    private fun getCurrentDateAtMidnight(): Date {
+        val calendar = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        return calendar.time
+    }
+
+    private fun estimateActiveMinutes(steps: Int): Int {
+        return (steps / 100).coerceAtMost(1440)
+    }
 }
+
+/**
+ * Data class for comprehensive step analytics.
+ */
+data class StepAnalytics(
+    val totalSteps: Int,
+    val averageSteps: Float,
+    val maxSteps: Int,
+    val goalAchievedDays: Int,
+    val goalAchievementRate: Float,
+    val totalCaloriesBurned: Float,
+    val totalDistanceMeters: Float,
+    val bestDay: Step?,
+)
+
+/**
+ * Data class for weekly step statistics.
+ */
+data class WeeklyStepStats(
+    val totalSteps: Int,
+    val averageSteps: Float,
+    val goalAchievedDays: Int,
+    val weekStart: Date,
+    val weekEnd: Date,
+)
+
+/**
+ * Data class for monthly step statistics.
+ */
+data class MonthlyStepStats(
+    val totalSteps: Int,
+    val averageSteps: Float,
+    val goalAchievedDays: Int,
+    val year: String,
+    val month: String,
+)

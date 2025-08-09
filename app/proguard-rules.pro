@@ -5,8 +5,26 @@
 # Keep source file and line numbers for easier debugging (stack traces)
 -keepattributes SourceFile,LineNumberTable
 
-# Optional: Remove original source file name from stack trace (privacy)
-#-renamesourcefileattribute SourceFile
+# Keep generic signatures for reflection and type safety
+-keepattributes Signature
+
+# Keep annotations for runtime reflection
+-keepattributes *Annotation*
+
+# Keep inner class information for proper obfuscation
+-keepattributes InnerClasses
+
+# Keep parameter names for debugging (optional in release)
+-keepattributes LocalVariableTable,LocalVariableTypeTable
+
+# Remove original source file name from stack trace for privacy
+-renamesourcefileattribute SourceFile
+
+# Enable aggressive optimization
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
 
 
 ########################################

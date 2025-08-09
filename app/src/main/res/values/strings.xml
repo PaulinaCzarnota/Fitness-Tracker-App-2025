@@ -10,7 +10,31 @@
 
 <resources>
     <!-- App name and general strings -->
-    <string name="app_name">Fitness Tracker</string>
+    <string name="app_name">FitnessTrackerApp</string>
+
+    <!-- Notification Strings -->
+    <string name="notification_channel_goals">Goal Reminders</string>
+    <string name="notification_channel_goals_description">Notifications for goal progress and reminders</string>
+    <string name="notification_channel_workouts">Workout Notifications</string>
+    <string name="notification_channel_workouts_description">Notifications for workout completion and reminders</string>
+    <string name="notification_channel_progress">Daily Progress</string>
+    <string name="notification_channel_progress_description">Daily progress summaries and updates</string>
+    <string name="notification_channel_reminders">General Reminders</string>
+    <string name="notification_channel_reminders_description">General fitness and health reminders</string>
+
+    <string name="notification_workout_complete_title">Workout Complete!</string>
+    <string name="notification_workout_complete_message">Great job! You completed %1$s in %2$d minutes and burned %3$d calories.</string>
+    <string name="notification_daily_progress_title">Daily Progress Summary</string>
+    <string name="notification_daily_progress_message">Today: %1$d steps, %2$d calories burned, %3$d workouts completed</string>
+
+    <string name="notification_goal_achieved_title">Goal Achieved! 🎉</string>
+    <string name="notification_goal_achieved_message">Congratulations! You achieved your %1$s goal!</string>
+    <string name="notification_almost_there_title">Almost There!</string>
+    <string name="notification_almost_there_message">You\'re 75%% complete with your %1$s goal. Keep it up!</string>
+    <string name="notification_halfway_title">Halfway There!</string>
+    <string name="notification_halfway_message">You\'re 50%% complete with your %1$s goal. You\'re doing great!</string>
+    <string name="notification_keep_going_title">Keep Going!</string>
+    <string name="notification_keep_going_message">You\'ve started working on your %1$s goal. Every step counts!</string>
     <string name="app_description">Track your fitness journey</string>
 
     <!-- WorkManager initialization -->
@@ -35,7 +59,7 @@
     <string name="create_account">Create Account</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="dont_have_account">Don\'t have an account?</string>
-    
+
     <!-- Enhanced Authentication strings -->
     <string name="full_name">Full Name</string>
     <string name="username">Username</string>
@@ -53,7 +77,7 @@
     <string name="logging_in">Logging in...</string>
     <string name="creating_account">Creating account...</string>
     <string name="signing_up">Signing up...</string>
-    
+
     <!-- Authentication validation strings -->
     <string name="email_required">Email is required</string>
     <string name="password_required">Password is required</string>
@@ -167,31 +191,9 @@
     <string name="functionality_reminders">workout reminders and goal tracking</string>
     <string name="functionality_step_counting">automatic step counting</string>
 
-    <!-- Notification strings -->
-    <string name="notification_channel_goals">Fitness Goals</string>
-    <string name="notification_channel_goals_description">Notifications about your fitness goals and reminders</string>
-    <string name="notification_channel_workouts">Workouts</string>
-    <string name="notification_channel_workouts_description">Workout completion and exercise notifications</string>
-    <string name="notification_channel_progress">Daily Progress</string>
-    <string name="notification_channel_progress_description">Daily progress summaries and statistics</string>
-    <string name="notification_channel_reminders">Reminders</string>
-    <string name="notification_channel_reminders_description">General fitness reminders and motivational messages</string>
+    <!-- Additional notification strings -->
     <string name="notification_channel_step_counter">Step Counter</string>
     <string name="notification_channel_step_counter_description">Shows live step count and daily progress</string>
-
-    <string name="notification_workout_complete_title">Workout Complete!</string>
-    <string name="notification_workout_complete_message">Great job! You completed %1$s in %2$d minutes and burned %3$d calories.</string>
-    <string name="notification_daily_progress_title">Daily Progress Summary</string>
-    <string name="notification_daily_progress_message">Today: %1$d steps, %2$d calories burned, %3$d workouts completed</string>
-
-    <string name="notification_goal_achieved_title">🎉 Goal Achieved!</string>
-    <string name="notification_goal_achieved_message">Congratulations! You\'ve completed your %1$s goal. Keep up the great work!</string>
-    <string name="notification_almost_there_title">🔥 Almost There!</string>
-    <string name="notification_almost_there_message">You\'re 75%% of the way to your %1$s goal. Just a little more!</string>
-    <string name="notification_halfway_title">💪 Halfway There!</string>
-    <string name="notification_halfway_message">Great progress! You\'re 50%% of the way to your %1$s goal.</string>
-    <string name="notification_keep_going_title">🚀 Keep Going!</string>
-    <string name="notification_keep_going_message">You\'ve made a good start on your %1$s goal. Don\'t give up!</string>
 
     <!-- General strings -->
     <string name="create_account_subtitle">Join us to start your fitness journey</string>
@@ -213,7 +215,7 @@
     <string name="finish">Finish</string>
     <string name="loading">Loading...</string>
     <string name="please_wait">Please wait...</string>
-    
+
     <!-- Accessibility strings -->
     <string name="password_visibility_toggle">Toggle password visibility</string>
     <string name="confirm_password_visibility_toggle">Toggle confirm password visibility</string>
@@ -232,7 +234,7 @@
     <string name="confirm_password_input_description">Re-enter your password to confirm</string>
     <string name="error_alert_description">Error message displayed</string>
     <string name="success_alert_description">Success message displayed</string>
-    
+
     <!-- Security and Biometric strings -->
     <string name="biometric_prompt_title">Biometric Authentication</string>
     <string name="biometric_prompt_subtitle">Use your fingerprint or face to sign in</string>
@@ -242,7 +244,7 @@
     <string name="biometric_authentication_failed">Biometric authentication failed</string>
     <string name="biometric_authentication_succeeded">Authentication successful</string>
     <string name="enable_biometric_login">Enable biometric login for faster access</string>
-    
+
     <!-- Firebase Auth error messages -->
     <string name="firebase_error_connection_failed">Connection failed. Please check your internet connection</string>
     <string name="firebase_error_timeout">Request timed out. Please try again</string>
@@ -255,7 +257,7 @@
     <string name="firebase_error_requires_recent_login">This operation requires recent authentication</string>
     <string name="firebase_error_credential_already_in_use">Credential is already associated with another user</string>
     <string name="firebase_error_invalid_credential">Invalid credential provided</string>
-    
+
     <!-- Legal and Terms strings -->
     <string name="terms_of_service">Terms of Service</string>
     <string name="privacy_policy">Privacy Policy</string>

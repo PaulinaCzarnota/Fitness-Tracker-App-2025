@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 /**
  * App Module Gradle Build Script (Kotlin DSL)
  *
@@ -26,6 +29,8 @@ plugins {
     alias(libs.plugins.versions)
     // Google services plugin for Firebase
     id("com.google.gms.google-services")
+    // JaCoCo code coverage plugin
+    jacoco
 }
 
 android {
@@ -37,6 +42,13 @@ android {
      */
     namespace = "com.example.fitnesstrackerapp"
     compileSdk = 34
+
+    // Load keystore properties
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    val keystoreProperties = Properties()
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
@@ -55,14 +67,27 @@ android {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
             // Enable code shrinking and obfuscation for release builds
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -117,7 +142,177 @@ android {
 
         // Configure test orchestrator for improved test isolation
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        
+        // Enable code coverage for unit tests
+        unitTests.all {
+            it.useJUnitPlatform()
+            it.systemProperty("robolectric.enabledSdks", "28,29,30,31,32,33,34")
+        }
     }
+}
+
+/**
+ * JaCoCo Code Coverage Configuration
+ *
+ * Provides comprehensive code coverage reporting for unit and integration tests.
+ * Generates both XML and HTML reports with >80% coverage target.
+ */
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    group = "reporting"
+    description = "Generate JaCoCo test coverage report"
+    
+    dependsOn("testDebugUnitTest")
+    
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+    
+    val debugTree = fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/classes") {
+        exclude(
+            "**/R.class",
+            "**/R$*.class",
+            "**/BuildConfig.*",
+            "**/Manifest*.*",
+            "**/*Test*.*",
+            "**/*\$MockitoMock\$*.*",
+            "**/databinding/**",
+            "**/android/databinding/**",
+            "**/androidx/databinding/**",
+            "**/di/module/**",
+            "**/*MapperImpl*.*",
+            "**/*\$ViewInjector*.*",
+            "**/*\$ViewBinder*.*",
+            "**/BuildConfig.*",
+            "**/*Component*.*",
+            "**/*BR*.*",
+            "**/Manifest*.*",
+            "**/*\$Lambda\$*.*",
+            "**/*Companion*.*",
+            "**/*Module*.*",
+            "**/*Dagger*.*",
+            "**/*MembersInjector*.*",
+            "**/*_MembersInjector.class",
+            "**/*_Factory*.*",
+            "**/*_Provide*Factory*.*",
+            "**/*_ViewBinding*.*",
+            "**/*Binding*.*",
+            "**/*\$Result.*",
+            "**/*\$Result\$*.*"
+        )
+    }
+    
+    val kotlinDebugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+        exclude(
+            "**/R.class",
+            "**/R$*.class",
+            "**/BuildConfig.*",
+            "**/Manifest*.*",
+            "**/*Test*.*",
+            "**/*\$MockitoMock\$*.*",
+            "**/databinding/**",
+            "**/android/databinding/**",
+            "**/androidx/databinding/**",
+            "**/di/module/**",
+            "**/*MapperImpl*.*",
+            "**/*\$ViewInjector*.*",
+            "**/*\$ViewBinder*.*",
+            "**/BuildConfig.*",
+            "**/*Component*.*",
+            "**/*BR*.*",
+            "**/Manifest*.*",
+            "**/*\$Lambda\$*.*",
+            "**/*Companion*.*",
+            "**/*Module*.*",
+            "**/*Dagger*.*",
+            "**/*MembersInjector*.*",
+            "**/*_MembersInjector.class",
+            "**/*_Factory*.*",
+            "**/*_Provide*Factory*.*",
+            "**/*_ViewBinding*.*",
+            "**/*Binding*.*",
+            "**/*\$Result.*",
+            "**/*\$Result\$*.*"
+        )
+    }
+    
+    classDirectories.setFrom(debugTree, kotlinDebugTree)
+    sourceDirectories.setFrom(
+        "${project.projectDir}/src/main/java",
+        "${project.projectDir}/src/main/kotlin"
+    )
+    executionData.setFrom(fileTree(layout.buildDirectory.get()).include("**/*.exec", "**/*.ec"))
+}
+
+tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
+    group = "verification"
+    description = "Verify JaCoCo test coverage meets minimum thresholds"
+    
+    dependsOn("jacocoTestReport")
+    
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.80".toBigDecimal()  // 80% coverage requirement
+            }
+        }
+        
+        rule {
+            enabled = true
+            element = "CLASS"
+            limit {
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.75".toBigDecimal()  // 75% branch coverage
+            }
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()  // 80% line coverage
+            }
+        }
+    }
+    
+    classDirectories.setFrom(
+        fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/classes") {
+            exclude(
+                "**/R.class",
+                "**/R$*.class",
+                "**/BuildConfig.*",
+                "**/Manifest*.*",
+                "**/*Test*.*",
+                "**/*\$MockitoMock\$*.*",
+                "**/databinding/**",
+                "**/android/databinding/**",
+                "**/androidx/databinding/**"
+            )
+        },
+        fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
+            exclude(
+                "**/R.class",
+                "**/R$*.class",
+                "**/BuildConfig.*",
+                "**/Manifest*.*",
+                "**/*Test*.*",
+                "**/*\$MockitoMock\$*.*",
+                "**/databinding/**",
+                "**/android/databinding/**",
+                "**/androidx/databinding/**"
+            )
+        }
+    )
+    
+    executionData.setFrom(fileTree(layout.buildDirectory.get()).include("**/*.exec", "**/*.ec"))
+}
+
+// Make check depend on jacoco coverage verification
+tasks.named("check") {
+    dependsOn("jacocoCoverageVerification")
 }
 
 dependencies {
@@ -163,6 +358,18 @@ dependencies {
     // Material Icons Extended for complete icon set
     implementation(libs.androidx.compose.material.icons.extended)
 
+    // Additional Material 3 and Animation dependencies for UI/UX overhaul
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
+    implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha03")
+    implementation("androidx.compose.animation:animation:1.5.8")
+    implementation("androidx.compose.animation:animation-graphics:1.5.8")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+
+    // Motion Layout and Advanced Animation Support
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+
     // Biometric Authentication
     implementation(libs.androidx.biometric)
 
@@ -183,10 +390,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation("com.google.firebase:firebase-common-ktx:20.4.2")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
-    
+
     // MPAndroidChart for advanced charting
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    
+
     // Note: Using only standard Android SDK libraries as per assignment requirements
 
     // JUnit 5 Testing Framework
