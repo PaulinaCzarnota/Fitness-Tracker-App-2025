@@ -6,7 +6,7 @@
 
 [versions]
 # Android Gradle Plugin
-agp = "8.3.0"
+agp = "8.4.0"
 # Kotlin language and Symbol Processing
 kotlin = "1.9.24"
 ksp = "1.9.24-1.0.20"

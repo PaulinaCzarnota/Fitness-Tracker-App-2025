@@ -103,11 +103,13 @@ android {
                     "/META-INF/LICENSE",
                     "/META-INF/LICENSE.txt",
                     "/META-INF/license.txt",
+                    "/META-INF/LICENSE.md",
                     "/META-INF/NOTICE",
                     "/META-INF/NOTICE.txt",
                     "/META-INF/notice.txt",
                     "/META-INF/ASL2.0",
                     "/META-INF/*.kotlin_module",
+                    "/META-INF/LICENSE-notice.md",
                 ),
             )
         }
@@ -404,6 +406,13 @@ dependencies {
     // WorkManager Testing
     testImplementation("androidx.work:work-testing:2.9.0")
     androidTestImplementation("androidx.work:work-testing:2.9.0")
+
+    // Test dependencies for Robolectric, MockK, Google Truth
+    testImplementation("org.robolectric:robolectric:4.13")
+    testImplementation("io.mockk:mockk:1.13.14")
+    testImplementation("com.google.truth:truth:1.4.4")
+    androidTestImplementation("io.mockk:mockk-android:1.13.14")
+    androidTestImplementation("com.google.truth:truth:1.4.4")
 
     // Standard Android testing libraries only
     androidTestImplementation(libs.androidx.test.rules)
