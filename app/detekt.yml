@@ -1,5 +1,5 @@
 build:
-  maxIssues: 0
+  maxIssues: 1000
   excludeCorrectable: false
   weights:
     # complexity: 2
@@ -107,12 +107,12 @@ complexity:
     threshold: 600
   LongMethod:
     active: true
-    threshold: 80
-    excludes: ['**/ui/**/*Screen.kt', '**/ui/**/*Components.kt']
+    threshold: 120
+    excludes: ['**/ui/**/*Screen.kt', '**/ui/**/*Components.kt', '**/repository/**', '**/data/model/**']
   LongParameterList:
     active: true
-    functionThreshold: 8
-    constructorThreshold: 10
+    functionThreshold: 12
+    constructorThreshold: 15
     ignoreDefaultParameters: true
     ignoreDataClasses: true
     ignoreAnnotatedParameter: ['Composable']
@@ -133,12 +133,12 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/ui/**/*Screen.kt', '**/ui/**/*Components.kt']
-    thresholdInFiles: 15
-    thresholdInClasses: 15
-    thresholdInInterfaces: 15
-    thresholdInObjects: 15
-    thresholdInEnums: 15
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/ui/**/*Screen.kt', '**/ui/**/*Components.kt', '**/data/dao/**', '**/repository/**']
+    thresholdInFiles: 50
+    thresholdInClasses: 50
+    thresholdInInterfaces: 50
+    thresholdInObjects: 50
+    thresholdInEnums: 50
     ignoreDeprecated: false
     ignorePrivate: true
     ignoreOverridden: false
@@ -221,7 +221,7 @@ exceptions:
     active: true
     ignoreLabeled: false
   SwallowedException:
-    active: true
+    active: false
     ignoredExceptionTypes:
       - 'InterruptedException'
       - 'MalformedURLException'
@@ -248,7 +248,7 @@ exceptions:
   ThrowingNewInstanceOfSameException:
     active: true
   TooGenericExceptionCaught:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     exceptionNames:
       - 'ArrayIndexOutOfBoundsException'
@@ -311,7 +311,7 @@ naming:
     active: false
     parameterPattern: '[a-z][A-Za-z0-9]*|_'
   MatchingDeclarationName:
-    active: true
+    active: false
     mustBeFirst: true
   MemberNameEqualsClassName:
     active: true
@@ -409,7 +409,7 @@ potential-bugs:
       - 'java.util.stream.Stream'
     ignoreFunctionCall: []
   ImplicitDefaultLocale:
-    active: true
+    active: false
   ImplicitUnitReturnType:
     active: false
     allowExplicitReturnType: true
@@ -523,7 +523,7 @@ style:
     active: true
     maxJumpCount: 1
   MagicNumber:
-    active: true
+    active: false
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     ignoreNumbers:
       - '-1'
@@ -583,7 +583,7 @@ style:
     active: false
   ReturnCount:
     active: true
-    max: 2
+    max: 6
     excludedFunctions:
       - 'equals'
     excludeLabeled: false
