@@ -16,6 +16,7 @@ package com.example.fitnesstrackerapp.ui.accessibility
 import android.content.Context
 import android.os.Build
 import android.view.accessibility.AccessibilityManager
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -30,8 +31,8 @@ import com.example.fitnesstrackerapp.ui.accessibility.FitnessAccessibilityText.n
 import com.example.fitnesstrackerapp.ui.accessibility.FitnessAccessibilityText.stepCountDescription
 import com.example.fitnesstrackerapp.ui.accessibility.FitnessAccessibilityText.workoutStatusDescription
 import com.example.fitnesstrackerapp.ui.accessibility.SpeakOutUtils.FitnessUpdateType
-import com.example.fitnesstrackerapp.ui.accessibility.SpeakOutUtils.announceForAccessibility
 import com.example.fitnesstrackerapp.ui.accessibility.SpeakOutUtils.announceFitnessUpdate
+import com.example.fitnesstrackerapp.ui.accessibility.SpeakOutUtils.announceForAccessibility
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.*
@@ -39,8 +40,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
-import androidx.compose.ui.graphics.Color
-import kotlin.math.roundToInt
 
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [28, 29, 30, 31, 33], manifest = Config.NONE)

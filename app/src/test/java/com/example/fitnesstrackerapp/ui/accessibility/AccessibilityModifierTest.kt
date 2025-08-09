@@ -11,17 +11,14 @@
 package com.example.fitnesstrackerapp.ui.accessibility
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.ui.accessibility.AccessibilityComposables.LiveRegionPriority
-import com.example.fitnesstrackerapp.ui.accessibility.AccessibilityConstants.MIN_TOUCH_TARGET_SIZE
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
