@@ -348,12 +348,13 @@ private fun getUnitForGoalType(goalType: GoalType): String {
         GoalType.DURATION_EXERCISE -> "minutes"
         GoalType.STRENGTH_TRAINING -> "reps"
         GoalType.OTHER -> "units"
-        GoalType.MUSCLE_BUILDING -> TODO()
-        GoalType.ENDURANCE -> TODO()
-        GoalType.FLEXIBILITY -> TODO()
-        GoalType.BODY_FAT -> TODO()
-        GoalType.HYDRATION -> TODO()
-        GoalType.SLEEP -> TODO()
+        GoalType.MUSCLE_BUILDING -> "kg"
+        GoalType.ENDURANCE -> "minutes"
+        GoalType.FLEXIBILITY -> "score"
+        GoalType.BODY_FAT -> "%"
+        GoalType.HYDRATION -> "liters"
+        GoalType.SLEEP -> "hours"
+        GoalType.FITNESS -> "score"
     }
 }
 

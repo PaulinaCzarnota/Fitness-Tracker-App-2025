@@ -164,7 +164,7 @@ fun LoginScreen(
                     focusManager.clearFocus()
                     val validation = authViewModel.validateLoginForm(email, password)
                     if (validation.isValid) {
-                        authViewModel.login(email, password)
+                        authViewModel.login(email, password, rememberMe)
                     }
                 },
             ),
@@ -206,7 +206,7 @@ fun LoginScreen(
             onClick = {
                 val validation = authViewModel.validateLoginForm(email, password)
                 if (validation.isValid) {
-                    authViewModel.login(email, password)
+                    authViewModel.login(email, password, rememberMe)
                 } else {
                     // Handle validation error - this should be shown in UI
                 }

@@ -122,7 +122,7 @@ fun FoodEntryItem(entry: FoodEntry) {
         Column(
             modifier = Modifier.padding(16.dp),
         ) {
-            Text(text = entry.name, style = MaterialTheme.typography.titleMedium)
+            Text(text = entry.foodName, style = MaterialTheme.typography.titleMedium)
             Text(text = "Meal: ${entry.mealType}", style = MaterialTheme.typography.bodySmall)
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = "${entry.calories} kcal", style = MaterialTheme.typography.bodyLarge)

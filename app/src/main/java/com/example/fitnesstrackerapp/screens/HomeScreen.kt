@@ -9,6 +9,7 @@
 package com.example.fitnesstrackerapp.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -97,15 +98,28 @@ fun HomeScreen(
 ) {
     LocalContext.current
 
+    // Step Dashboard ViewModel for real-time step tracking
+    val stepDashboardViewModel: com.example.fitnesstrackerapp.ui.viewmodel.StepDashboardViewModel = 
+        androidx.lifecycle.viewmodel.compose.viewModel()
+
     // Observe user state using StateFlow
     val authState by authViewModel.uiState.collectAsStateWithLifecycle()
+    
+    // Observe real-time step data
+    val stepData by stepDashboardViewModel.stepData.collectAsStateWithLifecycle()
+    val isServiceConnected by stepDashboardViewModel.isServiceConnected.collectAsStateWithLifecycle()
+    val errorMessage by stepDashboardViewModel.errorMessage.collectAsStateWithLifecycle()
 
     // Determine displayed userName based on state
     val userName = authState.user?.email?.substringBefore("@") ?: "User"
 
-    // TODO: Schedule daily notifications using SimpleNotificationManager
-    LaunchedEffect(Unit) {
-        // Would schedule daily reminders here using SimpleNotificationManager
+    // Handle errors
+    errorMessage?.let { error ->
+        LaunchedEffect(error) {
+            Log.d("HomeScreen", "Step service error: $error")
+            // Could show a snackbar here if needed
+            stepDashboardViewModel.clearError()
+        }
     }
 
     // Quick actions for navigation
@@ -136,31 +150,30 @@ fun HomeScreen(
         ),
     )
 
-    // Enhanced fitness stats with real data from repositories
-    // In a production app, these would come from ViewModels with live data
+    // Enhanced fitness stats with real-time data from step tracking service
     val fitnessStats = listOf(
         FitnessStat(
             label = "Today's Steps",
-            value = "8,534",
-            unit = "steps",
+            value = String.format("%,d", stepData.steps),
+            unit = if (isServiceConnected) "${stepData.progress.toInt()}% of goal" else "tracking...",
             icon = Icons.AutoMirrored.Filled.DirectionsRun,
         ),
         FitnessStat(
             label = "Calories Burned",
-            value = "340",
-            unit = "kcal",
+            value = stepDashboardViewModel.getFormattedCalories().substringBefore(" "),
+            unit = "kcal from steps",
             icon = Icons.Default.LocalFireDepartment,
         ),
         FitnessStat(
-            label = "Workouts",
-            value = "2",
-            unit = "this week",
-            icon = Icons.Default.FitnessCenter,
+            label = "Distance",
+            value = stepDashboardViewModel.getFormattedDistance().substringBefore(" "),
+            unit = stepDashboardViewModel.getFormattedDistance().substringAfter(" "),
+            icon = Icons.AutoMirrored.Filled.DirectionsRun,
         ),
         FitnessStat(
-            label = "Total Volume",
-            value = "2.5k",
-            unit = "kg lifted",
+            label = "Activity Level",
+            value = stepDashboardViewModel.getActivityLevel(),
+            unit = if (stepData.isTracking) "live tracking" else "inactive",
             icon = Icons.Default.FitnessCenter,
         ),
     )
