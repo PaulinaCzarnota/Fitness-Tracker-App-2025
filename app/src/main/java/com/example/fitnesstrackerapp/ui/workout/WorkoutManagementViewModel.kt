@@ -16,9 +16,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.fitnesstrackerapp.data.entity.Workout
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
 import com.example.fitnesstrackerapp.util.MetTableCalculator
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Date
 
 /**
  * UI state for workout management operations.

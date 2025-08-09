@@ -12,13 +12,51 @@
 
 package com.example.fitnesstrackerapp.ui.workout
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Pool
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.SelfImprovement
+import androidx.compose.material.icons.filled.SportsBasketball
+import androidx.compose.material.icons.filled.SportsGolf
+import androidx.compose.material.icons.filled.SportsSoccer
+import androidx.compose.material.icons.filled.SportsTennis
+import androidx.compose.material.icons.filled.Straighten
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +71,7 @@ import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import com.example.fitnesstrackerapp.util.MetTableCalculator
 import com.example.fitnesstrackerapp.util.WorkoutIntensity
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -428,7 +466,7 @@ private fun WorkoutStatItem(
 
 internal fun getWorkoutIcon(workoutType: WorkoutType): androidx.compose.ui.graphics.vector.ImageVector {
     return when (workoutType) {
-        WorkoutType.RUNNING -> Icons.Default.DirectionsRun
+        WorkoutType.RUNNING -> Icons.Default.FitnessCenter
         WorkoutType.CYCLING -> Icons.Default.DirectionsBike
         WorkoutType.WEIGHTLIFTING -> Icons.Default.FitnessCenter
         WorkoutType.SWIMMING -> Icons.Default.Pool
@@ -437,7 +475,7 @@ internal fun getWorkoutIcon(workoutType: WorkoutType): androidx.compose.ui.graph
         WorkoutType.SOCCER -> Icons.Default.SportsSoccer
         WorkoutType.TENNIS -> Icons.Default.SportsTennis
         WorkoutType.GOLF -> Icons.Default.SportsGolf
-        else -> Icons.Default.DirectionsRun
+        else -> Icons.Default.FitnessCenter
     }
 }
 

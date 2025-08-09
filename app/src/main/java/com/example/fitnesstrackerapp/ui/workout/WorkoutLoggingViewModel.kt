@@ -20,12 +20,22 @@ package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.EquipmentType
+import com.example.fitnesstrackerapp.data.entity.Exercise
+import com.example.fitnesstrackerapp.data.entity.MuscleGroup
+import com.example.fitnesstrackerapp.data.entity.SetType
+import com.example.fitnesstrackerapp.data.entity.Workout
+import com.example.fitnesstrackerapp.data.entity.WorkoutSet
+import com.example.fitnesstrackerapp.data.entity.WorkoutSetSummary
+import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import com.example.fitnesstrackerapp.repository.ExerciseRepository
 import com.example.fitnesstrackerapp.repository.ExerciseStats
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
 import com.example.fitnesstrackerapp.repository.WorkoutSetRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Date
 

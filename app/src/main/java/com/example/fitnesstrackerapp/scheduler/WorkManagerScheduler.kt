@@ -26,6 +26,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.fitnesstrackerapp.sensors.StepServiceManager
+import com.example.fitnesstrackerapp.worker.DataCleanupWorker
 import com.example.fitnesstrackerapp.worker.GoalReminderWorker
 import com.example.fitnesstrackerapp.worker.WorkoutReminderWorker
 import java.util.concurrent.TimeUnit
@@ -44,6 +45,7 @@ class WorkManagerScheduler(private val context: Context) {
         const val GOAL_REMINDER_WORK = "goal_reminder_work"
         const val WORKOUT_REMINDER_WORK = "workout_reminder_work"
         const val STEP_SERVICE_WORK = "step_service_work"
+        const val DATA_CLEANUP_WORK = "data_cleanup_work"
 
         // Default notification times
         const val DEFAULT_MORNING_REMINDER_HOUR = 9
@@ -77,6 +79,9 @@ class WorkManagerScheduler(private val context: Context) {
 
         // Schedule workout reminders
         scheduleWorkoutReminderNotifications(userId)
+
+        // Schedule data cleanup
+        scheduleDataCleanup()
 
         Log.d(TAG, "All background work initialized successfully")
     }
@@ -334,5 +339,52 @@ class WorkManagerScheduler(private val context: Context) {
 
         workManager.enqueue(immediateRequest)
         Log.d(TAG, "Goal reminder triggered immediately")
+    }
+
+    /**
+     * Schedules periodic data cleanup to remove old logs and optimize performance.
+     */
+    fun scheduleDataCleanup(retentionDays: Int = 90) {
+        val inputData = workDataOf(
+            DataCleanupWorker.KEY_RETENTION_DAYS to retentionDays,
+        )
+
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        val cleanupRequest = PeriodicWorkRequestBuilder<DataCleanupWorker>(
+            7, // Run weekly
+            TimeUnit.DAYS,
+        )
+            .setConstraints(constraints)
+            .setInputData(inputData)
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
+            .build()
+
+        workManager.enqueueUniquePeriodicWork(
+            DATA_CLEANUP_WORK,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            cleanupRequest,
+        )
+
+        Log.d(TAG, "Data cleanup scheduled to run weekly (retention: $retentionDays days)")
+    }
+
+    /**
+     * Triggers immediate data cleanup (for manual cleanup from settings).
+     */
+    fun triggerDataCleanupNow(retentionDays: Int = 90) {
+        val inputData = workDataOf(
+            DataCleanupWorker.KEY_RETENTION_DAYS to retentionDays,
+        )
+
+        val immediateCleanupRequest = OneTimeWorkRequestBuilder<DataCleanupWorker>()
+            .setInputData(inputData)
+            .build()
+
+        workManager.enqueue(immediateCleanupRequest)
+        Log.d(TAG, "Immediate data cleanup triggered (retention: $retentionDays days)")
     }
 }
