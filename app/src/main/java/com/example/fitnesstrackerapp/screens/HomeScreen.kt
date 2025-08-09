@@ -12,13 +12,18 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +43,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -95,6 +102,7 @@ data class FitnessStat(
 fun HomeScreen(
     navController: androidx.navigation.NavController,
     authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
+    windowSize: WindowSizeClass? = null,
 ) {
     LocalContext.current
 
@@ -201,19 +209,79 @@ fun HomeScreen(
             )
         },
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            // Fitness Stats Section
-            FitnessStatsSection(stats = fitnessStats)
-
-            // Quick Actions Section
-            QuickActionsSection(actions = quickActions)
+        when (windowSize?.widthSizeClass) {
+            WindowWidthSizeClass.Compact -> {
+                // Compact layout: Single column with scrolling
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    FitnessStatsSection(stats = fitnessStats, windowSize = windowSize)
+                    QuickActionsSection(actions = quickActions, windowSize = windowSize)
+                }
+            }
+            WindowWidthSizeClass.Medium -> {
+                // Medium layout: Grid layout for better space utilization
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    item {
+                        FitnessStatsSection(stats = fitnessStats, windowSize = windowSize)
+                    }
+                    item {
+                        QuickActionsSection(actions = quickActions, windowSize = windowSize)
+                    }
+                }
+            }
+            WindowWidthSizeClass.Expanded -> {
+                // Expanded layout: Side-by-side layout for large screens
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(horizontal = 32.dp, vertical = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        FitnessStatsSection(stats = fitnessStats, windowSize = windowSize)
+                    }
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        QuickActionsSection(actions = quickActions, windowSize = windowSize)
+                    }
+                }
+            }
+            else -> {
+                // Default layout: Single column
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    FitnessStatsSection(stats = fitnessStats, windowSize = windowSize)
+                    QuickActionsSection(actions = quickActions, windowSize = windowSize)
+                }
+            }
         }
     }
 }
@@ -236,6 +304,7 @@ private fun getGreeting(): String {
 @Composable
 private fun FitnessStatsSection(
     stats: List<FitnessStat>,
+    windowSize: WindowSizeClass? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -245,11 +314,40 @@ private fun FitnessStatsSection(
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(stats) { stat ->
-                StatCard(stat = stat)
+        when (windowSize?.widthSizeClass) {
+            WindowWidthSizeClass.Expanded -> {
+                // Grid layout for expanded screens
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(stats) { stat ->
+                        StatCard(stat = stat, windowSize = windowSize)
+                    }
+                }
+            }
+            WindowWidthSizeClass.Medium -> {
+                // 2-column grid for medium screens
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(stats) { stat ->
+                        StatCard(stat = stat, windowSize = windowSize)
+                    }
+                }
+            }
+            else -> {
+                // Horizontal scroll for compact screens
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(stats) { stat ->
+                        StatCard(stat = stat, windowSize = windowSize)
+                    }
+                }
             }
         }
     }
@@ -261,6 +359,7 @@ private fun FitnessStatsSection(
 @Composable
 private fun QuickActionsSection(
     actions: List<QuickAction>,
+    windowSize: WindowSizeClass? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -270,11 +369,40 @@ private fun QuickActionsSection(
             modifier = Modifier.padding(bottom = 8.dp),
         )
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(actions) { action ->
-                ActionCard(action = action)
+        when (windowSize?.widthSizeClass) {
+            WindowWidthSizeClass.Expanded -> {
+                // Grid layout for expanded screens
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(actions) { action ->
+                        ActionCard(action = action, windowSize = windowSize)
+                    }
+                }
+            }
+            WindowWidthSizeClass.Medium -> {
+                // 2-column grid for medium screens
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(actions) { action ->
+                        ActionCard(action = action, windowSize = windowSize)
+                    }
+                }
+            }
+            else -> {
+                // Horizontal scroll for compact screens
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(actions) { action ->
+                        ActionCard(action = action, windowSize = windowSize)
+                    }
+                }
             }
         }
     }
@@ -286,26 +414,53 @@ private fun QuickActionsSection(
 @Composable
 private fun StatCard(
     stat: FitnessStat,
+    windowSize: WindowSizeClass? = null,
     modifier: Modifier = Modifier,
 ) {
+    val cardWidth = when (windowSize?.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 160.dp
+        WindowWidthSizeClass.Medium -> 140.dp
+        else -> 120.dp
+    }
+    
+    val iconSize = when (windowSize?.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 32.dp
+        WindowWidthSizeClass.Medium -> 28.dp
+        else -> 24.dp
+    }
+    
+    val padding = when (windowSize?.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 16.dp
+        WindowWidthSizeClass.Medium -> 14.dp
+        else -> 12.dp
+    }
+
     Card(
-        modifier = modifier.width(120.dp),
+        modifier = if (windowSize?.widthSizeClass == WindowWidthSizeClass.Expanded || 
+                     windowSize?.widthSizeClass == WindowWidthSizeClass.Medium) {
+            modifier.fillMaxSize()
+        } else {
+            modifier.width(cardWidth)
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = stat.icon,
                 contentDescription = stat.label,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(iconSize),
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stat.value,
-                style = MaterialTheme.typography.titleMedium,
+                style = when (windowSize?.widthSizeClass) {
+                    WindowWidthSizeClass.Expanded -> MaterialTheme.typography.titleLarge
+                    else -> MaterialTheme.typography.titleMedium
+                },
                 fontWeight = FontWeight.Bold,
             )
             Text(
@@ -328,27 +483,54 @@ private fun StatCard(
 @Composable
 private fun ActionCard(
     action: QuickAction,
+    windowSize: WindowSizeClass? = null,
     modifier: Modifier = Modifier,
 ) {
+    val cardWidth = when (windowSize?.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 180.dp
+        WindowWidthSizeClass.Medium -> 160.dp
+        else -> 140.dp
+    }
+    
+    val iconSize = when (windowSize?.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 40.dp
+        WindowWidthSizeClass.Medium -> 36.dp
+        else -> 32.dp
+    }
+    
+    val padding = when (windowSize?.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 20.dp
+        WindowWidthSizeClass.Medium -> 18.dp
+        else -> 16.dp
+    }
+
     Card(
         onClick = action.onClick,
-        modifier = modifier.width(140.dp),
+        modifier = if (windowSize?.widthSizeClass == WindowWidthSizeClass.Expanded || 
+                     windowSize?.widthSizeClass == WindowWidthSizeClass.Medium) {
+            modifier.fillMaxSize()
+        } else {
+            modifier.width(cardWidth)
+        },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(padding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = action.icon,
                 contentDescription = action.title,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(iconSize),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = action.title,
-                style = MaterialTheme.typography.titleSmall,
+                style = when (windowSize?.widthSizeClass) {
+                    WindowWidthSizeClass.Expanded -> MaterialTheme.typography.titleMedium
+                    else -> MaterialTheme.typography.titleSmall
+                },
                 fontWeight = FontWeight.Medium,
             )
             Text(

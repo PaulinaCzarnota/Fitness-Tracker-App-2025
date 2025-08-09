@@ -43,7 +43,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.example.fitnesstrackerapp.auth.FirebaseAuthManager
+// Note: Firebase removed as per assignment requirements
 import com.example.fitnesstrackerapp.auth.ValidationUtils
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -51,7 +51,6 @@ import com.example.fitnesstrackerapp.auth.ValidationUtils
 fun EnhancedSignUpScreen(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
-    firebaseAuthManager: FirebaseAuthManager,
     onSignUpSuccess: () -> Unit,
     onNavigateToLogin: () -> Unit = {},
 ) {

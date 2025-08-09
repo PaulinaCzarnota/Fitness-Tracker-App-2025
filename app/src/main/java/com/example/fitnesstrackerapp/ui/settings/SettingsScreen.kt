@@ -44,6 +44,9 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     settingsManager: SettingsManager,
     modifier: Modifier = Modifier,
+    onExportAnalytics: () -> Unit = {},
+    onExportDebugLogs: () -> Unit = {},
+    onCleanupLogs: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val measurementUnit by settingsManager.measurementUnit.collectAsState(initial = MeasurementUnit.METRIC)
@@ -144,6 +147,35 @@ fun SettingsScreen(
                         ) {
                             Text("Reminder Time: $notificationTime")
                         }
+                    }
+                }
+            }
+        }
+
+        item {
+            SettingsSection(title = "Developer Options") {
+                Column {
+                    OutlinedButton(
+                        onClick = onExportAnalytics,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("Export Analytics")
+                    }
+                    OutlinedButton(
+                        onClick = onExportDebugLogs,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    ) {
+                        Text("Export Debug Logs")
+                    }
+                    OutlinedButton(
+                        onClick = onCleanupLogs,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    ) {
+                        Text("Clean Up Notification Logs")
                     }
                 }
             }
