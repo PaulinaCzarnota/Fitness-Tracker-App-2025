@@ -5,6 +5,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.core.content.edit
 
 /**
  * Biometric Authentication Manager
@@ -67,7 +68,7 @@ class BiometricAuthManager(private val context: Context) {
      */
     fun setBiometricEnabled(enabled: Boolean) {
         val prefs = context.getSharedPreferences("biometric_prefs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("biometric_enabled", enabled).apply()
+        prefs.edit { putBoolean("biometric_enabled", enabled) }
     }
 
     /**
