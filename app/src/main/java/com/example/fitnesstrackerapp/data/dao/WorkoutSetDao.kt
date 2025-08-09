@@ -383,5 +383,5 @@ interface WorkoutSetDao {
         )
     """,
     )
-    suspend fun isPersonalRecord(exerciseId: Long, weight: Float, repetitions: Int): Boolean
+    suspend fun isPersonalRecord(exerciseId: Long, weight: Double, repetitions: Int): Boolean
 }

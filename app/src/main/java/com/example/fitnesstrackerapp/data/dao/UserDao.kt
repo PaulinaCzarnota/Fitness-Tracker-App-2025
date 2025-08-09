@@ -33,7 +33,7 @@ interface UserDao {
      *
      * @param user User entity to insert
      * @return The ID of the inserted user
-     * @throws SQLException if email or username already exists
+     * @throws java.sql.SQLException if email or username already exists
      */
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUser(user: User): Long
