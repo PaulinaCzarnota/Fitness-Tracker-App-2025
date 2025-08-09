@@ -376,7 +376,7 @@ abstract class AppDatabase : RoomDatabase() {
          * @param context Application context
          * @return true if database is healthy, false if corrupted
          */
-        suspend fun validateDatabaseIntegrity(context: Context): Boolean {
+        fun validateDatabaseIntegrity(context: Context): Boolean {
             return try {
                 val db = getInstance(context)
                 // Simple check - try to access the database
