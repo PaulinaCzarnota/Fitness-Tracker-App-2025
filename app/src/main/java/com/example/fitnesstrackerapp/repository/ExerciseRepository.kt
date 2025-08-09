@@ -16,7 +16,11 @@
 package com.example.fitnesstrackerapp.repository
 
 import com.example.fitnesstrackerapp.data.dao.ExerciseDao
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.DifficultyLevel
+import com.example.fitnesstrackerapp.data.entity.EquipmentType
+import com.example.fitnesstrackerapp.data.entity.Exercise
+import com.example.fitnesstrackerapp.data.entity.ExerciseType
+import com.example.fitnesstrackerapp.data.entity.MuscleGroup
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
