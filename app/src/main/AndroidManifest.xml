@@ -17,23 +17,59 @@
         /**
          * Permissions
          *
-         * - ACTIVITY_RECOGNITION: For step counting and activity sensors.
-         * - BODY_SENSORS: For accessing health-related sensors.
-         * - INTERNET: For Firebase authentication and remote APIs.
-         * - POST_NOTIFICATIONS: For sending notifications (Android 13+).
-         * - RECEIVE_BOOT_COMPLETED: For re-registering alarms after device reboot.
+         * Core Fitness & Health Permissions:
+         * - ACTIVITY_RECOGNITION: For step counting and activity detection (Android 10+)
+         * - BODY_SENSORS: For accessing health-related sensors and fitness data
+         * - HIGH_SAMPLING_RATE_SENSORS: For high-frequency sensor access (Android 12+)
+         *
+         * Notification & Service Permissions:
+         * - POST_NOTIFICATIONS: For sending workout and goal notifications (Android 13+)
+         * - FOREGROUND_SERVICE: For running step counter as foreground service
+         * - FOREGROUND_SERVICE_HEALTH: Specific type for health-related foreground services
+         * - RECEIVE_BOOT_COMPLETED: For re-registering alarms after device reboot
+         * - SCHEDULE_EXACT_ALARM: For precise notification and reminder scheduling
+         *
+         * Network Permissions:
+         * - INTERNET: For Firebase authentication and remote APIs
+         * - ACCESS_NETWORK_STATE: For checking connectivity status
+         *
+         * Optional Permissions:
+         * - CAMERA: For barcode scanning in food logging (optional feature)
          */
     -->
+    <!-- Hardware features -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.stepcounter"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.sensor.stepdetector"
+        android:required="false" />
+
+    <!-- Core fitness and health permissions -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"
+        tools:ignore="HighSamplingRate" />
+
+    <!-- Notification and service permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- Network permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Optional permissions -->
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".FitnessApplication"
@@ -106,6 +142,20 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!--
+            /**
+             * NotificationActionReceiver
+             *
+             * - Handles notification action button clicks
+             * - Processes workout, hydration, and goal reminder actions
+             * - Logs user interactions to database
+             */
+        -->
+        <receiver
+            android:name=".notifications.NotificationActionReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <!--
             /**
