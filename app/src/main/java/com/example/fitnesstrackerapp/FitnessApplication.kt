@@ -22,7 +22,6 @@ import com.example.fitnesstrackerapp.scheduler.WorkManagerScheduler
  * Main Application class that initializes all app-wide components.
  */
 class FitnessApplication : Application() {
-
     companion object {
         private const val TAG = "FitnessApplication"
     }

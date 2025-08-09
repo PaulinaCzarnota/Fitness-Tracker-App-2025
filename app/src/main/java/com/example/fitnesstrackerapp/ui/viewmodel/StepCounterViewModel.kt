@@ -50,7 +50,6 @@ class StepCounterViewModel(
     private val authRepository: AuthRepository,
     private val userId: Long,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(StepCounterUiState())
     val uiState: StateFlow<StepCounterUiState> = _uiState.asStateFlow()
 

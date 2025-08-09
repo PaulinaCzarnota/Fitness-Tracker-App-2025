@@ -27,7 +27,6 @@ import java.util.Date
  */
 @Dao
 interface UserDao {
-
     /**
      * Inserts a new user into the database.
      *

@@ -9,8 +9,15 @@ import androidx.room.Update
 import com.example.fitnesstrackerapp.data.entity.NotificationDeliveryChannel
 import com.example.fitnesstrackerapp.data.entity.NotificationLog
 import com.example.fitnesstrackerapp.data.entity.NotificationLogEvent
+import com.example.fitnesstrackerapp.data.model.BatchStatistics
+import com.example.fitnesstrackerapp.data.model.ErrorFrequency
+import com.example.fitnesstrackerapp.data.model.ExperimentPerformance
+import com.example.fitnesstrackerapp.data.model.HourlyInteractionPattern
 import com.example.fitnesstrackerapp.data.model.NotificationAnalytics
+import com.example.fitnesstrackerapp.data.model.NotificationDeliveryStats
 import com.example.fitnesstrackerapp.data.model.NotificationPerformanceMetrics
+import com.example.fitnesstrackerapp.data.model.RetryStatistics
+import com.example.fitnesstrackerapp.data.model.SystemHealthMetrics
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -33,7 +40,6 @@ import java.util.Date
  */
 @Dao
 interface NotificationLogDao {
-
     // MARK: - Basic CRUD Operations
 
     /**
@@ -232,10 +238,10 @@ interface NotificationLogDao {
      */
     @Query(
         """
-        SELECT delivery_channel,
-        COUNT(*) as total_attempts,
-        SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) as successful_attempts,
-        CAST(SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) * 100 as success_rate
+        SELECT delivery_channel AS delivery_channel,
+        COUNT(*) AS total_attempts,
+        SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS successful_attempts,
+        CAST(SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) * 100 AS success_rate
         FROM notification_logs
         WHERE user_id = :userId
         AND event_timestamp BETWEEN :startDate AND :endDate
@@ -312,13 +318,13 @@ interface NotificationLogDao {
     @Query(
         """
         SELECT
-        COUNT(*) as total_events,
-        AVG(processing_duration_ms) as avg_processing_duration,
-        MIN(processing_duration_ms) as min_processing_duration,
-        MAX(processing_duration_ms) as max_processing_duration,
-        AVG(delivery_duration_ms) as avg_delivery_duration,
-        SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) as successful_events,
-        SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) as failed_events
+        COUNT(*) AS total_events,
+        AVG(processing_duration_ms) AS avg_processing_duration,
+        MIN(processing_duration_ms) AS min_processing_duration,
+        MAX(processing_duration_ms) AS max_processing_duration,
+        AVG(delivery_duration_ms) AS avg_delivery_duration,
+        SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS successful_events,
+        SUM(CASE WHEN is_success = 0 THEN 1 ELSE 0 END) AS failed_events
         FROM notification_logs
         WHERE user_id = :userId
         AND event_timestamp BETWEEN :startDate AND :endDate
@@ -392,7 +398,7 @@ interface NotificationLogDao {
      */
     @Query(
         """
-        SELECT error_code, COUNT(*) as frequency
+        SELECT error_code AS error_code, COUNT(*) AS frequency
         FROM notification_logs
         WHERE user_id = :userId
         AND event_timestamp BETWEEN :startDate AND :endDate
@@ -401,7 +407,7 @@ interface NotificationLogDao {
         ORDER BY frequency DESC
     """,
     )
-    suspend fun getMostCommonErrors(userId: Long, startDate: Date, endDate: Date): List<Pair<String, Int>>
+    suspend fun getMostCommonErrors(userId: Long, startDate: Date, endDate: Date): List<ErrorFrequency>
 
     /**
      * Gets retry statistics.
@@ -414,17 +420,17 @@ interface NotificationLogDao {
     @Query(
         """
         SELECT
-        COUNT(*) as total_retries,
-        AVG(retry_count) as avg_retry_count,
-        MAX(retry_count) as max_retry_count,
-        SUM(CASE WHEN event_type = 'RETRIED' AND is_success = 1 THEN 1 ELSE 0 END) as successful_retries
+        COUNT(*) AS total_retries,
+        AVG(retry_count) AS avg_retry_count,
+        MAX(retry_count) AS max_retry_count,
+        SUM(CASE WHEN event_type = 'RETRIED' AND is_success = 1 THEN 1 ELSE 0 END) AS successful_retries
         FROM notification_logs
         WHERE user_id = :userId
         AND event_timestamp BETWEEN :startDate AND :endDate
         AND retry_count > 0
     """,
     )
-    suspend fun getRetryStatistics(userId: Long, startDate: Date, endDate: Date): Map<String, Any>
+    suspend fun getRetryStatistics(userId: Long, startDate: Date, endDate: Date): RetryStatistics?
 
     // MARK: - User Engagement Analytics
 
@@ -440,7 +446,7 @@ interface NotificationLogDao {
         """
         SELECT
         CAST(SUM(CASE WHEN event_type = 'OPENED' THEN 1 ELSE 0 END) AS FLOAT) /
-        NULLIF(SUM(CASE WHEN event_type = 'DELIVERED' THEN 1 ELSE 0 END), 0) * 100 as engagement_rate
+        NULLIF(SUM(CASE WHEN event_type = 'DELIVERED' THEN 1 ELSE 0 END), 0) * 100 AS engagementRate
         FROM notification_logs
         WHERE user_id = :userId
         AND event_timestamp BETWEEN :startDate AND :endDate
@@ -460,8 +466,8 @@ interface NotificationLogDao {
     @Query(
         """
         SELECT
-        strftime('%H', event_timestamp/1000, 'unixepoch') as hour,
-        COUNT(*) as interaction_count
+        strftime('%H', event_timestamp/1000, 'unixepoch') AS hour,
+        COUNT(*) AS interaction_count
         FROM notification_logs
         WHERE user_id = :userId
         AND event_timestamp BETWEEN :startDate AND :endDate
@@ -470,7 +476,7 @@ interface NotificationLogDao {
         ORDER BY hour
     """,
     )
-    suspend fun getUserInteractionPatternsByHour(userId: Long, startDate: Date, endDate: Date): List<Pair<String, Int>>
+    suspend fun getUserInteractionPatternsByHour(userId: Long, startDate: Date, endDate: Date): List<HourlyInteractionPattern>
 
     /**
      * Gets notification response times (time from delivered to opened).
@@ -482,7 +488,7 @@ interface NotificationLogDao {
      */
     @Query(
         """
-        SELECT AVG(opened.event_timestamp - delivered.event_timestamp) as avg_response_time
+        SELECT AVG(opened.event_timestamp - delivered.event_timestamp) AS avgResponseTime
         FROM notification_logs delivered
         JOIN notification_logs opened ON delivered.notification_id = opened.notification_id
         WHERE delivered.user_id = :userId
@@ -516,17 +522,17 @@ interface NotificationLogDao {
     @Query(
         """
         SELECT
-        COUNT(*) as total_notifications,
-        SUM(CASE WHEN event_type = 'DELIVERED' THEN 1 ELSE 0 END) as delivered_count,
-        SUM(CASE WHEN event_type = 'OPENED' THEN 1 ELSE 0 END) as opened_count,
-        SUM(CASE WHEN event_type = 'ACTION_CLICKED' THEN 1 ELSE 0 END) as action_clicked_count,
-        AVG(processing_duration_ms) as avg_processing_duration
+        COUNT(*) AS total_notifications,
+        SUM(CASE WHEN event_type = 'DELIVERED' THEN 1 ELSE 0 END) AS delivered_count,
+        SUM(CASE WHEN event_type = 'OPENED' THEN 1 ELSE 0 END) AS opened_count,
+        SUM(CASE WHEN event_type = 'ACTION_CLICKED' THEN 1 ELSE 0 END) AS action_clicked_count,
+        AVG(processing_duration_ms) AS avg_processing_duration
         FROM notification_logs
         WHERE experiment_id = :experimentId
         AND event_timestamp BETWEEN :startDate AND :endDate
     """,
     )
-    suspend fun getExperimentPerformance(experimentId: String, startDate: Date, endDate: Date): Map<String, Any>
+    suspend fun getExperimentPerformance(experimentId: String, startDate: Date, endDate: Date): ExperimentPerformance?
 
     // MARK: - Cleanup Operations
 
@@ -581,16 +587,16 @@ interface NotificationLogDao {
     @Query(
         """
         SELECT
-        COUNT(*) as total_notifications,
-        SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) as successful_notifications,
-        AVG(processing_duration_ms) as avg_processing_duration,
-        MIN(event_timestamp) as batch_start_time,
-        MAX(event_timestamp) as batch_end_time
+        COUNT(*) AS total_notifications,
+        SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS successful_notifications,
+        AVG(processing_duration_ms) AS avg_processing_duration,
+        MIN(event_timestamp) AS batch_start_time,
+        MAX(event_timestamp) AS batch_end_time
         FROM notification_logs
         WHERE batch_id = :batchId
     """,
     )
-    suspend fun getBatchStatistics(batchId: String): Map<String, Any>
+    suspend fun getBatchStatistics(batchId: String): BatchStatistics?
 
     // MARK: - System Health Monitoring
 
@@ -604,16 +610,16 @@ interface NotificationLogDao {
     @Query(
         """
         SELECT
-        COUNT(*) as total_events,
-        CAST(SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) * 100 as overall_success_rate,
-        AVG(processing_duration_ms) as avg_processing_time,
-        COUNT(DISTINCT user_id) as active_users,
-        COUNT(DISTINCT notification_id) as unique_notifications
+        COUNT(*) AS total_events,
+        CAST(SUM(CASE WHEN is_success = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) * 100 AS overall_success_rate,
+        AVG(processing_duration_ms) AS avg_processing_time,
+        COUNT(DISTINCT user_id) AS active_users,
+        COUNT(DISTINCT notification_id) AS unique_notifications
         FROM notification_logs
         WHERE event_timestamp BETWEEN :startDate AND :endDate
     """,
     )
-    suspend fun getSystemHealthMetrics(startDate: Date, endDate: Date): Map<String, Any>
+    suspend fun getSystemHealthMetrics(startDate: Date, endDate: Date): SystemHealthMetrics?
 
     /**
      * Gets critical errors that need immediate attention.
@@ -632,4 +638,146 @@ interface NotificationLogDao {
     """,
     )
     suspend fun getCriticalErrors(severityThreshold: Int = 4, hoursBack: Int = 24): List<NotificationLog>
+
+    // MARK: - Repository Compatibility Methods
+    // These methods provide compatibility with NotificationRepository
+
+    /**
+     * Gets comprehensive notification delivery statistics for a date range.
+     * Compatible with NotificationRepository expectations.
+     */
+    @Query(
+        """
+        SELECT
+        SUM(CASE WHEN event_type = 'SENT' THEN 1 ELSE 0 END) AS total_sent,
+        SUM(CASE WHEN event_type = 'DELIVERED' THEN 1 ELSE 0 END) AS total_delivered,
+        SUM(CASE WHEN event_type = 'FAILED' THEN 1 ELSE 0 END) AS total_failed,
+        SUM(CASE WHEN event_type = 'OPENED' THEN 1 ELSE 0 END) AS total_clicked,
+        SUM(CASE WHEN event_type = 'DISMISSED' THEN 1 ELSE 0 END) AS total_dismissed,
+        AVG(delivery_duration_ms) AS avg_delivery_time
+        FROM notification_logs
+        WHERE user_id = :userId
+        AND event_timestamp BETWEEN :startDate AND :endDate
+    """,
+    )
+    suspend fun getNotificationDeliveryStats(userId: Long, startDate: Date, endDate: Date): NotificationDeliveryStats?
+
+    /**
+     * Gets the average delivery latency for notifications in a date range.
+     */
+    @Query(
+        """
+        SELECT AVG(delivery_duration_ms)
+        FROM notification_logs
+        WHERE user_id = :userId
+        AND event_timestamp BETWEEN :startDate AND :endDate
+        AND delivery_duration_ms IS NOT NULL AND delivery_duration_ms > 0
+    """,
+    )
+    suspend fun getAverageDeliveryLatency(userId: Long, startDate: Date, endDate: Date): Double?
+
+    /**
+     * Gets the maximum retry count for a user's notifications.
+     */
+    @Query(
+        """
+        SELECT MAX(retry_count)
+        FROM notification_logs
+        WHERE user_id = :userId
+    """,
+    )
+    suspend fun getMaxRetryCount(userId: Long): Int?
+
+    /**
+     * Gets notification logs filtered by channel (compatibility method).
+     * Maps NotificationChannel to NotificationDeliveryChannel.
+     */
+    @Query(
+        """
+        SELECT * FROM notification_logs
+        WHERE user_id = :userId
+        AND (
+            (delivery_channel = 'PUSH' AND :channelName = 'PUSH') OR
+            (delivery_channel = 'EMAIL' AND :channelName = 'EMAIL') OR
+            (delivery_channel = 'SMS' AND :channelName = 'SMS') OR
+            (delivery_channel = 'IN_APP' AND :channelName = 'IN_APP')
+        )
+        ORDER BY event_timestamp DESC
+    """,
+    )
+    fun getNotificationLogsByChannel(userId: Long, channelName: String): Flow<List<NotificationLog>>
+
+    /**
+     * Gets notification logs within a date range (compatibility method).
+     */
+    fun getNotificationLogsByDateRange(userId: Long, startDate: Date, endDate: Date): Flow<List<NotificationLog>> {
+        return getNotificationLogsForDateRange(userId, startDate, endDate)
+    }
+
+    /**
+     * Gets failed notifications (compatibility method).
+     */
+    fun getFailedNotifications(userId: Long): Flow<List<NotificationLog>> {
+        return getFailedNotificationLogs(userId)
+    }
+
+    /**
+     * Gets successful notifications (compatibility method).
+     */
+    fun getSuccessfulNotifications(userId: Long): Flow<List<NotificationLog>> {
+        return getSuccessfulNotificationLogs(userId)
+    }
+
+    /**
+     * Gets notifications by priority (compatibility method).
+     * Since NotificationLog doesn't have priority field, we'll use a placeholder query.
+     */
+    @Query(
+        """
+        SELECT * FROM notification_logs
+        WHERE user_id = :userId
+        AND priority_level = :priorityValue
+        ORDER BY event_timestamp DESC
+    """,
+    )
+    fun getNotificationsByPriority(userId: Long, priorityValue: Int): Flow<List<NotificationLog>>
+
+    /**
+     * Gets notifications with retries (compatibility method).
+     */
+    @Query(
+        """
+        SELECT * FROM notification_logs
+        WHERE user_id = :userId
+        AND retry_count > 0
+        ORDER BY event_timestamp DESC
+    """,
+    )
+    fun getNotificationsWithRetries(userId: Long): Flow<List<NotificationLog>>
+
+    /**
+     * Gets notifications that were clicked by the user (compatibility method).
+     */
+    @Query(
+        """
+        SELECT * FROM notification_logs
+        WHERE user_id = :userId
+        AND event_type = 'OPENED'
+        ORDER BY event_timestamp DESC
+    """,
+    )
+    fun getClickedNotifications(userId: Long): Flow<List<NotificationLog>>
+
+    /**
+     * Gets notifications that were dismissed by the user (compatibility method).
+     */
+    @Query(
+        """
+        SELECT * FROM notification_logs
+        WHERE user_id = :userId
+        AND event_type = 'DISMISSED'
+        ORDER BY event_timestamp DESC
+    """,
+    )
+    fun getDismissedNotifications(userId: Long): Flow<List<NotificationLog>>
 }

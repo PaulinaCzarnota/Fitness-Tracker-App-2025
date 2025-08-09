@@ -12,13 +12,11 @@ import androidx.room.Relation
 data class WorkoutWithDetails(
     @Embedded
     val workout: Workout,
-
     val workoutNumber: Int,
     val avgDuration: Float,
     val avgCalories: Float,
     val weeklyAverage: Float? = null,
     val monthlyAverage: Float? = null,
-
     @Relation(
         parentColumn = "userId",
         entityColumn = "userId",

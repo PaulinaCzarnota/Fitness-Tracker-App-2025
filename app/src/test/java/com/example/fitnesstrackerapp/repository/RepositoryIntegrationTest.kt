@@ -28,7 +28,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class RepositoryIntegrationTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

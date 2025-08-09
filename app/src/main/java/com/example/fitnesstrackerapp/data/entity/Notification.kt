@@ -108,77 +108,53 @@ enum class NotificationStatus {
 data class Notification(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Long,
-
     @ColumnInfo(name = "type")
     val type: NotificationType,
-
     @ColumnInfo(name = "title")
     val title: String,
-
     @ColumnInfo(name = "message")
     val message: String,
-
     @ColumnInfo(name = "priority")
     val priority: NotificationPriority = NotificationPriority.DEFAULT,
-
     @ColumnInfo(name = "status")
     val status: NotificationStatus = NotificationStatus.PENDING,
-
     @ColumnInfo(name = "scheduled_time")
     val scheduledTime: Date,
-
     @ColumnInfo(name = "sent_time")
     val sentTime: Date? = null,
-
     @ColumnInfo(name = "read_time")
     val readTime: Date? = null,
-
     @ColumnInfo(name = "dismissed_time")
     val dismissedTime: Date? = null,
-
     @ColumnInfo(name = "clicked_time")
     val clickedTime: Date? = null,
-
     @ColumnInfo(name = "is_read")
     val isRead: Boolean = false,
-
     @ColumnInfo(name = "is_recurring")
     val isRecurring: Boolean = false,
-
     @ColumnInfo(name = "recurrence_pattern")
     val recurrencePattern: String? = null, // JSON string for recurrence rules
-
     @ColumnInfo(name = "channel_id")
     val channelId: String, // Android notification channel ID
-
     @ColumnInfo(name = "notification_id")
     val notificationId: Int? = null, // System notification ID for cancellation
-
     @ColumnInfo(name = "action_data")
     val actionData: String? = null, // JSON string for additional action data
-
     @ColumnInfo(name = "related_entity_id")
     val relatedEntityId: Long? = null, // ID of related goal, workout, etc.
-
     @ColumnInfo(name = "related_entity_type")
     val relatedEntityType: String? = null, // Type of related entity (goal, workout, etc.)
-
     @ColumnInfo(name = "retry_count")
     val retryCount: Int = 0,
-
     @ColumnInfo(name = "max_retries")
     val maxRetries: Int = 3,
-
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updated_at")
     val updatedAt: Date = Date(),
 ) {
-
     /**
      * Checks if the notification is overdue for delivery.
      * @return true if scheduled time has passed and notification is still pending

@@ -35,7 +35,6 @@ import java.util.Date
  * and user engagement analytics with proper validation and error handling.
  */
 class NotificationRepository(private val notificationDao: NotificationDao) {
-
     // region CRUD Operations
 
     /**

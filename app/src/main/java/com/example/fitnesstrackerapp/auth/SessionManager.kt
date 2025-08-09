@@ -26,7 +26,6 @@ class SessionManager(
     context: Context,
     private val userDao: UserDao,
 ) {
-
     companion object {
         private const val KEY_USER_ID = "user_id"
         private const val KEY_EMAIL = "email"

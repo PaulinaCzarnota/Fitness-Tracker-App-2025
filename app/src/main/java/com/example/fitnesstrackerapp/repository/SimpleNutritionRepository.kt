@@ -32,7 +32,6 @@ import java.util.*
 class SimpleNutritionRepository(
     private val foodEntryDao: FoodEntryDao,
 ) {
-
     companion object {
         private const val TAG = "SimpleNutritionRepository"
     }

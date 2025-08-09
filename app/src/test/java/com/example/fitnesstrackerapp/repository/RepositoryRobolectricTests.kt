@@ -32,7 +32,6 @@ import java.util.concurrent.Executors
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [33])
 class RepositoryRobolectricTests {
-
     private lateinit var database: FitnessDatabase
     private lateinit var userDao: UserDao
     private lateinit var workoutDao: WorkoutDao

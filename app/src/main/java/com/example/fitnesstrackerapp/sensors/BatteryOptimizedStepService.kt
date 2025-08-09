@@ -52,7 +52,6 @@ import java.util.Date
 import kotlin.math.abs
 
 class BatteryOptimizedStepService : Service(), SensorEventListener {
-
     // Sensor components
     private var sensorManager: SensorManager? = null
     private var stepCounterSensor: Sensor? = null

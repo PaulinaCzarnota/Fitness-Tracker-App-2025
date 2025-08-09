@@ -36,49 +36,34 @@ import java.util.Date
 data class Nutrition(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "userId")
     val userId: Long,
-
     @ColumnInfo(name = "foodName")
     val foodName: String,
-
     @ColumnInfo(name = "mealType")
     val mealType: MealType,
-
     @ColumnInfo(name = "quantity")
     val quantity: Float,
-
     @ColumnInfo(name = "unit")
     val unit: String, // grams, cups, pieces, etc.
-
     @ColumnInfo(name = "calories")
     val calories: Float,
-
     @ColumnInfo(name = "protein")
     val protein: Float = 0f, // in grams
-
     @ColumnInfo(name = "carbohydrates")
     val carbohydrates: Float = 0f, // in grams
-
     @ColumnInfo(name = "fat")
     val fat: Float = 0f, // in grams
-
     @ColumnInfo(name = "fiber")
     val fiber: Float = 0f, // in grams
-
     @ColumnInfo(name = "sugar")
     val sugar: Float = 0f, // in grams
-
     @ColumnInfo(name = "sodium")
     val sodium: Float = 0f, // in mg
-
     @ColumnInfo(name = "date")
     val date: Date,
-
     @ColumnInfo(name = "notes")
     val notes: String? = null,
-
     @ColumnInfo(name = "createdAt")
     val createdAt: Date = Date(),
 ) {

@@ -29,7 +29,6 @@ import java.util.Date
 @RunWith(AndroidJUnit4::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WorkoutRepositoryTest {
-
     private lateinit var context: Context
     private lateinit var database: AppDatabase
     private lateinit var workoutRepository: WorkoutRepository

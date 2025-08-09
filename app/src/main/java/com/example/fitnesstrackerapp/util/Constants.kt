@@ -53,7 +53,6 @@ object StepTrackingConstants {
  * Utility class for date operations
  */
 object DateUtil {
-
     fun formatDate(date: java.util.Date): String {
         val formatter = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
         return formatter.format(date)

@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
  * ViewModel for managing step tracking service connection and real-time step data
  */
 class StepDashboardViewModel(application: Application) : AndroidViewModel(application) {
-
     private var stepService: StepCounterService? = null
     private var isServiceBound = false
 

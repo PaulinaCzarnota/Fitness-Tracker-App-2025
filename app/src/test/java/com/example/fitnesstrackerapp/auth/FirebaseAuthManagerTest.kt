@@ -35,7 +35,6 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class FirebaseAuthManagerTest {
-
     private lateinit var context: Context
     private lateinit var userDao: UserDao
     private lateinit var cryptoManager: CryptoManager

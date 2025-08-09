@@ -43,7 +43,6 @@ import javax.inject.Inject
 @LargeTest
 @HiltAndroidTest
 class ComprehensiveUITests {
-
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 

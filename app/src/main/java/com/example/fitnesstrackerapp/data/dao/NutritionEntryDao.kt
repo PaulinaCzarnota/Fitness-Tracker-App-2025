@@ -37,7 +37,6 @@ import java.util.Date
  */
 @Dao
 interface NutritionEntryDao {
-
     // MARK: - Basic CRUD Operations
 
     /**
@@ -219,7 +218,7 @@ interface NutritionEntryDao {
      */
     @Query(
         """
-        SELECT meal_type, SUM(calories_per_serving * serving_size) as calories
+        SELECT meal_type AS meal_type, SUM(calories_per_serving * serving_size) AS calories
         FROM nutrition_entries
         WHERE user_id = :userId AND DATE(date_consumed/1000, 'unixepoch') = DATE(:date/1000, 'unixepoch')
         GROUP BY meal_type
@@ -255,9 +254,9 @@ interface NutritionEntryDao {
     @Query(
         """
         SELECT
-        SUM(protein_grams * serving_size) as total_protein,
-        SUM(carbs_grams * serving_size) as total_carbs,
-        SUM(fat_grams * serving_size) as total_fat
+        SUM(protein_grams * serving_size) AS total_protein,
+        SUM(carbs_grams * serving_size) AS total_carbs,
+        SUM(fat_grams * serving_size) AS total_fat
         FROM nutrition_entries
         WHERE user_id = :userId AND DATE(date_consumed/1000, 'unixepoch') = DATE(:date/1000, 'unixepoch')
     """,
@@ -274,22 +273,22 @@ interface NutritionEntryDao {
     @Query(
         """
         SELECT
-        SUM(calories_per_serving * serving_size) as total_calories,
-        SUM(protein_grams * serving_size) as total_protein,
-        SUM(carbs_grams * serving_size) as total_carbs,
-        SUM(fat_grams * serving_size) as total_fat,
-        SUM(saturated_fat_grams * serving_size) as total_saturated_fat,
-        SUM(trans_fat_grams * serving_size) as total_trans_fat,
-        SUM(cholesterol_mg * serving_size) as total_cholesterol,
-        SUM(fiber_grams * serving_size) as total_fiber,
-        SUM(sugar_grams * serving_size) as total_sugar,
-        SUM(added_sugars_grams * serving_size) as total_added_sugars,
-        SUM(sodium_mg * serving_size) as total_sodium,
-        SUM(potassium_mg * serving_size) as total_potassium,
-        SUM(vitamin_c_mg * serving_size) as total_vitamin_c,
-        SUM(vitamin_d_mcg * serving_size) as total_vitamin_d,
-        SUM(calcium_mg * serving_size) as total_calcium,
-        SUM(iron_mg * serving_size) as total_iron
+        SUM(calories_per_serving * serving_size) AS total_calories,
+        SUM(protein_grams * serving_size) AS total_protein,
+        SUM(carbs_grams * serving_size) AS total_carbs,
+        SUM(fat_grams * serving_size) AS total_fat,
+        SUM(saturated_fat_grams * serving_size) AS total_saturated_fat,
+        SUM(trans_fat_grams * serving_size) AS total_trans_fat,
+        SUM(cholesterol_mg * serving_size) AS total_cholesterol,
+        SUM(fiber_grams * serving_size) AS total_fiber,
+        SUM(sugar_grams * serving_size) AS total_sugar,
+        SUM(added_sugars_grams * serving_size) AS total_added_sugars,
+        SUM(sodium_mg * serving_size) AS total_sodium,
+        SUM(potassium_mg * serving_size) AS total_potassium,
+        SUM(vitamin_c_mg * serving_size) AS total_vitamin_c,
+        SUM(vitamin_d_mcg * serving_size) AS total_vitamin_d,
+        SUM(calcium_mg * serving_size) AS total_calcium,
+        SUM(iron_mg * serving_size) AS total_iron
         FROM nutrition_entries
         WHERE user_id = :userId AND DATE(date_consumed/1000, 'unixepoch') = DATE(:date/1000, 'unixepoch')
     """,
@@ -307,22 +306,22 @@ interface NutritionEntryDao {
     @Query(
         """
         SELECT
-        SUM(calories_per_serving * serving_size) as total_calories,
-        SUM(protein_grams * serving_size) as total_protein,
-        SUM(carbs_grams * serving_size) as total_carbs,
-        SUM(fat_grams * serving_size) as total_fat,
-        SUM(saturated_fat_grams * serving_size) as total_saturated_fat,
-        SUM(trans_fat_grams * serving_size) as total_trans_fat,
-        SUM(cholesterol_mg * serving_size) as total_cholesterol,
-        SUM(fiber_grams * serving_size) as total_fiber,
-        SUM(sugar_grams * serving_size) as total_sugar,
-        SUM(added_sugars_grams * serving_size) as total_added_sugars,
-        SUM(sodium_mg * serving_size) as total_sodium,
-        SUM(potassium_mg * serving_size) as total_potassium,
-        SUM(vitamin_c_mg * serving_size) as total_vitamin_c,
-        SUM(vitamin_d_mcg * serving_size) as total_vitamin_d,
-        SUM(calcium_mg * serving_size) as total_calcium,
-        SUM(iron_mg * serving_size) as total_iron
+        SUM(calories_per_serving * serving_size) AS total_calories,
+        SUM(protein_grams * serving_size) AS total_protein,
+        SUM(carbs_grams * serving_size) AS total_carbs,
+        SUM(fat_grams * serving_size) AS total_fat,
+        SUM(saturated_fat_grams * serving_size) AS total_saturated_fat,
+        SUM(trans_fat_grams * serving_size) AS total_trans_fat,
+        SUM(cholesterol_mg * serving_size) AS total_cholesterol,
+        SUM(fiber_grams * serving_size) AS total_fiber,
+        SUM(sugar_grams * serving_size) AS total_sugar,
+        SUM(added_sugars_grams * serving_size) AS total_added_sugars,
+        SUM(sodium_mg * serving_size) AS total_sodium,
+        SUM(potassium_mg * serving_size) AS total_potassium,
+        SUM(vitamin_c_mg * serving_size) AS total_vitamin_c,
+        SUM(vitamin_d_mcg * serving_size) AS total_vitamin_d,
+        SUM(calcium_mg * serving_size) AS total_calcium,
+        SUM(iron_mg * serving_size) AS total_iron
         FROM nutrition_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate
     """,
@@ -338,7 +337,7 @@ interface NutritionEntryDao {
     @Query(
         """
         SELECT AVG(daily_calories) FROM (
-            SELECT DATE(date_consumed) as date, SUM(calories_per_serving * serving_size) as daily_calories
+            SELECT DATE(date_consumed) AS date, SUM(calories_per_serving * serving_size) AS daily_calories
             FROM nutrition_entries
             WHERE user_id = :userId
             GROUP BY DATE(date_consumed)
@@ -358,11 +357,11 @@ interface NutritionEntryDao {
     @Query(
         """
         SELECT
-        SUM(calories_per_serving * serving_size) as weekly_calories,
-        AVG(calories_per_serving * serving_size) as avg_daily_calories,
-        SUM(protein_grams * serving_size) as weekly_protein,
-        SUM(carbs_grams * serving_size) as weekly_carbs,
-        SUM(fat_grams * serving_size) as weekly_fat
+        SUM(calories_per_serving * serving_size) AS weekly_calories,
+        AVG(calories_per_serving * serving_size) AS avg_daily_calories,
+        SUM(protein_grams * serving_size) AS weekly_protein,
+        SUM(carbs_grams * serving_size) AS weekly_carbs,
+        SUM(fat_grams * serving_size) AS weekly_fat
         FROM nutrition_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :weekStart AND :weekEnd
     """,
@@ -380,7 +379,7 @@ interface NutritionEntryDao {
      */
     @Query(
         """
-        SELECT food_name, COUNT(*) as frequency, AVG(calories_per_serving * serving_size) as avg_calories
+        SELECT food_name AS food_name, COUNT(*) AS frequency, AVG(calories_per_serving * serving_size) AS avg_calories
         FROM nutrition_entries
         WHERE user_id = :userId
         GROUP BY food_name
@@ -399,13 +398,13 @@ interface NutritionEntryDao {
      */
     @Query(
         """
-        SELECT food_name, MAX(calories_per_serving * serving_size) as max_calories,
-        AVG(calories_per_serving * serving_size) as avg_calories,
-        COUNT(*) as frequency
+        SELECT food_name AS food_name, MAX(calories_per_serving * serving_size) AS avg_calories,
+        AVG(calories_per_serving * serving_size) AS avg_calories,
+        COUNT(*) AS frequency
         FROM nutrition_entries
         WHERE user_id = :userId
         GROUP BY food_name
-        ORDER BY max_calories DESC
+        ORDER BY avg_calories DESC
         LIMIT :limit
     """,
     )
@@ -420,13 +419,13 @@ interface NutritionEntryDao {
      */
     @Query(
         """
-        SELECT food_name, AVG(confidence_level) as avg_quality,
-        COUNT(*) as frequency,
-        AVG(calories_per_serving * serving_size) as avg_calories
+        SELECT food_name AS food_name, AVG(confidence_level) AS avg_calories,
+        COUNT(*) AS frequency,
+        AVG(calories_per_serving * serving_size) AS avg_calories
         FROM nutrition_entries
         WHERE user_id = :userId AND confidence_level > 0.7
         GROUP BY food_name
-        ORDER BY avg_quality DESC
+        ORDER BY avg_calories DESC
         LIMIT :limit
     """,
     )
@@ -604,14 +603,14 @@ interface NutritionEntryDao {
     @Query(
         """
         SELECT
-        DATE(date_consumed/1000, 'unixepoch') as date,
-        SUM(calories_per_serving * serving_size) as total_calories,
-        SUM(protein_grams * serving_size) as total_protein,
-        SUM(carbs_grams * serving_size) as total_carbs,
-        SUM(fat_grams * serving_size) as total_fat,
-        SUM(fiber_grams * serving_size) as total_fiber,
-        SUM(sodium_mg * serving_size) as total_sodium,
-        COUNT(*) as entry_count
+        DATE(date_consumed/1000, 'unixepoch') AS date,
+        SUM(calories_per_serving * serving_size) AS total_calories,
+        SUM(protein_grams * serving_size) AS total_protein,
+        SUM(carbs_grams * serving_size) AS total_carbs,
+        SUM(fat_grams * serving_size) AS total_fat,
+        SUM(fiber_grams * serving_size) AS total_fiber,
+        SUM(sodium_mg * serving_size) AS total_sodium,
+        COUNT(*) AS entry_count
         FROM nutrition_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate
         GROUP BY DATE(date_consumed/1000, 'unixepoch')

@@ -30,7 +30,6 @@ import java.util.Date
 class ExerciseRepository(
     private val exerciseDao: ExerciseDao,
 ) {
-
     /**
      * Inserts a new exercise into the database.
      *
@@ -303,7 +302,6 @@ class ExerciseRepository(
                 difficulty = DifficultyLevel.INTERMEDIATE,
                 instructions = "Lie on bench, arc dumbbells from chest to sides and back",
             ),
-
             // Back exercises
             Exercise(
                 name = "Pull-ups",
@@ -332,7 +330,6 @@ class ExerciseRepository(
                 difficulty = DifficultyLevel.INTERMEDIATE,
                 instructions = "Bend over, row barbell to lower chest",
             ),
-
             // Leg exercises
             Exercise(
                 name = "Squats",
@@ -361,7 +358,6 @@ class ExerciseRepository(
                 difficulty = DifficultyLevel.BEGINNER,
                 instructions = "Step forward into lunge position, alternate legs",
             ),
-
             // Shoulder exercises
             Exercise(
                 name = "Overhead Press",
@@ -381,7 +377,6 @@ class ExerciseRepository(
                 difficulty = DifficultyLevel.BEGINNER,
                 instructions = "Raise dumbbells to sides until parallel to floor",
             ),
-
             // Arm exercises
             Exercise(
                 name = "Bicep Curls",
@@ -401,7 +396,6 @@ class ExerciseRepository(
                 difficulty = DifficultyLevel.INTERMEDIATE,
                 instructions = "Lower body by bending arms, push back up",
             ),
-
             // Core exercises
             Exercise(
                 name = "Plank",
@@ -421,7 +415,6 @@ class ExerciseRepository(
                 difficulty = DifficultyLevel.BEGINNER,
                 instructions = "Curl upper body towards knees, focus on abs",
             ),
-
             // Cardio exercises
             Exercise(
                 name = "Running",

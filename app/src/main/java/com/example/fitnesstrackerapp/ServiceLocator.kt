@@ -47,7 +47,6 @@ import com.example.fitnesstrackerapp.usecase.TrackStepsUseCase
  * and proper resource management for memory efficiency.
  */
 class ServiceLocator private constructor(private val appContext: Context) {
-
     companion object {
         private const val TAG = "ServiceLocator"
 

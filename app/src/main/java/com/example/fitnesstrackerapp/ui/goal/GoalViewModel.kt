@@ -29,7 +29,6 @@ data class GoalUiState(
 class GoalViewModel(
     private val goalRepository: GoalRepository,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(GoalUiState())
     val uiState: StateFlow<GoalUiState> = _uiState.asStateFlow()
 

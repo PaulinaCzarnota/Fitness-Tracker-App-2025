@@ -16,7 +16,6 @@ import java.util.Date
 class TrackStepsUseCase(
     private val stepRepository: StepRepository,
 ) {
-
     /**
      * Records steps for a user
      */

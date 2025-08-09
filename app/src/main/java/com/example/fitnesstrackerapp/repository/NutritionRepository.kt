@@ -41,7 +41,6 @@ import java.util.Date
 class NutritionRepository(
     private val nutritionEntryDao: NutritionEntryDao,
 ) {
-
     // MARK: - Basic CRUD Operations
 
     /**

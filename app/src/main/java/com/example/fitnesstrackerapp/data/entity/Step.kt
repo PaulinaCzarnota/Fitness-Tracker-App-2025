@@ -57,31 +57,22 @@ import java.util.Date
 data class Step(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Long,
-
     @ColumnInfo(name = "step_count")
     val count: Int,
-
     @ColumnInfo(name = "step_goal")
     val goal: Int = 10000,
-
     @ColumnInfo(name = "date")
     val date: Date,
-
     @ColumnInfo(name = "calories_burned")
     val caloriesBurned: Float = 0f,
-
     @ColumnInfo(name = "distance_meters")
     val distanceMeters: Float = 0f,
-
     @ColumnInfo(name = "active_minutes")
     val activeMinutes: Int = 0,
-
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updated_at")
     val updatedAt: Date = Date(),
 ) {

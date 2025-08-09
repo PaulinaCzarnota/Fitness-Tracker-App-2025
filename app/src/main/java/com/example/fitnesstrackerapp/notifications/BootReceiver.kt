@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
  * the app's notification and reminder functionality.
  */
 class BootReceiver : BroadcastReceiver() {
-
     companion object {
         private const val TAG = "BootReceiver"
     }

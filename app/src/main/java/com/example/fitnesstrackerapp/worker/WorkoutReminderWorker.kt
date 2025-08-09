@@ -30,7 +30,6 @@ class WorkoutReminderWorker(
     context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
-
     private val notificationManager = SimpleNotificationManager(applicationContext)
 
     companion object {

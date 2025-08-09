@@ -21,7 +21,6 @@ import com.example.fitnesstrackerapp.worker.WorkoutReminderWorker
 import java.util.concurrent.TimeUnit
 
 class WorkoutScheduler(context: Context) {
-
     companion object {
         private const val WORKOUT_REMINDER_WORK = "workout_reminder_work"
         private const val GOAL_REMINDER_WORK = "goal_reminder_work"

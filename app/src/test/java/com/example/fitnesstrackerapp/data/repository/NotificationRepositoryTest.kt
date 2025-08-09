@@ -29,7 +29,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class NotificationRepositoryTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

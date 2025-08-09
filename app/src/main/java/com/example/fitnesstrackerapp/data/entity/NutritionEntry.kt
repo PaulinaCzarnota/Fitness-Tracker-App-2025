@@ -59,97 +59,66 @@ import java.util.Date
 data class NutritionEntry(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Long,
-
     @ColumnInfo(name = "food_name")
     val foodName: String,
-
     @ColumnInfo(name = "brand_name")
     val brandName: String? = null,
-
     @ColumnInfo(name = "serving_size")
     val servingSize: Double,
-
     @ColumnInfo(name = "serving_unit")
     val servingUnit: String, // grams, cups, pieces, etc.
-
     @ColumnInfo(name = "calories_per_serving")
     val caloriesPerServing: Double,
-
     @ColumnInfo(name = "protein_grams")
     val proteinGrams: Double = 0.0,
-
     @ColumnInfo(name = "carbs_grams")
     val carbsGrams: Double = 0.0,
-
     @ColumnInfo(name = "fat_grams")
     val fatGrams: Double = 0.0,
-
     @ColumnInfo(name = "saturated_fat_grams")
     val saturatedFatGrams: Double = 0.0,
-
     @ColumnInfo(name = "trans_fat_grams")
     val transFatGrams: Double = 0.0,
-
     @ColumnInfo(name = "cholesterol_mg")
     val cholesterolMg: Double = 0.0,
-
     @ColumnInfo(name = "fiber_grams")
     val fiberGrams: Double = 0.0,
-
     @ColumnInfo(name = "sugar_grams")
     val sugarGrams: Double = 0.0,
-
     @ColumnInfo(name = "added_sugars_grams")
     val addedSugarsGrams: Double = 0.0,
-
     @ColumnInfo(name = "sodium_mg")
     val sodiumMg: Double = 0.0,
-
     @ColumnInfo(name = "potassium_mg")
     val potassiumMg: Double = 0.0,
-
     @ColumnInfo(name = "vitamin_c_mg")
     val vitaminCMg: Double = 0.0,
-
     @ColumnInfo(name = "vitamin_d_mcg")
     val vitaminDMcg: Double = 0.0,
-
     @ColumnInfo(name = "calcium_mg")
     val calciumMg: Double = 0.0,
-
     @ColumnInfo(name = "iron_mg")
     val ironMg: Double = 0.0,
-
     @ColumnInfo(name = "meal_type")
     val mealType: MealType,
-
     @ColumnInfo(name = "date_consumed")
     val dateConsumed: Date = Date(),
-
     @ColumnInfo(name = "notes")
     val notes: String? = null,
-
     @ColumnInfo(name = "barcode")
     val barcode: String? = null,
-
     @ColumnInfo(name = "recipe_id")
     val recipeId: Long? = null,
-
     @ColumnInfo(name = "is_homemade")
     val isHomemade: Boolean = false,
-
     @ColumnInfo(name = "confidence_level")
     val confidenceLevel: Double = 1.0, // 0.0 to 1.0, accuracy of nutrition data
-
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updated_at")
     val updatedAt: Date = Date(),
-
     @ColumnInfo(name = "logged_at")
     val loggedAt: Date = Date(),
 ) {

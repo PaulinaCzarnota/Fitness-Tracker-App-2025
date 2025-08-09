@@ -33,7 +33,6 @@ import java.util.Date
  */
 @Dao
 interface FoodEntryDao {
-
     /**
      * Inserts a new food entry into the database.
      *
@@ -173,9 +172,9 @@ interface FoodEntryDao {
     @Query(
         """
         SELECT
-        SUM(protein_grams * serving_size) as total_protein,
-        SUM(carbs_grams * serving_size) as total_carbs,
-        SUM(fat_grams * serving_size) as total_fat
+        SUM(protein_grams * serving_size) AS total_protein,
+        SUM(carbs_grams * serving_size) AS total_carbs,
+        SUM(fat_grams * serving_size) AS total_fat
         FROM food_entries
         WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date)
     """,
@@ -193,13 +192,22 @@ interface FoodEntryDao {
     @Query(
         """
         SELECT
-        SUM(calories_per_serving * serving_size) as total_calories,
-        SUM(protein_grams * serving_size) as total_protein,
-        SUM(carbs_grams * serving_size) as total_carbs,
-        SUM(fat_grams * serving_size) as total_fat,
-        SUM(fiber_grams * serving_size) as total_fiber,
-        SUM(sugar_grams * serving_size) as total_sugar,
-        SUM(sodium_mg * serving_size) as total_sodium
+        SUM(calories_per_serving * serving_size) AS total_calories,
+        SUM(protein_grams * serving_size) AS total_protein,
+        SUM(carbs_grams * serving_size) AS total_carbs,
+        SUM(fat_grams * serving_size) AS total_fat,
+        0.0 AS total_saturated_fat,
+        0.0 AS total_trans_fat,
+        0.0 AS total_cholesterol,
+        SUM(fiber_grams * serving_size) AS total_fiber,
+        SUM(sugar_grams * serving_size) AS total_sugar,
+        0.0 AS total_added_sugars,
+        SUM(sodium_mg * serving_size) AS total_sodium,
+        0.0 AS total_potassium,
+        0.0 AS total_vitamin_c,
+        0.0 AS total_vitamin_d,
+        0.0 AS total_calcium,
+        0.0 AS total_iron
         FROM food_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :startDate AND :endDate
     """,
@@ -215,7 +223,7 @@ interface FoodEntryDao {
     @Query(
         """
         SELECT AVG(daily_calories) FROM (
-            SELECT DATE(date_consumed) as date, SUM(calories_per_serving * serving_size) as daily_calories
+            SELECT DATE(date_consumed) AS date, SUM(calories_per_serving * serving_size) AS daily_calories
             FROM food_entries
             WHERE user_id = :userId
             GROUP BY DATE(date_consumed)
@@ -233,7 +241,7 @@ interface FoodEntryDao {
      */
     @Query(
         """
-        SELECT meal_type, SUM(calories_per_serving * serving_size) as calories
+        SELECT meal_type AS meal_type, SUM(calories_per_serving * serving_size) AS calories
         FROM food_entries
         WHERE user_id = :userId AND DATE(date_consumed) = DATE(:date)
         GROUP BY meal_type
@@ -250,7 +258,7 @@ interface FoodEntryDao {
      */
     @Query(
         """
-        SELECT food_name, COUNT(*) as frequency, AVG(calories_per_serving * serving_size) as avg_calories
+        SELECT food_name AS food_name, COUNT(*) AS frequency, AVG(calories_per_serving * serving_size) AS avg_calories
         FROM food_entries
         WHERE user_id = :userId
         GROUP BY food_name
@@ -290,11 +298,11 @@ interface FoodEntryDao {
     @Query(
         """
         SELECT
-        SUM(calories_per_serving * serving_size) as weekly_calories,
-        AVG(calories_per_serving * serving_size) as avg_daily_calories,
-        SUM(protein_grams * serving_size) as weekly_protein,
-        SUM(carbs_grams * serving_size) as weekly_carbs,
-        SUM(fat_grams * serving_size) as weekly_fat
+        SUM(calories_per_serving * serving_size) AS weekly_calories,
+        AVG(calories_per_serving * serving_size) AS avg_daily_calories,
+        SUM(protein_grams * serving_size) AS weekly_protein,
+        SUM(carbs_grams * serving_size) AS weekly_carbs,
+        SUM(fat_grams * serving_size) AS weekly_fat
         FROM food_entries
         WHERE user_id = :userId AND date_consumed BETWEEN :weekStart AND :weekEnd
     """,

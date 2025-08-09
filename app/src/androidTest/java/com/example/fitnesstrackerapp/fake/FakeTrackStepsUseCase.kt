@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicLong
  * Provides minimal functionality with in-memory storage to prevent compilation errors.
  */
 class FakeTrackStepsUseCase {
-
     private val steps = mutableMapOf<String, Step>() // userId-date key to Step
     private val idCounter = AtomicLong(1)
 

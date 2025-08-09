@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
  * Enhanced manager for battery-optimized step counter service operations
  */
 object EnhancedStepServiceManager {
-
     private const val TAG = "EnhancedStepServiceManager"
 
     // Service connection and binding

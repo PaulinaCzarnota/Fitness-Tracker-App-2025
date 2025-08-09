@@ -22,7 +22,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
 class StepTrackerTest {
-
     private lateinit var context: Context
     private lateinit var stepTracker: StepTracker
     private lateinit var sensorManager: SensorManager

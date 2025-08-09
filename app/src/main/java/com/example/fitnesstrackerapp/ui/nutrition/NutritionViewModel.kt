@@ -36,7 +36,6 @@ class NutritionViewModel(
     private val repository: SimpleNutritionRepository,
     private val userId: Long,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(NutritionUiState())
     val uiState: StateFlow<NutritionUiState> = _uiState.asStateFlow()
 

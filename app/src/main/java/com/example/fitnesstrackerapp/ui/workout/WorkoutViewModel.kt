@@ -37,7 +37,6 @@ class WorkoutViewModel(
     private val workoutRepository: WorkoutRepository,
     private val userId: Long,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(WorkoutUiState())
     val uiState: StateFlow<WorkoutUiState> = _uiState.asStateFlow()
 

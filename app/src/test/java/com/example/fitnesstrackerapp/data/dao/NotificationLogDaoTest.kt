@@ -30,7 +30,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class NotificationLogDaoTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -773,14 +772,12 @@ class NotificationLogDaoTest {
                 title = "Lifecycle Test",
                 notificationId = "lifecycle_123",
             ).copy(timestamp = Date(timestamp.time)),
-
             TestHelper.createTestNotificationLog(
                 userId = userId,
                 eventType = NotificationEventType.DELIVERED,
                 title = "Lifecycle Test",
                 notificationId = "lifecycle_123",
             ).copy(timestamp = Date(timestamp.time + 1000)),
-
             TestHelper.createTestNotificationLog(
                 userId = userId,
                 eventType = NotificationEventType.CLICKED,

@@ -30,7 +30,6 @@ import java.util.Date
 class WorkoutSetRepository(
     private val workoutSetDao: WorkoutSetDao,
 ) {
-
     /**
      * Inserts a new workout set into the database.
      * Automatically checks for personal records and updates the flag.

@@ -38,7 +38,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fitnesstrackerapp.data.entity.*
-import com.example.fitnesstrackerapp.repository.NutritionSummary
+import com.example.fitnesstrackerapp.data.model.NutritionSummary
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -1034,10 +1034,10 @@ fun NutritionSummaryDialog(
                 Column {
                     Text("Total Calories: ${nutritionSummary.totalCalories.toInt()}")
                     Text("Protein: ${nutritionSummary.totalProtein.toInt()}g")
-                    Text("Carbohydrates: ${nutritionSummary.totalCarbohydrates.toInt()}g")
+                    Text("Carbohydrates: ${nutritionSummary.totalCarbs.toInt()}g")
                     Text("Fat: ${nutritionSummary.totalFat.toInt()}g")
                     Text("Fiber: ${nutritionSummary.totalFiber.toInt()}g")
-                    Text("Food Entries: ${nutritionSummary.entryCount}")
+                    Text("Sugar: ${nutritionSummary.totalSugar.toInt()}g")
                 }
             },
             confirmButton = {

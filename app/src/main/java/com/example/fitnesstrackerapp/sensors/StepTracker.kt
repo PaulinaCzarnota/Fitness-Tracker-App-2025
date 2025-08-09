@@ -25,7 +25,6 @@ import kotlin.math.sqrt
 class StepTracker(
     private val context: Context,
 ) : SensorEventListener {
-
     private val sensorManager: SensorManager by lazy {
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }

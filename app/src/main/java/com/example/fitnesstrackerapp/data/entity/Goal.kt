@@ -58,46 +58,32 @@ import java.util.concurrent.TimeUnit
 data class Goal(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Long,
-
     @ColumnInfo(name = "title")
     val title: String,
-
     @ColumnInfo(name = "description")
     val description: String? = null,
-
     @ColumnInfo(name = "goal_type")
     val goalType: GoalType,
-
     @ColumnInfo(name = "target_value")
     val targetValue: Double,
-
     @ColumnInfo(name = "current_value")
     val currentValue: Double = 0.0,
-
     @ColumnInfo(name = "unit")
     val unit: String, // kg, km, times, calories, steps, etc.
-
     @ColumnInfo(name = "target_date")
     val targetDate: Date,
-
     @ColumnInfo(name = "start_date")
     val startDate: Date = Date(),
-
     @ColumnInfo(name = "status")
     val status: GoalStatus = GoalStatus.ACTIVE,
-
     @ColumnInfo(name = "reminder_enabled")
     val reminderEnabled: Boolean = true,
-
     @ColumnInfo(name = "reminder_frequency")
     val reminderFrequency: String? = null, // daily, weekly, etc.
-
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updated_at")
     val updatedAt: Date = Date(),
 ) {

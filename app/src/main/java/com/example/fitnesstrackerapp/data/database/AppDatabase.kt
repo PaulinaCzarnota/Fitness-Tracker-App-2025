@@ -63,7 +63,6 @@ import java.util.concurrent.Executors
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-
     /**
      * Provides access to User data operations including authentication,
      * profile management, and account security features.

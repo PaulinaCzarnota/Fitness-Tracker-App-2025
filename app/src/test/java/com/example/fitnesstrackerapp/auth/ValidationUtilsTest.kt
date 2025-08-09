@@ -18,11 +18,9 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class ValidationUtilsTest {
-
     @Nested
     @DisplayName("Email Validation Tests")
     inner class EmailValidationTests {
-
         @Test
         fun `valid emails return true`() {
             val validEmails = listOf(
@@ -76,7 +74,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Password Strength Validation Tests")
     inner class PasswordStrengthTests {
-
         @Test
         fun `strong passwords are valid`() {
             val strongPasswords = listOf(
@@ -205,7 +202,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Username Validation Tests")
     inner class UsernameValidationTests {
-
         @Test
         fun `valid usernames pass validation`() {
             val validUsernames = listOf(
@@ -296,7 +292,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Full Name Validation Tests")
     inner class FullNameValidationTests {
-
         @Test
         fun `valid names pass validation`() {
             val validNames = listOf(
@@ -357,7 +352,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Form Validation Tests")
     inner class FormValidationTests {
-
         @Test
         fun `valid registration form passes validation`() {
             val result = ValidationUtils.validateRegistrationForm(
@@ -424,7 +418,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Security Validation Tests")
     inner class SecurityValidationTests {
-
         @Test
         fun `safe input passes security check`() {
             val safeInputs = listOf(
@@ -482,7 +475,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Reset Token Validation Tests")
     inner class ResetTokenValidationTests {
-
         @Test
         fun `valid reset token passes validation`() {
             val validToken = "a".repeat(32)
@@ -527,7 +519,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Extension Function Tests")
     inner class ExtensionFunctionTests {
-
         @Test
         fun `matchesPassword extension works correctly`() {
             val password = "TestPassword123!"
@@ -564,7 +555,6 @@ class ValidationUtilsTest {
     @Nested
     @DisplayName("Edge Cases and Boundary Tests")
     inner class EdgeCasesTests {
-
         @Test
         fun `null and empty string handling`() {
             // Test various validation functions with empty strings

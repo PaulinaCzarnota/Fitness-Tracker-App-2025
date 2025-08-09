@@ -37,7 +37,6 @@ import java.util.Date
  * and dietary tracking with proper validation and error handling.
  */
 class FoodEntryRepository(private val foodEntryDao: FoodEntryDao) {
-
     // region CRUD Operations
 
     /**

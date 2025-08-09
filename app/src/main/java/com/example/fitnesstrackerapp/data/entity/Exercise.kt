@@ -45,46 +45,32 @@ import java.util.Date
 data class Exercise(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "name")
     val name: String,
-
     @ColumnInfo(name = "description")
     val description: String? = null,
-
     @ColumnInfo(name = "muscleGroup")
     val muscleGroup: MuscleGroup,
-
     @ColumnInfo(name = "equipmentType")
     val equipmentType: EquipmentType,
-
     @ColumnInfo(name = "exerciseType")
     val exerciseType: ExerciseType,
-
     @ColumnInfo(name = "difficulty")
     val difficulty: DifficultyLevel = DifficultyLevel.INTERMEDIATE,
-
     @ColumnInfo(name = "instructions")
     val instructions: String? = null,
-
     @ColumnInfo(name = "safetyNotes")
     val safetyNotes: String? = null,
-
     @ColumnInfo(name = "imageUrl")
     val imageUrl: String? = null,
-
     @ColumnInfo(name = "videoUrl")
     val videoUrl: String? = null,
-
     @ColumnInfo(name = "isCustom")
     val isCustom: Boolean = false, // User-created vs. pre-defined exercises
-
     @ColumnInfo(name = "createdBy")
     val createdBy: Long? = null, // User ID who created custom exercise
-
     @ColumnInfo(name = "createdAt")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updatedAt")
     val updatedAt: Date = Date(),
 )

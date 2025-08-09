@@ -27,7 +27,6 @@ import com.example.fitnesstrackerapp.ui.workout.WorkoutViewModel
  * Object providing centralized ViewModel factory methods for dependency injection.
  */
 object ViewModelFactoryProvider {
-
     const val TAG = "ViewModelFactoryProvider"
 
     /**

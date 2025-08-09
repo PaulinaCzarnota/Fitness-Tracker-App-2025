@@ -21,7 +21,6 @@ import com.example.fitnesstrackerapp.data.entity.MealType
 import com.example.fitnesstrackerapp.data.model.NutritionSummary
 import com.example.fitnesstrackerapp.fake.FakeServiceLocator
 import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerAppTheme
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -31,7 +30,6 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class NutritionScreenUITest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 
@@ -46,7 +44,7 @@ class NutritionScreenUITest {
     fun nutritionScreen_displaysCorrectInitialState() {
         // Given
         val userId = 1L
-        
+
         // When
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
@@ -67,7 +65,7 @@ class NutritionScreenUITest {
     fun nutritionScreen_addFoodEntry_showsDialog() {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -90,7 +88,7 @@ class NutritionScreenUITest {
     fun addFoodEntryDialog_validInput_createsFoodEntry() = runTest {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -99,17 +97,17 @@ class NutritionScreenUITest {
 
         // When
         composeTestRule.onNodeWithContentDescription("Add food entry").performClick()
-        
+
         // Fill in food entry form
         composeTestRule.onNodeWithText("Food Name").performTextInput("Apple")
         composeTestRule.onNodeWithText("Calories").performTextInput("95")
         composeTestRule.onNodeWithText("Protein (g)").performTextInput("0.5")
         composeTestRule.onNodeWithText("Carbs (g)").performTextInput("25")
         composeTestRule.onNodeWithText("Fat (g)").performTextInput("0.3")
-        
+
         // Select meal type
         composeTestRule.onNodeWithText("Breakfast").performClick()
-        
+
         // Save entry
         composeTestRule.onNodeWithText("Save").performClick()
 
@@ -123,7 +121,7 @@ class NutritionScreenUITest {
     fun addFoodEntryDialog_invalidInput_showsValidationErrors() {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -132,7 +130,7 @@ class NutritionScreenUITest {
 
         // When
         composeTestRule.onNodeWithContentDescription("Add food entry").performClick()
-        
+
         // Try to save without filling required fields
         composeTestRule.onNodeWithText("Save").performClick()
 
@@ -157,7 +155,7 @@ class NutritionScreenUITest {
                 calories = 450.0
             )
         )
-        
+
         // Setup fake data
         fakeServiceLocator.foodEntryRepository.addTestData(testFoodEntries)
 
@@ -186,7 +184,7 @@ class NutritionScreenUITest {
             createTestFoodEntry(foodName = "Banana", calories = 105.0),
             createTestFoodEntry(foodName = "Orange", calories = 62.0)
         )
-        
+
         fakeServiceLocator.foodEntryRepository.addTestData(testFoodEntries)
 
         composeTestRule.setContent {
@@ -218,7 +216,7 @@ class NutritionScreenUITest {
             totalFiber = 28.0,
             totalSugar = 85.0
         )
-        
+
         fakeServiceLocator.nutritionRepository.setNutritionSummary(nutritionSummary)
 
         composeTestRule.setContent {
@@ -241,13 +239,13 @@ class NutritionScreenUITest {
         val userId = 1L
         val nutritionSummary = NutritionSummary(
             totalCalories = 1600.0, // 80% of 2000 goal
-            totalProtein = 120.0,    // 80% of 150 goal
-            totalCarbs = 200.0,      // 80% of 250 goal
-            totalFats = 56.0,        // 80% of 70 goal
-            totalFiber = 20.0,       // 80% of 25 goal
+            totalProtein = 120.0, // 80% of 150 goal
+            totalCarbs = 200.0, // 80% of 250 goal
+            totalFats = 56.0, // 80% of 70 goal
+            totalFiber = 20.0, // 80% of 25 goal
             totalSugar = 40.0
         )
-        
+
         fakeServiceLocator.nutritionRepository.setNutritionSummary(nutritionSummary)
 
         composeTestRule.setContent {
@@ -272,7 +270,7 @@ class NutritionScreenUITest {
             foodName = "Banana",
             calories = 105.0
         )
-        
+
         fakeServiceLocator.foodEntryRepository.addTestData(listOf(testFoodEntry))
 
         composeTestRule.setContent {
@@ -299,7 +297,7 @@ class NutritionScreenUITest {
             foodName = "Banana",
             calories = 105.0
         )
-        
+
         fakeServiceLocator.foodEntryRepository.addTestData(listOf(testFoodEntry))
 
         composeTestRule.setContent {
@@ -322,7 +320,7 @@ class NutritionScreenUITest {
     fun nutritionGoalsSetting_clickGoalsButton_showsGoalsDialog() {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -344,7 +342,7 @@ class NutritionScreenUITest {
     fun setNutritionGoals_validInput_updatesGoals() = runTest {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -353,13 +351,13 @@ class NutritionScreenUITest {
 
         // When
         composeTestRule.onNodeWithContentDescription("Set nutrition goals").performClick()
-        
+
         composeTestRule.onNodeWithText("Daily Calories").performTextClearance()
         composeTestRule.onNodeWithText("Daily Calories").performTextInput("2200")
-        
+
         composeTestRule.onNodeWithText("Protein (g)").performTextClearance()
         composeTestRule.onNodeWithText("Protein (g)").performTextInput("165")
-        
+
         composeTestRule.onNodeWithText("Save Goals").performClick()
 
         // Then
@@ -375,13 +373,13 @@ class NutritionScreenUITest {
         val userId = 1L
         val nutritionSummary = NutritionSummary(
             totalCalories = 2000.0,
-            totalProtein = 150.0,  // 600 cal = 30%
-            totalCarbs = 250.0,    // 1000 cal = 50%
-            totalFats = 44.4,      // 400 cal = 20%
+            totalProtein = 150.0, // 600 cal = 30%
+            totalCarbs = 250.0, // 1000 cal = 50%
+            totalFats = 44.4, // 400 cal = 20%
             totalFiber = 25.0,
             totalSugar = 50.0
         )
-        
+
         fakeServiceLocator.nutritionRepository.setNutritionSummary(nutritionSummary)
 
         composeTestRule.setContent {
@@ -403,7 +401,7 @@ class NutritionScreenUITest {
     fun weeklyNutritionView_switchesToWeeklyMode() = runTest {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -426,7 +424,7 @@ class NutritionScreenUITest {
         // Given
         val userId = 1L
         fakeServiceLocator.nutritionRepository.setError("Network error")
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -443,7 +441,7 @@ class NutritionScreenUITest {
         // Given
         val userId = 1L
         fakeServiceLocator.nutritionRepository.setError("Network error")
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -464,7 +462,7 @@ class NutritionScreenUITest {
     fun accessibilityCompliance_allElementsHaveContentDescriptions() {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme {
                 NutritionScreen(userId = userId)
@@ -492,7 +490,7 @@ class NutritionScreenUITest {
                 calories = (100 + index * 10).toDouble()
             )
         }
-        
+
         fakeServiceLocator.foodEntryRepository.addTestData(manyFoodEntries)
 
         composeTestRule.setContent {
@@ -504,11 +502,11 @@ class NutritionScreenUITest {
         // When
         composeTestRule.onNodeWithText("Food Item 1").assertExists()
         composeTestRule.onNodeWithText("Food Item 20").assertDoesNotExist()
-        
+
         // Scroll to bottom
         composeTestRule.onNodeWithText("Food Item 1").performScrollTo()
-        composeTestRule.onRoot().performTouchInput { 
-            swipeUp(startY = centerY + 200f, endY = centerY - 200f) 
+        composeTestRule.onRoot().performTouchInput {
+            swipeUp(startY = centerY + 200f, endY = centerY - 200f)
         }
 
         // Then
@@ -519,7 +517,7 @@ class NutritionScreenUITest {
     fun darkMode_nutritionScreen_rendersCorrectly() {
         // Given
         val userId = 1L
-        
+
         composeTestRule.setContent {
             FitnessTrackerAppTheme(darkTheme = true) {
                 NutritionScreen(userId = userId)

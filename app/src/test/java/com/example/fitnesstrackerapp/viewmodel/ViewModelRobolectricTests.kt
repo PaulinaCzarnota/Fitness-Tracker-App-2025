@@ -38,7 +38,6 @@ import java.util.Date
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [33]) // Target SDK for Robolectric
 class ViewModelRobolectricTests {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

@@ -13,10 +13,8 @@
 package com.example.fitnesstrackerapp.ui.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.entity.MealType
-import com.example.fitnesstrackerapp.data.entity.NutritionEntry
 import com.example.fitnesstrackerapp.data.model.NutritionSummary
 import com.example.fitnesstrackerapp.repository.FoodEntryRepository
 import com.example.fitnesstrackerapp.repository.NutritionRepository
@@ -26,7 +24,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -35,23 +32,22 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.Rule
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.Rule
 import java.util.Date
 
 @ExperimentalCoroutinesApi
 class NutritionViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private val testDispatcher = StandardTestDispatcher()
     private val testScope = TestScope(testDispatcher)
-    
+
     private lateinit var foodEntryRepository: FoodEntryRepository
     private lateinit var nutritionRepository: NutritionRepository
     private lateinit var viewModel: NutritionViewModel
@@ -59,10 +55,10 @@ class NutritionViewModelTest {
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        
+
         foodEntryRepository = mockk(relaxed = true)
         nutritionRepository = mockk(relaxed = true)
-        
+
         viewModel = NutritionViewModel(foodEntryRepository, nutritionRepository)
     }
 
@@ -74,7 +70,6 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Food Entry Management Tests")
     inner class FoodEntryManagementTests {
-
         @Test
         fun `addFoodEntry successfully adds new food entry`() = testScope.runTest {
             // Given
@@ -143,7 +138,6 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Daily Nutrition Tracking Tests")
     inner class DailyNutritionTrackingTests {
-
         @Test
         fun `getDailyNutritionSummary calculates totals correctly`() = testScope.runTest {
             // Given
@@ -180,16 +174,16 @@ class NutritionViewModelTest {
             val carbGoal = 275.0
             val fatGoal = 85.0
 
-            coEvery { 
-                nutritionRepository.updateNutritionGoals(userId, calorieGoal, proteinGoal, carbGoal, fatGoal) 
+            coEvery {
+                nutritionRepository.updateNutritionGoals(userId, calorieGoal, proteinGoal, carbGoal, fatGoal)
             } returns Unit
 
             // When
             viewModel.updateDailyGoals(userId, calorieGoal, proteinGoal, carbGoal, fatGoal)
 
             // Then
-            coVerify { 
-                nutritionRepository.updateNutritionGoals(userId, calorieGoal, proteinGoal, carbGoal, fatGoal) 
+            coVerify {
+                nutritionRepository.updateNutritionGoals(userId, calorieGoal, proteinGoal, carbGoal, fatGoal)
             }
         }
     }
@@ -197,7 +191,6 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Meal Type Management Tests")
     inner class MealTypeManagementTests {
-
         @Test
         fun `getFoodEntriesByMealType filters entries correctly`() = testScope.runTest {
             // Given
@@ -208,9 +201,9 @@ class NutritionViewModelTest {
                 createTestFoodEntry(id = 1L, foodName = "Oatmeal", mealType = MealType.BREAKFAST),
                 createTestFoodEntry(id = 2L, foodName = "Orange Juice", mealType = MealType.BREAKFAST)
             )
-            
-            every { 
-                foodEntryRepository.getFoodEntriesByMealType(userId, date, mealType) 
+
+            every {
+                foodEntryRepository.getFoodEntriesByMealType(userId, date, mealType)
             } returns flowOf(breakfastEntries)
 
             // When
@@ -232,9 +225,9 @@ class NutritionViewModelTest {
             val date = Date()
             val mealType = MealType.LUNCH
             val lunchCalories = 650.0
-            
-            every { 
-                nutritionRepository.getMealTypeCalories(userId, date, mealType) 
+
+            every {
+                nutritionRepository.getMealTypeCalories(userId, date, mealType)
             } returns flowOf(lunchCalories)
 
             // When
@@ -250,7 +243,6 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Search and Filter Tests")
     inner class SearchAndFilterTests {
-
         @Test
         fun `searchFoodEntries filters by food name`() = testScope.runTest {
             // Given
@@ -260,9 +252,9 @@ class NutritionViewModelTest {
                 createTestFoodEntry(id = 1L, foodName = "Banana"),
                 createTestFoodEntry(id = 2L, foodName = "Banana Smoothie")
             )
-            
-            every { 
-                foodEntryRepository.searchFoodEntries(userId, searchQuery) 
+
+            every {
+                foodEntryRepository.searchFoodEntries(userId, searchQuery)
             } returns flowOf(searchResults)
 
             // When
@@ -286,9 +278,9 @@ class NutritionViewModelTest {
                 createTestFoodEntry(id = 1L, foodName = "Apple"),
                 createTestFoodEntry(id = 2L, foodName = "Chicken Breast")
             )
-            
-            every { 
-                foodEntryRepository.getRecentFoodEntries(userId, limit) 
+
+            every {
+                foodEntryRepository.getRecentFoodEntries(userId, limit)
             } returns flowOf(recentEntries)
 
             // When
@@ -306,14 +298,13 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Nutrition Calculation Tests")
     inner class NutritionCalculationTests {
-
         @Test
         fun `calculateMacroPercentages returns correct ratios`() = testScope.runTest {
             // Given
             val totalCalories = 2000.0
             val protein = 150.0 // 600 calories, 30%
-            val carbs = 250.0   // 1000 calories, 50%
-            val fats = 89.0     // 800 calories, 20%
+            val carbs = 250.0 // 1000 calories, 50%
+            val fats = 89.0 // 800 calories, 20%
 
             // When
             val percentages = viewModel.calculateMacroPercentages(totalCalories, protein, carbs, fats)
@@ -355,7 +346,6 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Error Handling Tests")
     inner class ErrorHandlingTests {
-
         @Test
         fun `addFoodEntry handles repository exception gracefully`() = testScope.runTest {
             // Given
@@ -390,9 +380,9 @@ class NutritionViewModelTest {
             // Given
             val userId = 1L
             val emptyQuery = ""
-            
-            every { 
-                foodEntryRepository.searchFoodEntries(userId, emptyQuery) 
+
+            every {
+                foodEntryRepository.searchFoodEntries(userId, emptyQuery)
             } returns flowOf(emptyList())
 
             // When
@@ -408,7 +398,6 @@ class NutritionViewModelTest {
     @Nested
     @DisplayName("Data Validation Tests")
     inner class DataValidationTests {
-
         @Test
         fun `validateFoodEntry returns false for invalid entry`() = testScope.runTest {
             // Given
@@ -522,10 +511,10 @@ class NutritionViewModelTest {
 
     private fun NutritionViewModel.validateFoodEntry(entry: FoodEntry): Boolean {
         return entry.foodName.isNotBlank() &&
-                entry.calories >= 0.0 &&
-                entry.protein >= 0.0 &&
-                entry.carbs >= 0.0 &&
-                entry.fats >= 0.0 &&
-                entry.servingSize > 0.0
+            entry.calories >= 0.0 &&
+            entry.protein >= 0.0 &&
+            entry.carbs >= 0.0 &&
+            entry.fats >= 0.0 &&
+            entry.servingSize > 0.0
     }
 }

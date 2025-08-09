@@ -36,7 +36,6 @@ class AuthRepository(
     private val sessionManager: SessionManager,
     context: Context,
 ) {
-
     private val _isAuthenticated = MutableStateFlow(false)
     val isAuthenticated: StateFlow<Boolean> = _isAuthenticated.asStateFlow()
 

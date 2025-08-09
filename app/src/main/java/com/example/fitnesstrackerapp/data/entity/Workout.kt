@@ -55,55 +55,38 @@ import java.util.Date
 data class Workout(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "userId")
     val userId: Long,
-
     @ColumnInfo(name = "workoutType")
     val workoutType: WorkoutType,
-
     @ColumnInfo(name = "title")
     val title: String,
-
     @ColumnInfo(name = "startTime")
     val startTime: Date,
-
     @ColumnInfo(name = "endTime")
     val endTime: Date? = null,
-
     @ColumnInfo(name = "duration")
     val duration: Int = 0, // Duration in minutes
-
     @ColumnInfo(name = "distance")
     val distance: Float = 0f, // Distance in kilometers
-
     @ColumnInfo(name = "caloriesBurned")
     val caloriesBurned: Int = 0,
-
     @ColumnInfo(name = "steps")
     val steps: Int = 0,
-
     @ColumnInfo(name = "avgHeartRate")
     val avgHeartRate: Int? = null, // Average heart rate in BPM
-
     @ColumnInfo(name = "maxHeartRate")
     val maxHeartRate: Int? = null, // Maximum heart rate in BPM
-
     @ColumnInfo(name = "notes")
     val notes: String? = null,
-
     @ColumnInfo(name = "rating")
     val rating: Int? = null, // Rating from 1-5
-
     @ColumnInfo(name = "weatherCondition")
     val weatherCondition: String? = null,
-
     @ColumnInfo(name = "temperature")
     val temperature: Float? = null, // Temperature in Celsius
-
     @ColumnInfo(name = "createdAt")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updatedAt")
     val updatedAt: Date = Date(),
 ) {

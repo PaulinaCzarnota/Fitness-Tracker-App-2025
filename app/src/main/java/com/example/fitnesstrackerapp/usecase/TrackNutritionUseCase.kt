@@ -16,7 +16,6 @@ import java.util.Date
 class TrackNutritionUseCase(
     private val nutritionRepository: SimpleNutritionRepository,
 ) {
-
     /**
      * Adds a food entry for a user
      */

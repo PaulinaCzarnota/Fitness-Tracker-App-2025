@@ -7,7 +7,6 @@ import android.content.Context
  * Provides minimal functionality to prevent compilation errors.
  */
 object FakeServiceLocator {
-
     // Fake repositories - minimal stubs for testing
     val workoutRepository = FakeWorkoutRepository()
     val exerciseRepository = FakeExerciseRepository()

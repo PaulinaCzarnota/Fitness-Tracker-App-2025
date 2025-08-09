@@ -143,7 +143,6 @@ fun Modifier.accessibleTouchTarget(
  * Color contrast validation utilities
  */
 object ColorAccessibility {
-
     /**
      * Calculates the contrast ratio between two colors
      */
@@ -228,7 +227,6 @@ object ColorAccessibility {
  * Accessibility-aware animation utilities
  */
 object AnimationAccessibility {
-
     /**
      * Returns appropriate animation duration based on accessibility preferences
      */
@@ -254,7 +252,6 @@ object AnimationAccessibility {
  * Fitness-specific accessibility descriptions
  */
 object FitnessAccessibilityText {
-
     fun stepCountDescription(steps: Int, goal: Int): String {
         val percentage = ((steps.toFloat() / goal) * 100).roundToInt()
         return when {
@@ -319,7 +316,6 @@ object FitnessAccessibilityText {
  * Accessibility action helpers
  */
 object AccessibilityActions {
-
     /**
      * Creates custom accessibility actions for workout controls
      */
@@ -367,7 +363,6 @@ object AccessibilityActions {
  * Haptic feedback helpers for accessibility
  */
 object AccessibilityFeedback {
-
     /**
      * Provides appropriate haptic feedback for different actions
      */

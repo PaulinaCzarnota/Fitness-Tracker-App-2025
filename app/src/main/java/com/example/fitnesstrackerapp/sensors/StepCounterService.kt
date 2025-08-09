@@ -45,7 +45,6 @@ import java.util.Date
 import kotlin.math.abs
 
 class StepCounterService : Service(), SensorEventListener {
-
     // Sensor components
     private var sensorManager: SensorManager? = null
     private var stepCounterSensor: Sensor? = null

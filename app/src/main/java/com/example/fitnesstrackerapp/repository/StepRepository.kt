@@ -25,7 +25,6 @@ import java.util.Date
  * @property stepDao The DAO for accessing step data in the Room database
  */
 class StepRepository(private val stepDao: StepDao) {
-
     /**
      * Upserts a step entity (inserts or updates if existing).
      *

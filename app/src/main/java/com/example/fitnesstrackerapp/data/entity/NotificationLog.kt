@@ -104,76 +104,52 @@ enum class NotificationDeliveryChannel {
 data class NotificationLog(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Long,
-
     @ColumnInfo(name = "notification_id")
     val notificationId: Long,
-
     @ColumnInfo(name = "event_type")
     val eventType: NotificationLogEvent,
-
     @ColumnInfo(name = "event_timestamp")
     val eventTimestamp: Date = Date(),
-
     @ColumnInfo(name = "delivery_channel")
     val deliveryChannel: NotificationDeliveryChannel,
-
     @ColumnInfo(name = "is_success")
     val isSuccess: Boolean = true,
-
     @ColumnInfo(name = "error_code")
     val errorCode: String? = null,
-
     @ColumnInfo(name = "error_message")
     val errorMessage: String? = null,
-
     @ColumnInfo(name = "retry_count")
     val retryCount: Int = 0,
-
     @ColumnInfo(name = "device_token")
     val deviceToken: String? = null,
-
     @ColumnInfo(name = "platform_response")
     val platformResponse: String? = null, // JSON string with platform-specific data
-
     @ColumnInfo(name = "user_agent")
     val userAgent: String? = null,
-
     @ColumnInfo(name = "ip_address")
     val ipAddress: String? = null,
-
     @ColumnInfo(name = "app_version")
     val appVersion: String? = null,
-
     @ColumnInfo(name = "os_version")
     val osVersion: String? = null,
-
     @ColumnInfo(name = "processing_duration_ms")
     val processingDurationMs: Long = 0,
-
     @ColumnInfo(name = "delivery_duration_ms")
     val deliveryDurationMs: Long? = null,
-
     @ColumnInfo(name = "interaction_data")
     val interactionData: String? = null, // JSON string with interaction details
-
     @ColumnInfo(name = "action_taken")
     val actionTaken: String? = null, // Specific action if action button was clicked
-
     @ColumnInfo(name = "session_id")
     val sessionId: String? = null,
-
     @ColumnInfo(name = "batch_id")
     val batchId: String? = null, // For bulk notification tracking
-
     @ColumnInfo(name = "priority_level")
     val priorityLevel: Int = 0, // 0-5, 5 being highest priority
-
     @ColumnInfo(name = "experiment_id")
     val experimentId: String? = null, // For A/B testing notifications
-
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
 ) {

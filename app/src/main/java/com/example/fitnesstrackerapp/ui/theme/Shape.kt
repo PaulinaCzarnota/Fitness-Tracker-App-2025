@@ -16,16 +16,12 @@ import androidx.compose.ui.unit.dp
 val Shapes = Shapes(
     // Extra small components (chips, small buttons)
     extraSmall = RoundedCornerShape(4.dp),
-
     // Small components (small cards, filled buttons)
     small = RoundedCornerShape(8.dp),
-
     // Medium components (cards, outlined buttons)
     medium = RoundedCornerShape(12.dp),
-
     // Large components (navigation drawer, large cards)
     large = RoundedCornerShape(16.dp),
-
     // Extra large components (dialogs, bottom sheets)
     extraLarge = RoundedCornerShape(28.dp),
 )

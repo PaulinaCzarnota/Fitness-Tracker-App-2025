@@ -26,7 +26,6 @@ import java.util.Date
 @RunWith(AndroidJUnit4::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ComprehensiveRepositoryTest {
-
     private lateinit var context: Context
     private lateinit var database: AppDatabase
     private lateinit var goalRepository: GoalRepository

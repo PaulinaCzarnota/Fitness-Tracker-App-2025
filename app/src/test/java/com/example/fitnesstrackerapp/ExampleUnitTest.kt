@@ -16,7 +16,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ExampleUnitTest {
-
     /**
      * Test 1: Basic addition validation
      *

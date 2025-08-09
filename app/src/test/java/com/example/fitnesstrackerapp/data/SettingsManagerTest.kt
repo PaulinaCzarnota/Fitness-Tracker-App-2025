@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config
 @Config(sdk = [33])
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsManagerTest {
-
     private lateinit var context: Context
     private lateinit var settingsManager: SettingsManager
 

@@ -28,7 +28,6 @@ import org.junit.Test
  */
 @ExperimentalCoroutinesApi
 class AuthViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

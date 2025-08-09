@@ -29,7 +29,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class GoalDaoTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface ExerciseDao {
-
     /**
      * Inserts a new exercise into the database.
      *

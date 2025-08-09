@@ -36,7 +36,6 @@ class PermissionManager(
     private val onPermissionResult: (PermissionRequestResult) -> Unit = {},
     private val onAllPermissionsHandled: (List<PermissionRequestResult>) -> Unit = {},
 ) : DefaultLifecycleObserver {
-
     companion object {
         private const val TAG = "PermissionManager"
     }

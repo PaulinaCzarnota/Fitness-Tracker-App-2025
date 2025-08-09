@@ -21,7 +21,6 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  * reminder schedules, and personalization options using DataStore.
  */
 class UserPreferences(private val context: Context) {
-
     companion object {
         // Basic user preferences
         private val USE_METRIC = booleanPreferencesKey("use_metric")

@@ -15,7 +15,6 @@ import java.util.Date
 class ManageGoalsUseCase(
     private val goalRepository: GoalRepository,
 ) {
-
     /**
      * Creates a new fitness goal
      */

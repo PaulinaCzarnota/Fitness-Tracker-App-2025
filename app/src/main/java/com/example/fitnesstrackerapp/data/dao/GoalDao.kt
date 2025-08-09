@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface GoalDao {
-
     /**
      * Inserts a new goal into the database.
      *

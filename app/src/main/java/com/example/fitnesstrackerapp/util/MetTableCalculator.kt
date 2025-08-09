@@ -18,7 +18,6 @@ import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import kotlin.math.max
 
 object MetTableCalculator {
-
     /**
      * Calculates calories burned based on MET value, user weight, and duration.
      *

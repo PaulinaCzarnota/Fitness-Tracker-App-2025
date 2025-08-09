@@ -39,7 +39,6 @@ import com.example.fitnesstrackerapp.util.PermissionUtils
  * - Providing error handling for critical app functionality
  */
 class MainActivity : ComponentActivity() {
-
     companion object {
         private const val TAG = "MainActivity"
     }

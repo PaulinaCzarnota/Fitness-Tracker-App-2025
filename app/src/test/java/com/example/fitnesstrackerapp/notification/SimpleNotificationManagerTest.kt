@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
 class SimpleNotificationManagerTest {
-
     private lateinit var context: Context
     private lateinit var notificationManager: SimpleNotificationManager
     private lateinit var systemNotificationManager: NotificationManager

@@ -16,7 +16,6 @@ import java.util.Date
 class LogWorkoutUseCase(
     private val workoutRepository: WorkoutRepository,
 ) {
-
     /**
      * Starts a new workout session
      */

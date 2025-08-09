@@ -142,7 +142,7 @@ android {
 
         // Configure test orchestrator for improved test isolation
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        
+
         // Enable code coverage for unit tests
         unitTests.all {
             it.useJUnitPlatform()
@@ -164,15 +164,15 @@ jacoco {
 tasks.register<JacocoReport>("jacocoTestReport") {
     group = "reporting"
     description = "Generate JaCoCo test coverage report"
-    
+
     dependsOn("testDebugUnitTest")
-    
+
     reports {
         xml.required.set(true)
         html.required.set(true)
         csv.required.set(false)
     }
-    
+
     val debugTree = fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/classes") {
         exclude(
             "**/R.class",
@@ -206,7 +206,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*\$Result\$*.*"
         )
     }
-    
+
     val kotlinDebugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
         exclude(
             "**/R.class",
@@ -240,7 +240,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*\$Result\$*.*"
         )
     }
-    
+
     classDirectories.setFrom(debugTree, kotlinDebugTree)
     sourceDirectories.setFrom(
         "${project.projectDir}/src/main/java",
@@ -252,32 +252,32 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
     group = "verification"
     description = "Verify JaCoCo test coverage meets minimum thresholds"
-    
+
     dependsOn("jacocoTestReport")
-    
+
     violationRules {
         rule {
             limit {
-                minimum = "0.80".toBigDecimal()  // 80% coverage requirement
+                minimum = "0.80".toBigDecimal() // 80% coverage requirement
             }
         }
-        
+
         rule {
             enabled = true
             element = "CLASS"
             limit {
                 counter = "BRANCH"
                 value = "COVEREDRATIO"
-                minimum = "0.75".toBigDecimal()  // 75% branch coverage
+                minimum = "0.75".toBigDecimal() // 75% branch coverage
             }
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = "0.80".toBigDecimal()  // 80% line coverage
+                minimum = "0.80".toBigDecimal() // 80% line coverage
             }
         }
     }
-    
+
     classDirectories.setFrom(
         fileTree("${layout.buildDirectory.get()}/intermediates/javac/debug/classes") {
             exclude(
@@ -306,7 +306,7 @@ tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
             )
         }
     )
-    
+
     executionData.setFrom(fileTree(layout.buildDirectory.get()).include("**/*.exec", "**/*.ec"))
 }
 

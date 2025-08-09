@@ -31,7 +31,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthRepositoryTest {
-
     private lateinit var context: Context
     private lateinit var database: AppDatabase
     private lateinit var userDao: UserDao

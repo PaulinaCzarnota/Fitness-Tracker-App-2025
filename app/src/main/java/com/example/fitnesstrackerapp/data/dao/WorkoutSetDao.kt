@@ -36,7 +36,6 @@ import java.util.Date
  */
 @Dao
 interface WorkoutSetDao {
-
     /**
      * Inserts a new workout set into the database.
      *

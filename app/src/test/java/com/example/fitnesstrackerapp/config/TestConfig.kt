@@ -24,7 +24,6 @@ import io.mockk.mockk
  * - Test-specific utilities and helpers
  */
 object TestConfig {
-
     /**
      * Provides in-memory database for testing.
      * This database is destroyed after each test method.
@@ -81,7 +80,6 @@ object TestConfig {
  * Base test class for unit tests with common setup.
  */
 abstract class BaseUnitTest {
-
     /**
      * Common setup for unit tests.
      * Override this method in test classes for specific setup.
@@ -103,7 +101,6 @@ abstract class BaseUnitTest {
  * Base test class for integration tests with database.
  */
 abstract class BaseIntegrationTest {
-
     protected lateinit var database: AppDatabase
 
     /**
@@ -132,7 +129,6 @@ abstract class BaseIntegrationTest {
  * Test data factory for creating consistent test objects.
  */
 object TestDataFactory {
-
     /**
      * Creates a set of test users for bulk testing scenarios.
      */
@@ -181,7 +177,6 @@ object TestDataFactory {
  * Assertion helpers for common test scenarios.
  */
 object TestAssertions {
-
     /**
      * Asserts that a list contains items with specific properties.
      */
@@ -229,7 +224,6 @@ object TestAssertions {
  * Test utilities for common operations.
  */
 object TestUtils {
-
     /**
      * Executes a block with a timeout.
      */

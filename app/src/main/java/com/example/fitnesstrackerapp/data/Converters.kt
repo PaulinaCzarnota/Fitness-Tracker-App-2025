@@ -44,7 +44,6 @@ import java.util.Date
  * - Complex objects ↔ JSON strings (if needed)
  */
 class Converters {
-
     /**
      * Converts timestamp to Date object.
      * @param timestamp Unix timestamp in milliseconds

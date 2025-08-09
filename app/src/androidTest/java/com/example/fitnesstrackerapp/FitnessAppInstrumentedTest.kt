@@ -23,7 +23,6 @@ import java.util.Date
  */
 @RunWith(AndroidJUnit4::class)
 class FitnessAppInstrumentedTest {
-
     private lateinit var fakeWorkoutUseCase: FakeLogWorkoutUseCase
     private lateinit var fakeStepsUseCase: FakeTrackStepsUseCase
 

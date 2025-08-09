@@ -33,7 +33,6 @@ import org.junit.Test
  */
 @ExperimentalCoroutinesApi
 class AuthenticationSecurityTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
  * Manager class for StepCounterService operations
  */
 object StepServiceManager {
-
     private const val TAG = "StepServiceManager"
 
     /**

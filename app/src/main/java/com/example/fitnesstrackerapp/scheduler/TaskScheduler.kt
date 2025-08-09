@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit
  * Manages scheduling of background tasks using WorkManager
  */
 class TaskScheduler(context: Context) {
-
     private val workManager = WorkManager.getInstance(context)
 
     /**

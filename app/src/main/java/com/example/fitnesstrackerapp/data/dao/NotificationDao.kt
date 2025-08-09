@@ -30,7 +30,6 @@ import java.util.Date
  */
 @Dao
 interface NotificationDao {
-
     /**
      * Inserts a new notification into the database.
      *

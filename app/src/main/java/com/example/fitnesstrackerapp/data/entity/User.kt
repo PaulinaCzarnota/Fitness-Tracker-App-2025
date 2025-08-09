@@ -79,95 +79,65 @@ enum class ActivityLevel(val multiplier: Double) {
 data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "email")
     val email: String,
-
     @ColumnInfo(name = "username")
     val username: String,
-
     @ColumnInfo(name = "password_hash")
     val passwordHash: String,
-
     @ColumnInfo(name = "password_salt")
     val passwordSalt: String,
-
     @ColumnInfo(name = "first_name")
     val firstName: String? = null,
-
     @ColumnInfo(name = "last_name")
     val lastName: String? = null,
-
     @ColumnInfo(name = "date_of_birth")
     val dateOfBirth: Date? = null,
-
     @ColumnInfo(name = "height_cm")
     val heightCm: Float? = null,
-
     @ColumnInfo(name = "weight_kg")
     val weightKg: Float? = null,
-
     @ColumnInfo(name = "gender")
     val gender: Gender? = null,
-
     @ColumnInfo(name = "activity_level")
     val activityLevel: ActivityLevel = ActivityLevel.MODERATELY_ACTIVE,
-
     @ColumnInfo(name = "fitness_level")
     val fitnessLevel: String? = null, // beginner, intermediate, advanced
-
     @ColumnInfo(name = "registration_date")
     val registrationDate: Date = Date(),
-
     @ColumnInfo(name = "last_login")
     val lastLogin: Date? = null,
-
     @ColumnInfo(name = "is_active")
     val isActive: Boolean = true,
-
     @ColumnInfo(name = "is_account_locked")
     val isAccountLocked: Boolean = false,
-
     @ColumnInfo(name = "failed_login_attempts")
     val failedLoginAttempts: Int = 0,
-
     @ColumnInfo(name = "last_password_change")
     val lastPasswordChange: Date = Date(),
-
     @ColumnInfo(name = "profile_image_path")
     val profileImagePath: String? = null,
-
     @ColumnInfo(name = "notification_enabled")
     val notificationEnabled: Boolean = true,
-
     @ColumnInfo(name = "privacy_settings")
     val privacySettings: String? = null, // JSON string for privacy preferences
-
     @ColumnInfo(name = "created_at")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updated_at")
     val updatedAt: Date = Date(),
-
     @ColumnInfo(name = "daily_step_goal")
     val dailyStepGoal: Int = 10000,
-
     @ColumnInfo(name = "daily_calorie_goal")
     val dailyCalorieGoal: Int = 2000,
-
     @ColumnInfo(name = "use_metric_units")
     val useMetricUnits: Boolean = true,
-
     // Firebase Authentication fields
     @ColumnInfo(name = "firebase_uid")
     val firebaseUid: String? = null,
-
     @ColumnInfo(name = "is_email_verified")
     val isEmailVerified: Boolean = false,
-
     @ColumnInfo(name = "provider")
     val provider: String? = null, // "email", "google.com", etc.
-
     @ColumnInfo(name = "photo_url")
     val photoUrl: String? = null,
 ) {

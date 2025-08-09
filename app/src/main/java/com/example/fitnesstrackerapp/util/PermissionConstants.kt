@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat
  * Centralizes permission strings and provides categorization.
  */
 object PermissionConstants {
-
     // Core fitness and health permissions
     @RequiresApi(Build.VERSION_CODES.Q)
     const val ACTIVITY_RECOGNITION = Manifest.permission.ACTIVITY_RECOGNITION
@@ -155,7 +154,6 @@ data class PermissionDescription(
  * Utility class for permission-related operations.
  */
 object PermissionUtils {
-
     /**
      * Checks if a specific permission is granted.
      */

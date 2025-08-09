@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicLong
  * Provides minimal functionality with in-memory storage to prevent compilation errors.
  */
 class FakeLogWorkoutUseCase {
-
     private val workouts = mutableMapOf<Long, Workout>()
     private val idCounter = AtomicLong(1)
 

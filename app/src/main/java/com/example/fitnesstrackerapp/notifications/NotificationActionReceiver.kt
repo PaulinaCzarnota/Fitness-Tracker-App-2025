@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
  * actions and updates the database accordingly.
  */
 class NotificationActionReceiver : BroadcastReceiver() {
-
     companion object {
         private const val TAG = "NotificationActionReceiver"
 

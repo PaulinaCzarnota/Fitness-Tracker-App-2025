@@ -29,7 +29,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class FoodEntryDaoTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -216,14 +215,12 @@ class FoodEntryDaoTest {
                 caloriesPerServing = 300.0,
                 servingSize = 1.0,
             ).copy(dateConsumed = targetDate),
-
             TestHelper.createTestFoodEntry(
                 userId = userId,
                 foodName = "Lunch",
                 caloriesPerServing = 500.0,
                 servingSize = 1.0,
             ).copy(dateConsumed = targetDate),
-
             TestHelper.createTestFoodEntry(
                 userId = userId,
                 foodName = "Dinner",
@@ -261,7 +258,6 @@ class FoodEntryDaoTest {
                 carbsGrams = 0.0,
                 fatGrams = 3.6,
             ),
-
             TestHelper.createTestFoodEntry(
                 userId = userId,
                 foodName = "Brown Rice",

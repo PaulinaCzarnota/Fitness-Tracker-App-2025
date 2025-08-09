@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentActivity
  * @property context The application context
  */
 class BiometricAuthManager(private val context: Context) {
-
     /**
      * Checks if biometric authentication is available on the device.
      *

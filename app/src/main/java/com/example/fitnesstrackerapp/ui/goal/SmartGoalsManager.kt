@@ -771,7 +771,6 @@ private fun getDefaultUnit(goalType: GoalType): String {
  * Progress calculation utilities
  */
 object GoalProgressCalculator {
-
     /**
      * Calculates progress percentage with completion logic
      */

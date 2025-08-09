@@ -33,7 +33,6 @@ import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WorkoutViewModelTest {
-
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 

@@ -31,7 +31,6 @@ import java.util.regex.Pattern
  * @property authRepository The repository for handling authentication data.
  */
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
-
     /**
      * Represents the UI state for the authentication screens.
      *

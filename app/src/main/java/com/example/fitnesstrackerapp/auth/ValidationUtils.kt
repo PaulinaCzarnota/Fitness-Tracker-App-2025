@@ -9,7 +9,6 @@ import java.util.regex.Pattern
  * and data integrity checks.
  */
 object ValidationUtils {
-
     /**
      * Email validation using Android's built-in pattern matcher
      */

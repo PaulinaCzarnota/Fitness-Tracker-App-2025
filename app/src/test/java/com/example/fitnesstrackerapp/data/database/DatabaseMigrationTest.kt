@@ -34,7 +34,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class DatabaseMigrationTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 

@@ -35,7 +35,6 @@ import kotlinx.coroutines.launch
  * integrates with the repository layer for data retrieval.
  */
 class NotificationReceiver : BroadcastReceiver() {
-
     companion object {
         private const val TAG = "NotificationReceiver"
 

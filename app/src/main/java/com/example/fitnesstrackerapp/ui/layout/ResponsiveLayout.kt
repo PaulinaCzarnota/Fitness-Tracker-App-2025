@@ -245,7 +245,6 @@ fun ResponsiveConstraintLayout(
  * Adaptive spacing values
  */
 object AdaptiveSpacing {
-
     @Composable
     fun small(): Dp {
         val screenSize = getScreenSize()

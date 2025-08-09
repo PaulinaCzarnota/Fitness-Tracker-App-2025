@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit
  * Centralized scheduler for managing all background work and notifications.
  */
 class WorkManagerScheduler(private val context: Context) {
-
     private val workManager = WorkManager.getInstance(context)
 
     companion object {

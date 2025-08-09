@@ -34,7 +34,6 @@ import java.util.Date
 class WorkoutRepository(
     private val workoutDao: WorkoutDao,
 ) {
-
     /**
      * Inserts a new workout into the database.
      *

@@ -28,12 +28,10 @@ data class WorkoutManagementUiState(
     val workouts: List<Workout> = emptyList(),
     val error: String? = null,
     val successMessage: String? = null,
-
     // Filter and search state
     val searchQuery: String = "",
     val selectedWorkoutTypes: Set<String> = emptySet(),
     val dateRange: Pair<Date?, Date?> = Pair(null, null),
-
     // Statistics
     val totalWorkouts: Int = 0,
     val totalDuration: Int = 0,
@@ -48,7 +46,6 @@ class WorkoutManagementViewModel(
     private val workoutRepository: WorkoutRepository,
     private val userId: Long,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(WorkoutManagementUiState())
     val uiState: StateFlow<WorkoutManagementUiState> = _uiState.asStateFlow()
 

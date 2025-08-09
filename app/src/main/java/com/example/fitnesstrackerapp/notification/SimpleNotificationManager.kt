@@ -42,7 +42,6 @@ import com.example.fitnesstrackerapp.R
  * @param context The application context
  */
 class SimpleNotificationManager(private val context: Context) {
-
     companion object {
         private const val TAG = "SimpleNotificationManager"
 

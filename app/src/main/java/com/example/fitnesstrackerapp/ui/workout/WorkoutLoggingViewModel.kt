@@ -34,36 +34,30 @@ import java.util.Date
  */
 data class WorkoutLoggingUiState(
     val isLoading: Boolean = false,
-
     // Workout session state
     val activeWorkout: Workout? = null,
     val isWorkoutActive: Boolean = false,
     val workoutDuration: Long = 0L,
-
     // Exercise management
     val availableExercises: List<Exercise> = emptyList(),
     val selectedExercises: List<Exercise> = emptyList(),
     val exerciseSearchQuery: String = "",
     val muscleGroupFilter: MuscleGroup? = null,
     val equipmentFilter: EquipmentType? = null,
-
     // Set logging
     val currentExercise: Exercise? = null,
     val exerciseSets: List<WorkoutSet> = emptyList(),
     val recentSets: List<WorkoutSet> = emptyList(),
     val personalRecords: List<WorkoutSet> = emptyList(),
     val exerciseStats: ExerciseStats? = null,
-
     // Timer and rest
     val restTimer: Int = 0,
     val isRestTimerActive: Boolean = false,
     val suggestedRestTime: Int = 60, // seconds
-
     // Workout summary
     val workoutSummary: List<WorkoutSetSummary> = emptyList(),
     val totalVolume: Float = 0f,
     val totalSets: Int = 0,
-
     // UI state
     val error: String? = null,
     val successMessage: String? = null,
@@ -93,7 +87,6 @@ class WorkoutLoggingViewModel(
     private val workoutSetRepository: WorkoutSetRepository,
     private val userId: Long,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(WorkoutLoggingUiState())
     val uiState: StateFlow<WorkoutLoggingUiState> = _uiState.asStateFlow()
 

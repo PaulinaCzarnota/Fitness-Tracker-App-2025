@@ -61,55 +61,38 @@ import java.util.Date
 data class WorkoutSet(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-
     @ColumnInfo(name = "workoutId")
     val workoutId: Long,
-
     @ColumnInfo(name = "exerciseId")
     val exerciseId: Long,
-
     @ColumnInfo(name = "setNumber")
     val setNumber: Int, // Order of the set within the exercise (1, 2, 3, etc.)
-
     @ColumnInfo(name = "setType")
     val setType: SetType = SetType.NORMAL,
-
     @ColumnInfo(name = "repetitions")
     val repetitions: Int = 0, // Number of reps performed
-
     @ColumnInfo(name = "targetReps")
     val targetReps: Int? = null, // Planned number of reps
-
     @ColumnInfo(name = "weight")
     val weight: Double = 0.0, // Weight used in kg
-
     @ColumnInfo(name = "duration")
     val duration: Int = 0, // Duration in seconds (for time-based exercises)
-
     @ColumnInfo(name = "distance")
     val distance: Float = 0f, // Distance covered in meters (for cardio)
-
     @ColumnInfo(name = "restTime")
     val restTime: Int = 0, // Rest time after this set in seconds
-
     @ColumnInfo(name = "rpe")
     val rpe: Int? = null, // Rate of Perceived Exertion (1-10 scale)
-
     @ColumnInfo(name = "notes")
     val notes: String? = null,
-
     @ColumnInfo(name = "isPersonalRecord")
     val isPersonalRecord: Boolean = false,
-
     @ColumnInfo(name = "isCompleted")
     val isCompleted: Boolean = true,
-
     @ColumnInfo(name = "completedAt")
     val completedAt: Date? = null,
-
     @ColumnInfo(name = "createdAt")
     val createdAt: Date = Date(),
-
     @ColumnInfo(name = "updatedAt")
     val updatedAt: Date = Date(),
 ) {
