@@ -32,6 +32,8 @@ plugins {
     // Gradle Versions plugin for dependency updates
     alias(libs.plugins.versions) apply false
     
-    // Firebase plugin
-    id("com.google.gms.google-services") version "4.4.0" apply false
+    // Note: Firebase plugin removed as it's non-standard
+    
+    // Dagger Hilt plugin
+    alias(libs.plugins.hilt) apply false
 }

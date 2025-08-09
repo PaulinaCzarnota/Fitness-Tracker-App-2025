@@ -27,8 +27,9 @@ plugins {
     alias(libs.plugins.detekt)
     // Dependency updates plugin
     alias(libs.plugins.versions)
-    // Google services plugin for Firebase
-    id("com.google.gms.google-services")
+    // Note: Firebase plugin removed as it's non-standard
+    // Dagger Hilt plugin for dependency injection
+    alias(libs.plugins.hilt)
     // JaCoCo code coverage plugin
     jacoco
 }
@@ -56,7 +57,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.fitnesstrackerapp.HiltTestRunner"
 
         // Enable multidex for apps with many dependencies
         multiDexEnabled = true
@@ -99,7 +100,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     packaging {
@@ -124,6 +125,12 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
+        // Enable explicit API mode for better API visibility control
+        // This helps catch missing visibility modifiers and return types
+        // Only apply to new modules to avoid breaking existing code
+        if (project.hasProperty("enableExplicitApi")) {
+            freeCompilerArgs += "-Xexplicit-api=strict"
+        }
     }
 
     compileOptions {
@@ -203,7 +210,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*_ViewBinding*.*",
             "**/*Binding*.*",
             "**/*\$Result.*",
-            "**/*\$Result\$*.*"
+            "**/*\$Result\$*.*",
         )
     }
 
@@ -237,14 +244,14 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*_ViewBinding*.*",
             "**/*Binding*.*",
             "**/*\$Result.*",
-            "**/*\$Result\$*.*"
+            "**/*\$Result\$*.*",
         )
     }
 
     classDirectories.setFrom(debugTree, kotlinDebugTree)
     sourceDirectories.setFrom(
         "${project.projectDir}/src/main/java",
-        "${project.projectDir}/src/main/kotlin"
+        "${project.projectDir}/src/main/kotlin",
     )
     executionData.setFrom(fileTree(layout.buildDirectory.get()).include("**/*.exec", "**/*.ec"))
 }
@@ -289,7 +296,7 @@ tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
                 "**/*\$MockitoMock\$*.*",
                 "**/databinding/**",
                 "**/android/databinding/**",
-                "**/androidx/databinding/**"
+                "**/androidx/databinding/**",
             )
         },
         fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug") {
@@ -302,9 +309,9 @@ tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
                 "**/*\$MockitoMock\$*.*",
                 "**/databinding/**",
                 "**/android/databinding/**",
-                "**/androidx/databinding/**"
+                "**/androidx/databinding/**",
             )
-        }
+        },
     )
 
     executionData.setFrom(fileTree(layout.buildDirectory.get()).include("**/*.exec", "**/*.ec"))
@@ -359,12 +366,11 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
     // Additional Material 3 and Animation dependencies for UI/UX overhaul
-    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
-    implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha03")
-    implementation("androidx.compose.animation:animation:1.5.8")
-    implementation("androidx.compose.animation:animation-graphics:1.5.8")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+    implementation("androidx.compose.animation:animation")
+    implementation("androidx.compose.animation:animation-graphics")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+    // Navigation compose version is managed by BOM now
 
     // Motion Layout and Advanced Animation Support
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
@@ -379,39 +385,30 @@ dependencies {
     // Security
     implementation(libs.androidx.security.crypto)
 
-    // Required for R8 security crypto
-    implementation("com.google.errorprone:error_prone_annotations:2.18.0")
-    implementation("javax.annotation:javax.annotation-api:1.3.2")
+    // Note: Error prone annotations removed as they are non-standard
 
     // Multidex support for devices with API < 21
     implementation(libs.androidx.multidex)
 
-    // Firebase Authentication
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
-    implementation("com.google.firebase:firebase-common-ktx:20.4.2")
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    // Note: Firebase and MPAndroidChart removed as they are non-standard libraries
+    // Using standard Android SDK libraries only as per assignment requirements
 
-    // MPAndroidChart for advanced charting
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // Hilt Dependency Injection
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    ksp(libs.hilt.compiler.androidx)
+    implementation(libs.hilt.work)
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    
+    // Hilt for testing
+    testImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kspTest(libs.hilt.compiler)
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    kspAndroidTest(libs.hilt.compiler)
 
     // Note: Using only standard Android SDK libraries as per assignment requirements
 
-    // JUnit 5 Testing Framework
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.1")
-    testImplementation("org.junit.vintage:junit-vintage-engine:5.10.1") // For JUnit 4 compatibility
-
-    // MockK for Kotlin mocking
-    testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("io.mockk:mockk-android:1.13.8")
-    androidTestImplementation("io.mockk:mockk-android:1.13.8")
-
-    // Robolectric for unit testing Android components
-    testImplementation("org.robolectric:robolectric:4.11.1")
-    testImplementation("androidx.test:core:1.5.0")
-    testImplementation("androidx.test:runner:1.5.2")
-    testImplementation("androidx.test.ext:junit:1.1.5")
+    // Using standard Android testing libraries only
 
     // Architecture Testing
     testImplementation(libs.androidx.arch.core.testing)
@@ -438,20 +435,10 @@ dependencies {
     testImplementation("androidx.work:work-testing:2.9.0")
     androidTestImplementation("androidx.work:work-testing:2.9.0")
 
-    // Fragment Testing
-    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
-
-    // Test runners and utilities
+    // Standard Android testing libraries only
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
-
-    // Truth assertion library
-    testImplementation("com.google.truth:truth:1.1.5")
-    androidTestImplementation("com.google.truth:truth:1.1.5")
-
-    // UI Automator for system-level UI testing (notifications, etc.)
-    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
 }
 
 /**
