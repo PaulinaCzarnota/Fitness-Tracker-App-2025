@@ -12,9 +12,22 @@
 
 package com.example.fitnesstrackerapp.ui.nutrition
 
+// MPAndroidChart removed - using Compose-based charts instead
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -23,28 +36,59 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Bedtime
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Cookie
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DataArray
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SportsGymnastics
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.FoodEntry
+import com.example.fitnesstrackerapp.data.entity.MealType
+import com.example.fitnesstrackerapp.data.model.FoodDatabase
+import com.example.fitnesstrackerapp.data.model.FoodItem
 import com.example.fitnesstrackerapp.data.model.NutritionSummary
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 /**
  * Enhanced nutrition screen with comprehensive food tracking
@@ -114,16 +158,35 @@ fun EnhancedNutritionScreen(
             )
         }
 
-        // Quick add custom food button
-        OutlinedButton(
-            onClick = {
-                showAddFoodDialog = true
-            },
+        // Quick action buttons
+        Row(
             modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Add Custom Food")
+            OutlinedButton(
+                onClick = {
+                    showAddFoodDialog = true
+                },
+                modifier = Modifier.weight(1f),
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Custom Food")
+            }
+
+            // Demo data seeding button (only show if no entries for today)
+            if (uiState.foodEntries.isEmpty() && !uiState.isLoading) {
+                FilledTonalButton(
+                    onClick = {
+                        nutritionViewModel.seedDefaultData()
+                    },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Icon(Icons.Default.DataArray, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Demo Data")
+                }
+            }
         }
     }
 
@@ -379,7 +442,7 @@ fun MacroItem(
 }
 
 /**
- * Macro breakdown pie chart
+ * Macro breakdown chart using Compose Canvas
  */
 @Composable
 fun MacroBreakdownChart(
@@ -403,53 +466,112 @@ fun MacroBreakdownChart(
             )
 
             if (proteinGrams + carbsGrams + fatGrams > 0) {
-                AndroidView(
-                    factory = { context ->
-                        PieChart(context).apply {
-                            description.isEnabled = false
-                            isRotationEnabled = true
-                            setUsePercentValues(true)
-                            setDrawEntryLabels(false)
-                            centerText = "Macros"
-                            setCenterTextSize(16f)
-                            holeRadius = 40f
-                            transparentCircleRadius = 45f
-                            legend.isEnabled = true
-                        }
-                    },
-                    update = { pieChart ->
-                        val entries = mutableListOf<PieEntry>()
+                val total = proteinGrams + carbsGrams + fatGrams
+                val proteinPercent = (proteinGrams / total * 100).toInt()
+                val carbsPercent = (carbsGrams / total * 100).toInt()
+                val fatPercent = (fatGrams / total * 100).toInt()
 
-                        if (proteinGrams > 0) {
-                            entries.add(PieEntry(proteinGrams.toFloat(), "Protein"))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    // Simple bar chart representation
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .width(40.dp)
+                                .background(
+                                    Color(0xFF4CAF50),
+                                    RoundedCornerShape(4.dp),
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "${proteinPercent}%",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
                         }
-                        if (carbsGrams > 0) {
-                            entries.add(PieEntry(carbsGrams.toFloat(), "Carbs"))
-                        }
-                        if (fatGrams > 0) {
-                            entries.add(PieEntry(fatGrams.toFloat(), "Fat"))
-                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Protein",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            text = "${proteinGrams.toInt()}g",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
 
-                        if (entries.isNotEmpty()) {
-                            val dataSet = PieDataSet(entries, "").apply {
-                                colors = listOf(
-                                    Color(0xFF4CAF50).toArgb(), // Green for protein
-                                    Color(0xFF2196F3).toArgb(), // Blue for carbs
-                                    Color(0xFFFF9800).toArgb(), // Orange for fat
-                                )
-                                valueTextSize = 12f
-                                valueTextColor = android.graphics.Color.WHITE
-                            }
-
-                            pieChart.data = PieData(dataSet)
-                            pieChart.animateY(1000)
-                            pieChart.invalidate()
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .width(40.dp)
+                                .background(
+                                    Color(0xFF2196F3),
+                                    RoundedCornerShape(4.dp),
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "${carbsPercent}%",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Carbs",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            text = "${carbsGrams.toInt()}g",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .width(40.dp)
+                                .background(
+                                    Color(0xFFFF9800),
+                                    RoundedCornerShape(4.dp),
+                                ),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "${fatPercent}%",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Fat",
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            text = "${fatGrams.toInt()}g",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             } else {
                 Box(
                     modifier = Modifier
@@ -501,6 +623,9 @@ fun MealSection(
                             MealType.LUNCH -> Icons.Default.WbSunny
                             MealType.DINNER -> Icons.Default.DarkMode
                             MealType.SNACK -> Icons.Default.Cookie
+                            MealType.PRE_WORKOUT -> Icons.Default.FitnessCenter
+                            MealType.POST_WORKOUT -> Icons.Default.SportsGymnastics
+                            MealType.LATE_NIGHT -> Icons.Default.Bedtime
                         },
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
@@ -589,13 +714,11 @@ fun FoodEntryCard(
                         fontWeight = FontWeight.SemiBold,
                     )
 
-                    if (entry.servingSize.isNotBlank()) {
-                        Text(
-                            text = "${entry.quantity}x ${entry.servingSize}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    Text(
+                        text = entry.getFormattedServingSize(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
 
                 Row(
@@ -663,30 +786,9 @@ fun FoodSearchDialog(
     var quantity by remember { mutableStateOf("1") }
     var servingSize by remember { mutableStateOf("") }
 
-    // Mock food database - in a real app, this would be loaded from JSON or database
-    val foodDatabase = remember {
-        listOf(
-            FoodItem("Apple", 52.0, 0.3, 14.0, 0.2, 2.4, "medium (182g)"),
-            FoodItem("Banana", 89.0, 1.1, 23.0, 0.3, 2.6, "medium (118g)"),
-            FoodItem("White Rice", 130.0, 2.7, 28.0, 0.3, 0.4, "100g"),
-            FoodItem("Chicken Breast", 165.0, 31.0, 0.0, 3.6, 0.0, "100g"),
-            FoodItem("Broccoli", 34.0, 2.8, 7.0, 0.4, 2.6, "100g"),
-            FoodItem("Whole Wheat Bread", 247.0, 13.0, 41.0, 4.2, 7.0, "100g"),
-            FoodItem("Greek Yogurt", 59.0, 10.0, 3.6, 0.4, 0.0, "100g"),
-            FoodItem("Almonds", 579.0, 21.0, 22.0, 50.0, 12.0, "100g"),
-            FoodItem("Salmon", 208.0, 25.0, 0.0, 12.0, 0.0, "100g"),
-            FoodItem("Sweet Potato", 86.0, 1.6, 20.0, 0.1, 3.0, "100g"),
-        )
-    }
-
+    // Use the comprehensive food database
     val filteredFoods = remember(searchQuery) {
-        if (searchQuery.isBlank()) {
-            foodDatabase
-        } else {
-            foodDatabase.filter {
-                it.name.contains(searchQuery, ignoreCase = true)
-            }
-        }
+        FoodDatabase.searchFoods(searchQuery)
     }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -1049,15 +1151,3 @@ fun NutritionSummaryDialog(
     }
 }
 
-/**
- * Food item data class for offline database
- */
-data class FoodItem(
-    val name: String,
-    val caloriesPerServing: Double,
-    val proteinPerServing: Double,
-    val carbsPerServing: Double,
-    val fatPerServing: Double,
-    val fiberPerServing: Double,
-    val servingSize: String,
-)
