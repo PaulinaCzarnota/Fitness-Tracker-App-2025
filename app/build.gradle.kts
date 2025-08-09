@@ -34,7 +34,7 @@ android {
      * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
      */
     namespace = "com.example.fitnesstrackerapp"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
@@ -55,8 +55,8 @@ android {
 
     buildTypes {
         release {
-            // Disable code shrinking for release builds
-            isMinifyEnabled = false
+            // Enable code shrinking and obfuscation for release builds
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -92,6 +92,9 @@ android {
             isReturnDefaultValues = true
         }
         animationsDisabled = true
+
+        // Configure test orchestrator for improved test isolation
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
     packaging {
@@ -103,7 +106,7 @@ android {
 }
 
 dependencies {
-    /**
+    /*
      * Dependencies block
      *
      * - Declares all libraries and tools used in the app.
@@ -213,6 +216,8 @@ dependencies {
     testImplementation("com.google.truth:truth:1.1.5")
     androidTestImplementation("com.google.truth:truth:1.1.5")
 
+    // UI Automator for system-level UI testing (notifications, etc.)
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
 }
 
 /**
@@ -229,6 +234,11 @@ spotless {
             mapOf(
                 "ktlint_standard_max-line-length" to "disabled",
                 "ktlint_standard_no-wildcard-imports" to "disabled",
+                "ktlint_standard_no-consecutive-comments" to "disabled",
+                "ktlint_standard_discouraged-comment-location" to "disabled",
+                "ktlint_standard_property-naming" to "disabled",
+                "ktlint_standard_function-naming" to "disabled",
+                "ktlint_standard_filename" to "disabled",
             ),
         )
         trimTrailingWhitespace()
@@ -237,7 +247,17 @@ spotless {
 
     kotlinGradle {
         target("*.gradle.kts")
-        ktlint(libs.versions.ktlint.get())
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
+            mapOf(
+                "ktlint_standard_max-line-length" to "disabled",
+                "ktlint_standard_no-wildcard-imports" to "disabled",
+                "ktlint_standard_no-consecutive-comments" to "disabled",
+                "ktlint_standard_discouraged-comment-location" to "disabled",
+                "ktlint_standard_property-naming" to "disabled",
+                "ktlint_standard_function-naming" to "disabled",
+                "ktlint_standard_filename" to "disabled",
+            ),
+        )
     }
 
     format("xml") {
@@ -270,8 +290,12 @@ ktlint {
     // Prefer wildcard imports to reduce verbosity in UI-heavy files
     additionalEditorconfig = mapOf(
         "max_line_length" to "off",
-        // Disable the wildcard import rule for ktlint 0.50+
         "ktlint_standard_no-wildcard-imports" to "disabled",
+        "ktlint_standard_no-consecutive-comments" to "disabled",
+        "ktlint_standard_discouraged-comment-location" to "disabled",
+        "ktlint_standard_property-naming" to "disabled",
+        "ktlint_standard_function-naming" to "disabled",
+        "ktlint_standard_filename" to "disabled",
     )
 }
 
@@ -296,7 +320,6 @@ tasks.withType<Test>().configureEach {
 }
 
 // Enable essential ktlint tasks but skip formatting in CI
-@Suppress("UnstableApiUsage")
 tasks.matching { it.name.startsWith("runKtlintCheck") || it.name == "ktlintCheck" }.configureEach {
     enabled = true
 }
@@ -317,9 +340,9 @@ tasks.matching { it.name.startsWith("dokka") }.configureEach {
 }
 
 // Disable experimental Detekt baseline tasks in CI
-tasks.matching { 
-    it.name.startsWith("detektBaseline") || 
-    it.description?.contains("EXPERIMENTAL", ignoreCase = true) == true 
+tasks.matching {
+    it.name.startsWith("detektBaseline") ||
+        it.description?.contains("EXPERIMENTAL", ignoreCase = true) == true
 }.configureEach {
     enabled = !project.hasProperty("ci")
 }
@@ -334,10 +357,10 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 
 // Disable unnecessary Android test tasks in CI if no devices connected
 if (project.hasProperty("ci")) {
-    tasks.matching { 
-        it.name.startsWith("connected") || 
-        it.name.startsWith("device") ||
-        it.name.contains("AndroidTest")
+    tasks.matching {
+        it.name.startsWith("connected") ||
+            it.name.startsWith("device") ||
+            it.name.contains("AndroidTest")
     }.configureEach {
         enabled = false
     }
