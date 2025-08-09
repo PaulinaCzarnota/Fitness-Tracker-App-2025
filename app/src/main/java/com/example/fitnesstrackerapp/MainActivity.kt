@@ -64,7 +64,12 @@ class MainActivity : ComponentActivity() {
                     description = PermissionUtils.getPermissionDescription(permission),
                 )
             } else {
-                TODO("VERSION.SDK_INT < Q")
+                // For API < Q, create a simplified result
+                PermissionRequestResult(
+                    permission = permission,
+                    isGranted = isGranted,
+                    description = null,
+                )
             }
 
             handlePermissionResult(result)
