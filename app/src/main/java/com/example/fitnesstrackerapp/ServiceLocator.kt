@@ -16,11 +16,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.auth.SessionManager
 import com.example.fitnesstrackerapp.data.database.AppDatabase
+import com.example.fitnesstrackerapp.data.repository.NotificationRepository
 import com.example.fitnesstrackerapp.notification.SimpleNotificationManager
 import com.example.fitnesstrackerapp.repository.AuthRepository
 import com.example.fitnesstrackerapp.repository.FoodEntryRepository
 import com.example.fitnesstrackerapp.repository.GoalRepository
-import com.example.fitnesstrackerapp.repository.NotificationRepository
 import com.example.fitnesstrackerapp.repository.SimpleNutritionRepository
 import com.example.fitnesstrackerapp.repository.StepRepository
 import com.example.fitnesstrackerapp.repository.WorkoutRepository
@@ -160,6 +160,7 @@ class ServiceLocator private constructor(private val appContext: Context) {
     private val stepDao by lazy { database.stepDao() }
     private val foodEntryDao by lazy { database.foodEntryDao() }
     private val notificationDao by lazy { database.notificationDao() }
+    private val notificationLogDao by lazy { database.notificationLogDao() }
 
     // Core utilities and managers
     val cryptoManager by lazy { CryptoManager(appContext) }
@@ -175,7 +176,7 @@ class ServiceLocator private constructor(private val appContext: Context) {
     val stepRepository by lazy { StepRepository(stepDao) }
     val nutritionRepository by lazy { SimpleNutritionRepository(foodEntryDao) }
     val foodEntryRepository by lazy { FoodEntryRepository(foodEntryDao) }
-    val notificationRepository by lazy { NotificationRepository(notificationDao) }
+    val notificationRepository by lazy { NotificationRepository(notificationLogDao) }
 
     // Use cases with proper initialization
     val logWorkoutUseCase by lazy { LogWorkoutUseCase(workoutRepository) }
