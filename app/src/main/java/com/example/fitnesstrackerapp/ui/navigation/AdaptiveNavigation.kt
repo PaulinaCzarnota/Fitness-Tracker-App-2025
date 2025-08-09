@@ -28,12 +28,14 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -336,7 +338,7 @@ private fun ExpandedNavigation(
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+    rememberDrawerState(initialValue = DrawerValue.Open)
 
     PermanentNavigationDrawer(
         drawerContent = {
@@ -437,13 +439,9 @@ private fun ExpandedNavigation(
 /**
  * Get window size class for responsive design
  */
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun getWindowSizeClass(): WindowSizeClass {
-    val configuration = LocalConfiguration.current
-    return WindowSizeClass.calculateFromSize(
-        size = androidx.compose.ui.geometry.Size(
-            width = configuration.screenWidthDp.toFloat(),
-            height = configuration.screenHeightDp.toFloat(),
-        ),
-    )
+    val activity = LocalContext.current as ComponentActivity
+    return calculateWindowSizeClass(activity = activity)
 }
