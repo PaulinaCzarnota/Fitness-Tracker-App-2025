@@ -12,8 +12,6 @@
 
 package com.example.fitnesstrackerapp
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -21,12 +19,14 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesstrackerapp.navigation.AppNavigation
 import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
+import com.example.fitnesstrackerapp.util.PermissionConstants
+import com.example.fitnesstrackerapp.util.PermissionRequestResult
+import com.example.fitnesstrackerapp.util.PermissionUtils
 
 /**
  * Main Activity class that serves as the entry point for the application.
@@ -45,54 +45,42 @@ class MainActivity : ComponentActivity() {
     }
 
     // Tracks which permissions have been granted
-    private var notificationPermissionGranted = false
-    private var activityRecognitionGranted = false
+    private var permissionResults = mutableMapOf<String, Boolean>()
 
     /**
      * Handles the result of multiple permission requests.
      * Provides user feedback and logs permission status for debugging.
+     * Uses centralized permission handling for consistency.
      */
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { permissions ->
         permissions.forEach { (permission, isGranted) ->
-            when (permission) {
-                Manifest.permission.POST_NOTIFICATIONS -> {
-                    notificationPermissionGranted = isGranted
-                    if (isGranted) {
-                        Log.d(TAG, "Notification permission granted")
-                        // Initialize notification channels and schedulers
-                        initializeNotifications()
-                    } else {
-                        Log.w(TAG, "Notification permission denied")
-                        showPermissionDeniedMessage("Notifications", "workout reminders and goal tracking")
-                    }
-                }
-                Manifest.permission.ACTIVITY_RECOGNITION -> {
-                    activityRecognitionGranted = isGranted
-                    if (isGranted) {
-                        Log.d(TAG, "Activity recognition permission granted")
-                        // Initialize step tracking and activity sensors
-                        initializeActivityTracking()
-                    } else {
-                        Log.w(TAG, "Activity recognition permission denied")
-                        showPermissionDeniedMessage(
-                            "Activity Recognition",
-                            "automatic step counting and activity detection",
-                        )
-                    }
-                }
-                else -> {
-                    Log.d(TAG, "Permission $permission result: $isGranted")
-                }
+            permissionResults[permission] = isGranted
+            val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                PermissionRequestResult(
+                    permission = permission,
+                    isGranted = isGranted,
+                    description = PermissionUtils.getPermissionDescription(permission)
+                )
+            } else {
+                TODO("VERSION.SDK_INT < Q")
             }
+
+            handlePermissionResult(result)
         }
 
-        // Log summary of permission status
-        Log.i(
-            TAG,
-            "Permissions summary - Notifications: $notificationPermissionGranted, Activity: $activityRecognitionGranted",
-        )
+        // Log comprehensive permission status
+        val grantedPermissions = permissionResults.filter { it.value }.keys
+        val deniedPermissions = permissionResults.filter { !it.value }.keys
+        
+        Log.i(TAG, "Permissions granted: ${grantedPermissions.joinToString(", ")}")
+        if (deniedPermissions.isNotEmpty()) {
+            Log.w(TAG, "Permissions denied: ${deniedPermissions.joinToString(", ")}")
+        }
+        
+        // Check if essential permissions are met
+        checkEssentialPermissions()
     }
 
     /**
@@ -137,41 +125,26 @@ class MainActivity : ComponentActivity() {
 
     /**
      * Requests necessary permissions based on the Android API level.
-     * Only requests permissions that haven't been granted already.
+     * Uses centralized permission utilities for consistency.
      */
     private fun requestPermissions() {
-        val permissionsToRequest = mutableListOf<String>()
-
-        // Check and request POST_NOTIFICATIONS permission for Android 13+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                notificationPermissionGranted = true
-                initializeNotifications()
+        // Get permissions that need to be requested based on API level
+        val permissionsToRequest = PermissionUtils.getRuntimePermissionsToRequest(this)
+        
+        // Initialize already granted permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            PermissionConstants.RUNTIME_PERMISSIONS.forEach { permission ->
+                if (PermissionUtils.isPermissionGranted(this, permission)) {
+                    permissionResults[permission] = true
+                    initializePermissionFeature(permission)
+                }
             }
-        } else {
-            // For older versions, notifications are granted by default
-            notificationPermissionGranted = true
-            initializeNotifications()
         }
 
-        // Check and request ACTIVITY_RECOGNITION permission for Android 10+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACTIVITY_RECOGNITION,
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionsToRequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
-            } else {
-                activityRecognitionGranted = true
-                initializeActivityTracking()
-            }
+        // Handle notifications on older Android versions
+        if (!PermissionUtils.isNotificationPermissionGranted(this) && 
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            initializeNotifications()
         }
 
         // Request permissions only if needed
@@ -180,6 +153,7 @@ class MainActivity : ComponentActivity() {
             requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
             Log.d(TAG, "All required permissions already granted")
+            checkEssentialPermissions()
         }
     }
 
@@ -210,16 +184,79 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Shows a user-friendly message when a permission is denied.
-     *
-     * @param permissionName The name of the permission that was denied
-     * @param functionality The functionality that will be affected
+     * Handles the result of a single permission request.
+     * Initializes corresponding features and shows appropriate user feedback.
      */
-    private fun showPermissionDeniedMessage(permissionName: String, functionality: String) {
-        val message = "$permissionName permission is required for $functionality. You can enable it in Settings."
+    private fun handlePermissionResult(result: PermissionRequestResult) {
+        if (result.isGranted) {
+            Log.d(TAG, "${result.friendlyName} permission granted")
+            initializePermissionFeature(result.permission)
+        } else {
+            Log.w(TAG, "${result.friendlyName} permission denied")
+            showPermissionDeniedMessage(result)
+        }
+    }
+    
+    /**
+     * Initializes features based on granted permissions.
+     */
+    private fun initializePermissionFeature(permission: String) {
+        when (permission) {
+            PermissionConstants.POST_NOTIFICATIONS -> {
+                initializeNotifications()
+            }
+            PermissionConstants.ACTIVITY_RECOGNITION -> {
+                initializeActivityTracking()
+            }
+            PermissionConstants.CAMERA -> {
+                // Camera features initialized on-demand
+                Log.d(TAG, "Camera permission available for barcode scanning")
+            }
+            PermissionConstants.BODY_SENSORS -> {
+                // Body sensors integrated with activity tracking
+                Log.d(TAG, "Body sensors permission available for health tracking")
+            }
+            PermissionConstants.HIGH_SAMPLING_RATE_SENSORS -> {
+                // High sampling rate sensors for more precise tracking
+                Log.d(TAG, "High-rate sensors permission available for enhanced fitness tracking")
+            }
+        }
+    }
+    
+    /**
+     * Checks if essential permissions are granted and provides feedback.
+     */
+    private fun checkEssentialPermissions() {
+        val hasEssential = PermissionUtils.areEssentialPermissionsGranted(this)
+        val hasNotifications = PermissionUtils.isNotificationPermissionGranted(this)
+        
+        if (hasEssential && hasNotifications) {
+            Log.i(TAG, "All essential permissions granted - app fully functional")
+        } else if (hasEssential) {
+            Log.i(TAG, "Essential permissions granted - notifications may be limited")
+        } else {
+            Log.w(TAG, "Essential permissions missing - limited app functionality")
+            showEssentialPermissionsWarning()
+        }
+    }
+    
+    /**
+     * Shows a warning when essential permissions are missing.
+     */
+    private fun showEssentialPermissionsWarning() {
+        val message = "Some core features may not work properly without essential permissions. " +
+                     "You can enable them in Settings for the full fitness tracking experience."
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+    
+    /**
+     * Shows a user-friendly message when a permission is denied.
+     * Uses centralized permission descriptions for consistency.
+     */
+    private fun showPermissionDeniedMessage(result: PermissionRequestResult) {
         Toast.makeText(
             this,
-            message,
+            result.deniedMessage,
             Toast.LENGTH_LONG,
         ).show()
     }
