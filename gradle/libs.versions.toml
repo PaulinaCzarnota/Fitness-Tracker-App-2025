@@ -6,7 +6,7 @@
 
 [versions]
 # Android Gradle Plugin
-agp = "8.6.1"
+agp = "8.2.2"
 # Kotlin language and Symbol Processing
 kotlin = "1.9.24"
 ksp = "1.9.24-1.0.20"
@@ -42,6 +42,13 @@ androidxTestOrchestrator = "1.4.2"
 coreSplashscreen = "1.0.1"
 # Multidex
 multidex = "2.0.1"
+# Code quality and documentation tools
+detekt = "1.23.6"
+dokka = "1.9.10"
+spotless = "6.25.0"
+ktlint = "1.0.1"
+ktlintGradle = "12.1.0"
+versions = "0.51.0"
 
 [libraries]
 # Core Android Libraries
@@ -110,6 +117,12 @@ androidx-multidex = { group = "androidx.multidex", name = "multidex", version.re
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+# Code quality and documentation plugins
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
 
 [bundles]
 compose = [

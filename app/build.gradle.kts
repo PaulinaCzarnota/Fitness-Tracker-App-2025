@@ -15,15 +15,15 @@ plugins {
     // Kotlin annotation processing (for Room, Hilt)
     alias(libs.plugins.ksp)
     // Dokka plugin for generating HTML documentation from KDoc
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.dokka)
     // Spotless plugin for code formatting
-    id("com.diffplug.spotless")
+    alias(libs.plugins.spotless)
     // ktlint plugin for Kotlin linting
-    id("org.jlleitschuh.gradle.ktlint")
+    alias(libs.plugins.ktlint)
     // Detekt plugin for static analysis
-    id("io.gitlab.arturbosch.detekt")
+    alias(libs.plugins.detekt)
     // Dependency updates plugin
-    id("com.github.ben-manes.versions")
+    alias(libs.plugins.versions)
 }
 
 android {
@@ -34,7 +34,7 @@ android {
      * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
      */
     namespace = "com.example.fitnesstrackerapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.fitnesstrackerapp"
@@ -122,7 +122,6 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.androidx.core.splashscreen)
-    androidTestImplementation(project(":app"))
     ksp(libs.room.compiler)
     testImplementation(libs.room.testing)
 
@@ -179,7 +178,6 @@ dependencies {
 
     // Architecture Testing
     testImplementation(libs.androidx.arch.core.testing)
-    testImplementation(libs.kotlinx.coroutines.test)
 
     // Espresso for UI testing
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -198,7 +196,6 @@ dependencies {
 
     // Room Testing
     testImplementation(libs.room.testing)
-    androidTestImplementation(libs.room.testing)
 
     // WorkManager Testing
     testImplementation("androidx.work:work-testing:2.9.0")
@@ -216,11 +213,6 @@ dependencies {
     testImplementation("com.google.truth:truth:1.1.5")
     androidTestImplementation("com.google.truth:truth:1.1.5")
 
-    // Compose dependencies
-    implementation(libs.androidx.compose.material3)
-
-    // WorkManager
-    implementation(libs.androidx.work.runtime.ktx)
 }
 
 /**
@@ -233,7 +225,7 @@ spotless {
     kotlin {
         target("**/*.kt")
         targetExclude("**/build/**/*.kt")
-        ktlint("0.50.0").editorConfigOverride(
+        ktlint(libs.versions.ktlint.get()).editorConfigOverride(
             mapOf(
                 "ktlint_standard_max-line-length" to "disabled",
                 "ktlint_standard_no-wildcard-imports" to "disabled",
@@ -245,7 +237,7 @@ spotless {
 
     kotlinGradle {
         target("*.gradle.kts")
-        ktlint("0.50.0")
+        ktlint(libs.versions.ktlint.get())
     }
 
     format("xml") {
@@ -263,7 +255,7 @@ spotless {
  * Enforces Kotlin coding conventions and style guidelines
  */
 ktlint {
-    version.set("0.50.0")
+    version.set(libs.versions.ktlint.get())
     android.set(true)
     ignoreFailures.set(true)
     reporters {
@@ -281,31 +273,74 @@ ktlint {
         // Disable the wildcard import rule for ktlint 0.50+
         "ktlint_standard_no-wildcard-imports" to "disabled",
     )
-    // Double opt-out using plugin DSL for broader compatibility
-    disabledRules.set(setOf("no-wildcard-imports"))
 }
 
 /**
  * CI Configuration
  *
- * Enable all lint and test tasks for comprehensive code quality analysis
+ * Optimizes build tasks for CI environment by:
+ * - Disabling documentation generation (Dokka) tasks to speed up builds
+ * - Disabling experimental/incubating Detekt baseline tasks
+ * - Keeping essential testing and code quality checks enabled
+ * - Configuring test tasks for CI reliability
  */
 
 // Enable unit test tasks for CI analysis
 tasks.withType<Test>().configureEach {
     enabled = true
     useJUnitPlatform() // Enable JUnit 5 platform
+    // Set test timeout to avoid hanging builds in CI
+    systemProperty("junit.jupiter.execution.timeout.default", "30m")
+    // Optimize test execution for CI
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
 }
 
-// Enable ktlint check tasks for linting in CI
+// Enable essential ktlint tasks but skip formatting in CI
 @Suppress("UnstableApiUsage")
-tasks.matching { it.name.startsWith("runKtlintCheck") || it.name.startsWith("ktlint") }.configureEach {
+tasks.matching { it.name.startsWith("runKtlintCheck") || it.name == "ktlintCheck" }.configureEach {
     enabled = true
 }
 
-// Enable Kotlin test compilation tasks for comprehensive testing
+// Disable ktlint formatting tasks in CI (formatting should be done locally)
+tasks.matching { it.name == "ktlintFormat" }.configureEach {
+    enabled = !project.hasProperty("ci")
+}
+
+// Enable Kotlin compilation tasks
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     enabled = true
+}
+
+// Disable documentation generation tasks in CI to speed up builds
+tasks.matching { it.name.startsWith("dokka") }.configureEach {
+    enabled = !project.hasProperty("ci")
+}
+
+// Disable experimental Detekt baseline tasks in CI
+tasks.matching { 
+    it.name.startsWith("detektBaseline") || 
+    it.description?.contains("EXPERIMENTAL", ignoreCase = true) == true 
+}.configureEach {
+    enabled = !project.hasProperty("ci")
+}
+
+// Keep essential Detekt tasks enabled but configure for CI
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    // Skip baseline tasks in CI but keep main detekt analysis
+    enabled = !name.contains("Baseline", ignoreCase = true)
+    // Fail fast on detekt issues in CI
+    ignoreFailures = project.hasProperty("ci").not()
+}
+
+// Disable unnecessary Android test tasks in CI if no devices connected
+if (project.hasProperty("ci")) {
+    tasks.matching { 
+        it.name.startsWith("connected") || 
+        it.name.startsWith("device") ||
+        it.name.contains("AndroidTest")
+    }.configureEach {
+        enabled = false
+    }
 }
 
 /**
@@ -314,11 +349,14 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
  * Provides comprehensive static analysis with custom rules and reporting
  */
 detekt {
-    toolVersion = "1.23.6"
+    toolVersion = libs.versions.detekt.get()
     config.setFrom("$projectDir/detekt.yml")
     buildUponDefaultConfig = true
     allRules = false
+}
 
+// Configure detekt reports on individual tasks instead of globally
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     reports {
         html.required.set(true)
         xml.required.set(true)

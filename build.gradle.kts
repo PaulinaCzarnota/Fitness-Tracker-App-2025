@@ -18,17 +18,17 @@ plugins {
     alias(libs.plugins.ksp) apply false
     
     // Dokka plugin for generating HTML documentation from KDoc
-    id("org.jetbrains.dokka") version "1.9.10" apply false
+    alias(libs.plugins.dokka) apply false
     
     // Spotless plugin for code formatting
-    id("com.diffplug.spotless") version "6.23.3" apply false
+    alias(libs.plugins.spotless) apply false
     
     // ktlint plugin for Kotlin linting
-    id("org.jlleitschuh.gradle.ktlint") version "12.0.3" apply false
+    alias(libs.plugins.ktlint) apply false
     
     // Detekt plugin for static analysis
-    id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
+    alias(libs.plugins.detekt) apply false
     
     // Gradle Versions plugin for dependency updates
-    id("com.github.ben-manes.versions") version "0.50.0" apply false
+    alias(libs.plugins.versions) apply false
 }
