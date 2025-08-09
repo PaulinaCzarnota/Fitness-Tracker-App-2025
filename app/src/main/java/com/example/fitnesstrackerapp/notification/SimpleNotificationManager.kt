@@ -160,7 +160,7 @@ class SimpleNotificationManager(private val context: Context) {
             if (areNotificationsEnabled()) {
                 if (ActivityCompat.checkSelfPermission(
                         context,
-                        Manifest.permission.POST_NOTIFICATIONS
+                        Manifest.permission.POST_NOTIFICATIONS,
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
                     // TODO: Consider calling
