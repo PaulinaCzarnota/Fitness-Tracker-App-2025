@@ -41,7 +41,7 @@ import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgotPasswordScreen(
-    navController: NavController,
+    @Suppress("UNUSED_PARAMETER") navController: NavController,
     onNavigateToLogin: () -> Unit,
     viewModel: AuthViewModel,
 ) {
