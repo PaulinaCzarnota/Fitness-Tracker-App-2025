@@ -24,7 +24,7 @@ import org.robolectric.annotation.Config
 
 /**
  * Integration tests for the complete authentication system.
- * 
+ *
  * Tests the full authentication flow including:
  * - SessionManager + AuthRepository + AuthViewModel integration
  * - Secure session management with encrypted storage
@@ -56,7 +56,7 @@ class AuthenticationIntegrationTest {
         context = ApplicationProvider.getApplicationContext()
         mockUserDao = mockk()
         cryptoManager = CryptoManager(context)
-        
+
         sessionManager = SessionManager(context, mockUserDao)
         authRepository = AuthRepository(mockUserDao, cryptoManager, sessionManager, context)
         authViewModel = AuthViewModel(authRepository)
@@ -93,15 +93,19 @@ class AuthenticationIntegrationTest {
         assertThat(sessionManager.isLoggedIn()).isTrue()
         assertThat(sessionManager.getCurrentUserId()).isEqualTo(123L)
         assertThat(sessionManager.getSessionInfo().rememberMeEnabled).isTrue()
-        
+
         // Verify user creation
-        coVerify { mockUserDao.insertUser(match { user ->
-            user.email == email.lowercase() &&
-            user.username == name &&
-            user.isActive &&
-            !user.isAccountLocked &&
-            user.failedLoginAttempts == 0
-        }) }
+        coVerify {
+            mockUserDao.insertUser(
+                match { user ->
+                    user.email == email.lowercase() &&
+                        user.username == name &&
+                        user.isActive &&
+                        !user.isAccountLocked &&
+                        user.failedLoginAttempts == 0
+                },
+            )
+        }
     }
 
     @Test
@@ -114,7 +118,7 @@ class AuthenticationIntegrationTest {
             email = email,
             isActive = true,
             isAccountLocked = false,
-            failedLoginAttempts = 0
+            failedLoginAttempts = 0,
         )
 
         coEvery { mockUserDao.getUserByEmail(email.lowercase()) } returns user
@@ -145,7 +149,7 @@ class AuthenticationIntegrationTest {
             id = 789L,
             email = TestData.VALID_EMAIL,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
 
         coEvery { mockUserDao.updateLastLogin(any(), any()) } just Runs
@@ -182,7 +186,7 @@ class AuthenticationIntegrationTest {
         val uiState = authViewModel.uiState.value
         assertThat(uiState.isAuthenticated).isFalse()
         assertThat(uiState.user).isNull()
-        
+
         assertThat(sessionManager.isLoggedIn()).isFalse()
         assertThat(sessionManager.getCurrentUserId()).isEqualTo(0L)
     }
@@ -196,7 +200,7 @@ class AuthenticationIntegrationTest {
             email = email,
             failedLoginAttempts = 0,
             isActive = true,
-            isAccountLocked = false
+            isAccountLocked = false,
         )
 
         coEvery { mockUserDao.getUserByEmail(email.lowercase()) } returns user
@@ -204,16 +208,20 @@ class AuthenticationIntegrationTest {
 
         // When - multiple failed login attempts
         authViewModel.login(email, wrongPassword)
-        
+
         // Then - should track failed attempts
         val uiState = authViewModel.uiState.value
         assertThat(uiState.isAuthenticated).isFalse()
         assertThat(uiState.error).contains("attempts remaining")
-        
+
         // Verify failed attempt was tracked
-        coVerify { mockUserDao.updateUser(match { updatedUser ->
-            updatedUser.failedLoginAttempts == 1
-        }) }
+        coVerify {
+            mockUserDao.updateUser(
+                match { updatedUser ->
+                    updatedUser.failedLoginAttempts == 1
+                },
+            )
+        }
     }
 
     @Test
@@ -224,7 +232,7 @@ class AuthenticationIntegrationTest {
         val lockedUser = TestHelper.createTestUser(
             email = email,
             isAccountLocked = true,
-            failedLoginAttempts = 5
+            failedLoginAttempts = 5,
         )
 
         coEvery { mockUserDao.getUserByEmail(email.lowercase()) } returns lockedUser
@@ -236,7 +244,7 @@ class AuthenticationIntegrationTest {
         val uiState = authViewModel.uiState.value
         assertThat(uiState.isAuthenticated).isFalse()
         assertThat(uiState.error).contains("Account is locked")
-        
+
         // Verify session was not created
         assertThat(sessionManager.isLoggedIn()).isFalse()
     }
@@ -253,7 +261,7 @@ class AuthenticationIntegrationTest {
 
         // When - session info indicates active session
         val sessionInfo = sessionManager.getSessionInfo()
-        
+
         // Then - session should be active initially
         assertThat(sessionInfo.isActive).isTrue()
         assertThat(sessionInfo.rememberMeEnabled).isFalse()
@@ -267,7 +275,7 @@ class AuthenticationIntegrationTest {
         coEvery { mockUserDao.updateLastLogin(any(), any()) } just Runs
 
         sessionManager.saveUserSession(user, false)
-        
+
         // Initially disabled
         assertThat(sessionManager.isBiometricAuthEnabled()).isFalse()
 
@@ -296,7 +304,7 @@ class AuthenticationIntegrationTest {
 
         // When - enable auto-login
         sessionManager.enableAutoLogin()
-        
+
         // Then - should be enabled again
         assertThat(sessionManager.isAutoLoginEnabled()).isTrue()
         assertThat(sessionManager.getSessionInfo().autoLoginEnabled).isTrue()
@@ -310,11 +318,11 @@ class AuthenticationIntegrationTest {
 
         sessionManager.saveUserSession(user, false)
         sessionManager.getSessionInfo()
-        
+
         // When - refresh session
         Thread.sleep(10) // Small delay to ensure timestamp difference
         sessionManager.refreshSession()
-        
+
         // Then - session should still be active
         assertThat(sessionManager.isLoggedIn()).isTrue()
         val refreshedSessionInfo = sessionManager.getSessionInfo()
@@ -334,7 +342,7 @@ class AuthenticationIntegrationTest {
         assertThat(uiState.isAuthenticated).isFalse()
         assertThat(uiState.isLoading).isFalse()
         assertThat(uiState.error).contains("Login failed")
-        
+
         // Session should remain clean
         assertThat(sessionManager.isLoggedIn()).isFalse()
         assertThat(sessionManager.getCurrentUserId()).isEqualTo(0L)
@@ -351,12 +359,12 @@ class AuthenticationIntegrationTest {
         sessionManager.saveUserSession(user, false)
         sessionManager.refreshSession()
         sessionManager.enableBiometricAuth()
-        
+
         // Then - all operations should complete successfully
         assertThat(sessionManager.isLoggedIn()).isTrue()
         assertThat(sessionManager.getCurrentUserId()).isEqualTo(777L)
         assertThat(sessionManager.isBiometricAuthEnabled()).isTrue()
-        
+
         val sessionInfo = sessionManager.getSessionInfo()
         assertThat(sessionInfo.isActive).isTrue()
         assertThat(sessionInfo.biometricEnabled).isTrue()
