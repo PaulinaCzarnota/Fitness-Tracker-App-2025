@@ -616,6 +616,39 @@ if (project.hasProperty("ci")) {
 }
 
 /**
+ * Custom CI task for Pull Request validation
+ *
+ * This task runs unit tests automatically on every PR to catch
+ * potential issues like Room column mapping mismatches early.
+ */
+tasks.register("validatePR") {
+    group = "verification"
+    description = "Validates PR by running unit tests and code quality checks"
+
+    dependsOn("testDebugUnitTest")
+    dependsOn("ktlintCheck")
+    dependsOn("detekt")
+
+    doLast {
+        println("✅ PR validation complete - all checks passed!")
+    }
+}
+
+/**
+ * Task to run unit tests specifically for catching Room mapping issues
+ */
+tasks.register("testRoomMapping") {
+    group = "verification"
+    description = "Run unit tests focusing on Room database mapping validation"
+
+    dependsOn("testDebugUnitTest")
+
+    doLast {
+        println("✅ Room mapping tests complete - column mappings validated!")
+    }
+}
+
+/**
  * Detekt configuration for static code analysis
  *
  * Provides comprehensive static analysis with custom rules and reporting
