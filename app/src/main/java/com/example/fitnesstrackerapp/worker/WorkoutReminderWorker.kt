@@ -3,10 +3,6 @@
  *
  * This worker sends notifications to remind users about their scheduled workouts.
  * It uses only standard Android SDK components and the SimpleNotificationManager.
- *
- * @author Fitness Tracker Team
- * @version 1.0.0
- * @since 2024-12-01
  */
 package com.example.fitnesstrackerapp.worker
 
@@ -16,6 +12,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.fitnesstrackerapp.notification.SimpleNotificationManager
+import com.example.fitnesstrackerapp.util.PermissionUtils
 
 /**
  * Worker for handling workout reminder notifications.
@@ -49,7 +46,18 @@ class WorkoutReminderWorker(
             val message = inputData.getString("message") ?: "Your scheduled workout is ready. Let's get moving!"
 
             // Send workout reminder notification
-            notificationManager.showGeneralReminder(title, message)
+            if (PermissionUtils.isNotificationPermissionGranted(applicationContext)) {
+                @Suppress("MissingPermission")
+                notificationManager.showGeneralReminder(title, message)
+            } else {
+                Log.w(TAG, "Notification permission not granted, cannot show workout reminder")
+                return Result.failure(
+                    workDataOf(
+                        "error" to "Notification permission not granted",
+                        "timestamp" to System.currentTimeMillis(),
+                    ),
+                )
+            }
 
             Log.d(TAG, "Workout reminder notification sent successfully")
             Result.success(
