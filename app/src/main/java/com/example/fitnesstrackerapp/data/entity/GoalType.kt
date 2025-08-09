@@ -38,4 +38,5 @@ enum class GoalType {
     HYDRATION, // Daily water intake goals
     SLEEP, // Sleep quality and duration goals
     OTHER, // Custom or unlisted goal types
+    FITNESS, // General fitness improvement goals
 }
