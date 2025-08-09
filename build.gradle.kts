@@ -25,4 +25,10 @@ plugins {
     
     // ktlint plugin for Kotlin linting
     id("org.jlleitschuh.gradle.ktlint") version "12.0.3" apply false
+    
+    // Detekt plugin for static analysis
+    id("io.gitlab.arturbosch.detekt") version "1.23.6" apply false
+    
+    // Gradle Versions plugin for dependency updates
+    id("com.github.ben-manes.versions") version "0.50.0" apply false
 }

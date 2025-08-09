@@ -20,6 +20,10 @@ plugins {
     id("com.diffplug.spotless")
     // ktlint plugin for Kotlin linting
     id("org.jlleitschuh.gradle.ktlint")
+    // Detekt plugin for static analysis
+    id("io.gitlab.arturbosch.detekt")
+    // Dependency updates plugin
+    id("com.github.ben-manes.versions")
 }
 
 android {
@@ -118,6 +122,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.androidx.core.splashscreen)
+    androidTestImplementation(project(":app"))
     ksp(libs.room.compiler)
     testImplementation(libs.room.testing)
 
@@ -280,23 +285,46 @@ ktlint {
     disabledRules.set(setOf("no-wildcard-imports"))
 }
 
-// Disable unit test tasks for faster CI and to focus on app build stability
-// Individual tests can still be run explicitly when needed
+/**
+ * CI Configuration
+ *
+ * Enable all lint and test tasks for comprehensive code quality analysis
+ */
+
+// Enable unit test tasks for CI analysis
 tasks.withType<Test>().configureEach {
-    enabled = false
+    enabled = true
+    useJUnitPlatform() // Enable JUnit 5 platform
 }
 
-// Disable ktlint check tasks entirely (we enforce formatting via Spotless)
-// This avoids failures from ktlint plugin task behavior differences across versions
+// Enable ktlint check tasks for linting in CI
 @Suppress("UnstableApiUsage")
 tasks.matching { it.name.startsWith("runKtlintCheck") || it.name.startsWith("ktlint") }.configureEach {
-    enabled = false
+    enabled = true
 }
 
-// Disable Kotlin test compilation tasks to prevent unit test code from blocking app builds
+// Enable Kotlin test compilation tasks for comprehensive testing
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    if (name.contains("Test")) {
-        enabled = false
+    enabled = true
+}
+
+/**
+ * Detekt configuration for static code analysis
+ *
+ * Provides comprehensive static analysis with custom rules and reporting
+ */
+detekt {
+    toolVersion = "1.23.6"
+    config.setFrom("$projectDir/detekt.yml")
+    buildUponDefaultConfig = true
+    allRules = false
+
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+        md.required.set(true)
     }
 }
 
