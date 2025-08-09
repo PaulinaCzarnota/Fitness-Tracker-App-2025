@@ -31,4 +31,7 @@ plugins {
     
     // Gradle Versions plugin for dependency updates
     alias(libs.plugins.versions) apply false
+    
+    // Firebase plugin
+    id("com.google.gms.google-services") version "4.4.0" apply false
 }

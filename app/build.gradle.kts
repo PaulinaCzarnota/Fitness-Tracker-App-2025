@@ -24,6 +24,8 @@ plugins {
     alias(libs.plugins.detekt)
     // Dependency updates plugin
     alias(libs.plugins.versions)
+    // Google services plugin for Firebase
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -177,6 +179,14 @@ dependencies {
     // Multidex support for devices with API < 21
     implementation(libs.androidx.multidex)
 
+    // Firebase Authentication
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
+    implementation("com.google.firebase:firebase-common-ktx:20.4.2")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    
+    // MPAndroidChart for advanced charting
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    
     // Note: Using only standard Android SDK libraries as per assignment requirements
 
     // JUnit 5 Testing Framework
