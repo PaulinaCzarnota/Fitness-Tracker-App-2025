@@ -13,6 +13,8 @@ import com.example.fitnesstrackerapp.data.dao.ExerciseDao
 import com.example.fitnesstrackerapp.data.dao.FoodEntryDao
 import com.example.fitnesstrackerapp.data.dao.GoalDao
 import com.example.fitnesstrackerapp.data.dao.NotificationDao
+import com.example.fitnesstrackerapp.data.dao.NotificationLogDao
+import com.example.fitnesstrackerapp.data.dao.NutritionEntryDao
 import com.example.fitnesstrackerapp.data.dao.StepDao
 import com.example.fitnesstrackerapp.data.dao.UserDao
 import com.example.fitnesstrackerapp.data.dao.WorkoutDao
@@ -21,6 +23,8 @@ import com.example.fitnesstrackerapp.data.entity.Exercise
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
 import com.example.fitnesstrackerapp.data.entity.Goal
 import com.example.fitnesstrackerapp.data.entity.Notification
+import com.example.fitnesstrackerapp.data.entity.NotificationLog
+import com.example.fitnesstrackerapp.data.entity.NutritionEntry
 import com.example.fitnesstrackerapp.data.entity.Step
 import com.example.fitnesstrackerapp.data.entity.User
 import com.example.fitnesstrackerapp.data.entity.Workout
@@ -48,11 +52,13 @@ import java.util.concurrent.Executors
         Goal::class,
         Step::class,
         FoodEntry::class,
+        NutritionEntry::class,
         Notification::class,
+        NotificationLog::class,
         Exercise::class,
         WorkoutSet::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -99,12 +105,28 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun foodEntryDao(): FoodEntryDao
 
     /**
+     * Provides access to enhanced Nutrition data operations including comprehensive
+     * nutritional analysis, micronutrient tracking, and dietary insights.
+     *
+     * @return NutritionEntryDao instance for advanced nutrition-related database operations
+     */
+    abstract fun nutritionEntryDao(): NutritionEntryDao
+
+    /**
      * Provides access to Notification data operations including notification scheduling,
      * delivery tracking, and user interaction management.
      *
      * @return NotificationDao instance for notification-related database operations
      */
     abstract fun notificationDao(): NotificationDao
+
+    /**
+     * Provides access to Notification Log data operations including delivery analytics,
+     * performance monitoring, and user interaction tracking.
+     *
+     * @return NotificationLogDao instance for notification logging and analytics operations
+     */
+    abstract fun notificationLogDao(): NotificationLogDao
 
     /**
      * Provides access to Exercise data operations including exercise definitions,

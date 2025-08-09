@@ -157,6 +157,19 @@ data class User(
 
     @ColumnInfo(name = "use_metric_units")
     val useMetricUnits: Boolean = true,
+
+    // Firebase Authentication fields
+    @ColumnInfo(name = "firebase_uid")
+    val firebaseUid: String? = null,
+
+    @ColumnInfo(name = "is_email_verified")
+    val isEmailVerified: Boolean = false,
+
+    @ColumnInfo(name = "provider")
+    val provider: String? = null, // "email", "google.com", etc.
+
+    @ColumnInfo(name = "photo_url")
+    val photoUrl: String? = null,
 ) {
     /**
      * Calculates the user's age based on date of birth.
