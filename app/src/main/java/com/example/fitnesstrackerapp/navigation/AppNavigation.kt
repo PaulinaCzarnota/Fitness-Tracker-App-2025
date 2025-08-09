@@ -24,23 +24,15 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnesstrackerapp.screens.ForgotPasswordScreen
 import com.example.fitnesstrackerapp.screens.GoalScreen
@@ -50,6 +42,8 @@ import com.example.fitnesstrackerapp.screens.SignUpScreen
 import com.example.fitnesstrackerapp.screens.StepTrackerScreen
 import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
 import com.example.fitnesstrackerapp.ui.auth.LoginScreen
+import com.example.fitnesstrackerapp.ui.navigation.AdaptiveNavigation
+import com.example.fitnesstrackerapp.ui.navigation.getWindowSizeClass
 import com.example.fitnesstrackerapp.ui.nutrition.NutritionScreen
 import com.example.fitnesstrackerapp.ui.profile.ProfileScreen
 import com.example.fitnesstrackerapp.ui.workout.WorkoutScreen
@@ -147,7 +141,7 @@ private fun AuthNavigationGraph(
 }
 
 /**
- * Main application navigation graph with bottom navigation.
+ * Main application navigation graph with adaptive navigation.
  *
  * @param navController Navigation controller for main app flow
  * @param authViewModel Authentication ViewModel
@@ -159,45 +153,11 @@ private fun MainNavigationGraph(
     authViewModel: AuthViewModel,
 ) {
     val bottomNavController = rememberNavController()
-    val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    val windowSize = getWindowSizeClass()
 
-    val bottomNavItems = listOf(
-        Screen.Home,
-        Screen.Workouts,
-        Screen.Progress,
-        Screen.Goals,
-        Screen.Nutrition,
-    )
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar {
-                bottomNavItems.forEach { screen ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                imageVector = screen.icon,
-                                contentDescription = screen.title,
-                            )
-                        },
-                        label = { Text(screen.title) },
-                        selected = currentDestination?.hierarchy?.any {
-                            it.route == screen.route
-                        } == true,
-                        onClick = {
-                            bottomNavController.navigate(screen.route) {
-                                popUpTo(bottomNavController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                    )
-                }
-            }
-        },
+    AdaptiveNavigation(
+        navController = bottomNavController,
+        windowSize = windowSize,
     ) { innerPadding ->
         NavHost(
             navController = bottomNavController,
@@ -210,6 +170,7 @@ private fun MainNavigationGraph(
                 HomeScreen(
                     navController = bottomNavController,
                     authViewModel = authViewModel,
+                    windowSize = windowSize,
                 )
             }
 
