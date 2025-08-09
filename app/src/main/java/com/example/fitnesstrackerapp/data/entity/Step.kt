@@ -16,6 +16,7 @@
 
 package com.example.fitnesstrackerapp.data.entity
 
+import android.annotation.SuppressLint
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -149,6 +150,7 @@ data class Step(
      * Gets formatted step progress string for display.
      * @return Progress string (e.g., "8,500 / 10,000 steps (85%)")
      */
+    @SuppressLint("DefaultLocale")
     fun getFormattedProgress(): String {
         val percentage = getProgressPercentage().toInt()
         return "${String.format("%,d", count)} / ${String.format("%,d", goal)} steps ($percentage%)"
