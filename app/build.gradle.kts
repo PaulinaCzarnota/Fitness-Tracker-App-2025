@@ -418,6 +418,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
+    testImplementation("androidx.test:core:1.5.0")
 }
 
 /**
