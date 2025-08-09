@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 PermissionRequestResult(
                     permission = permission,
                     isGranted = isGranted,
-                    description = PermissionUtils.getPermissionDescription(permission)
+                    description = PermissionUtils.getPermissionDescription(permission),
                 )
             } else {
                 TODO("VERSION.SDK_INT < Q")
@@ -73,12 +73,12 @@ class MainActivity : ComponentActivity() {
         // Log comprehensive permission status
         val grantedPermissions = permissionResults.filter { it.value }.keys
         val deniedPermissions = permissionResults.filter { !it.value }.keys
-        
+
         Log.i(TAG, "Permissions granted: ${grantedPermissions.joinToString(", ")}")
         if (deniedPermissions.isNotEmpty()) {
             Log.w(TAG, "Permissions denied: ${deniedPermissions.joinToString(", ")}")
         }
-        
+
         // Check if essential permissions are met
         checkEssentialPermissions()
     }
@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
     private fun requestPermissions() {
         // Get permissions that need to be requested based on API level
         val permissionsToRequest = PermissionUtils.getRuntimePermissionsToRequest(this)
-        
+
         // Initialize already granted permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             PermissionConstants.RUNTIME_PERMISSIONS.forEach { permission ->
@@ -142,8 +142,9 @@ class MainActivity : ComponentActivity() {
         }
 
         // Handle notifications on older Android versions
-        if (!PermissionUtils.isNotificationPermissionGranted(this) && 
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+        if (!PermissionUtils.isNotificationPermissionGranted(this) &&
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+        ) {
             initializeNotifications()
         }
 
@@ -196,7 +197,7 @@ class MainActivity : ComponentActivity() {
             showPermissionDeniedMessage(result)
         }
     }
-    
+
     /**
      * Initializes features based on granted permissions.
      */
@@ -222,14 +223,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    
+
     /**
      * Checks if essential permissions are granted and provides feedback.
      */
     private fun checkEssentialPermissions() {
         val hasEssential = PermissionUtils.areEssentialPermissionsGranted(this)
         val hasNotifications = PermissionUtils.isNotificationPermissionGranted(this)
-        
+
         if (hasEssential && hasNotifications) {
             Log.i(TAG, "All essential permissions granted - app fully functional")
         } else if (hasEssential) {
@@ -239,16 +240,16 @@ class MainActivity : ComponentActivity() {
             showEssentialPermissionsWarning()
         }
     }
-    
+
     /**
      * Shows a warning when essential permissions are missing.
      */
     private fun showEssentialPermissionsWarning() {
         val message = "Some core features may not work properly without essential permissions. " +
-                     "You can enable them in Settings for the full fitness tracking experience."
+            "You can enable them in Settings for the full fitness tracking experience."
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
-    
+
     /**
      * Shows a user-friendly message when a permission is denied.
      * Uses centralized permission descriptions for consistency.
