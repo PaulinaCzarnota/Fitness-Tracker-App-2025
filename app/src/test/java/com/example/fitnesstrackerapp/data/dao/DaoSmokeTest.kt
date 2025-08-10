@@ -3,23 +3,31 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.ActivityLevel
+import com.example.fitnesstrackerapp.data.entity.FoodEntry
+import com.example.fitnesstrackerapp.data.entity.Gender
+import com.example.fitnesstrackerapp.data.entity.MealType
+import com.example.fitnesstrackerapp.data.entity.NutritionEntry
+import com.example.fitnesstrackerapp.data.entity.User
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.IOException
-import java.util.*
+import java.util.Date
 
 /**
  * Simple smoke test to verify DAO mappings work correctly.
  * This tests the core database operations without the complex UI compilation issues.
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(JUnit4::class)
 class DaoSmokeTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -59,12 +67,14 @@ class DaoSmokeTest {
             lastName = "User",
             dateOfBirth = Date(),
             gender = Gender.OTHER,
-            heightCm = 175.0,
-            weightKg = 70.0,
+            heightCm = 175.0f,
+            weightKg = 70.0f,
             activityLevel = ActivityLevel.MODERATELY_ACTIVE,
             createdAt = Date(),
             updatedAt = Date(),
             isActive = true,
+            passwordHash = "dummyhash",
+            passwordSalt = "dummysalt",
         )
         val userId = userDao.insertUser(user)
 
@@ -115,12 +125,14 @@ class DaoSmokeTest {
             lastName = "User",
             dateOfBirth = Date(),
             gender = Gender.OTHER,
-            heightCm = 175.0,
-            weightKg = 70.0,
+            heightCm = 175.0f,
+            weightKg = 70.0f,
             activityLevel = ActivityLevel.MODERATELY_ACTIVE,
             createdAt = Date(),
             updatedAt = Date(),
             isActive = true,
+            passwordHash = "dummyhash",
+            passwordSalt = "dummysalt",
         )
         val userId = userDao.insertUser(user)
 

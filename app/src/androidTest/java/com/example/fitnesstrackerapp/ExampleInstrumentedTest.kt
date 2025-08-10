@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp
+
 /**
  * ExampleInstrumentedTest
  *
@@ -7,8 +9,6 @@
  * Run with:
  * ./gradlew connectedAndroidTest
  */
-
-package com.example.fitnesstrackerapp
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

@@ -6,7 +6,6 @@ import androidx.room.migration.Migration
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.fitnesstrackerapp.data.entity.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +31,7 @@ import java.util.*
  * - Performance impact assessment
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class DatabaseMigrationTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -547,12 +546,12 @@ class DatabaseMigrationTest {
 
             // Test Exercise entity
             val testExercise = Exercise(
-                name = "Schema Test Exercise",
-                description = "Test exercise description",
+                name = "Push-up",
+                description = "Basic bodyweight exercise",
                 muscleGroup = MuscleGroup.CHEST,
                 equipmentType = EquipmentType.BODYWEIGHT,
                 exerciseType = ExerciseType.STRENGTH,
-                difficulty = Difficulty.INTERMEDIATE,
+                difficulty = DifficultyLevel.INTERMEDIATE,
                 createdAt = currentTime,
                 updatedAt = currentTime,
             )
@@ -565,7 +564,7 @@ class DatabaseMigrationTest {
                 exerciseId = exerciseId,
                 setNumber = 1,
                 repetitions = 10,
-                weight = 50.0f,
+                weight = 50.0, // Changed from 50.0f to 50.0 (Double instead of Float)
                 createdAt = currentTime,
                 updatedAt = currentTime,
             )
