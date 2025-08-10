@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.navigation
+
 /**
  * Navigation controller and routing configuration for the Fitness Tracker application.
  *
@@ -10,9 +12,8 @@
  * for state management and dependency injection without external libraries.
  */
 
-package com.example.fitnesstrackerapp.navigation
-
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -29,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -178,14 +178,13 @@ private fun MainNavigationGraph(
                 WorkoutScreen(
                     modifier = Modifier.fillMaxSize(),
                     authViewModel = authViewModel,
-                    activity = LocalContext.current as ComponentActivity,
+                    activity = LocalActivity.current as ComponentActivity,
                 )
             }
 
             composable(Screen.Progress.route) {
                 ProgressScreen(
                     modifier = Modifier.fillMaxSize(),
-                    authViewModel = authViewModel,
                 )
             }
 
@@ -199,7 +198,7 @@ private fun MainNavigationGraph(
             composable(Screen.Goals.route) {
                 GoalScreen(
                     modifier = Modifier.fillMaxSize(),
-                    activity = LocalContext.current as ComponentActivity,
+                    activity = LocalActivity.current as ComponentActivity,
                 )
             }
 

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * Repository class for handling user authentication operations in the Fitness Tracker application.
  *
@@ -10,8 +12,6 @@
  * @param userDao Data access object for user database operations
  * @param passwordManager Security manager for password encryption and validation
  */
-
-package com.example.fitnesstrackerapp.repository
 
 import android.content.Context
 import android.content.SharedPreferences

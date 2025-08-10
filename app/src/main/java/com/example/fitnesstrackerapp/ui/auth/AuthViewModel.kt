@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.auth
+
 /**
  * ViewModel class for managing authentication UI state and business logic.
  *
@@ -10,8 +12,6 @@
  *
  * @param authRepository Repository for authentication data operations
  */
-
-package com.example.fitnesstrackerapp.ui.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -225,7 +225,7 @@ abstract class AppDatabase : RoomDatabase() {
          * This migration adds the comprehensive notifications table with all
          * required columns, indices, and foreign key constraints.
          */
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 try {
                     // Create notifications table
@@ -285,7 +285,7 @@ abstract class AppDatabase : RoomDatabase() {
          * This migration adds comprehensive exercise tracking with detailed
          * workout sets for enhanced fitness logging capabilities.
          */
-        private val MIGRATION_2_3 = object : Migration(2, 3) {
+        val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 try {
                     // Create exercises table
@@ -365,7 +365,7 @@ abstract class AppDatabase : RoomDatabase() {
          *
          * This migration acts as a placeholder for version 4.
          */
-        private val MIGRATION_3_4 = object : Migration(3, 4) {
+        val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 try {
                     // Placeholder migration - no schema changes needed
@@ -383,7 +383,7 @@ abstract class AppDatabase : RoomDatabase() {
          * This migration adds the comprehensive notification log table for tracking
          * notification delivery analytics, performance monitoring, and user interactions.
          */
-        private val MIGRATION_4_5 = object : Migration(4, 5) {
+        val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 try {
                     // Create notification_logs table

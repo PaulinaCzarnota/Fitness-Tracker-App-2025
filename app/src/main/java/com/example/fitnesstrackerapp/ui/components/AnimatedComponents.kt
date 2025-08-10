@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.components
+
 /**
  * Enhanced Animation Components for Fitness Tracker App
  *
@@ -9,8 +11,6 @@
  * - Accessibility-aware animations
  * - Performance-optimized animations
  */
-
-package com.example.fitnesstrackerapp.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
@@ -474,7 +474,7 @@ fun MotionCard(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
             )
-            
+
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
@@ -482,10 +482,10 @@ fun MotionCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            
+
             if (expanded) {
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
