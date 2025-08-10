@@ -3,15 +3,20 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
+import com.example.fitnesstrackerapp.data.entity.DifficultyLevel
+import com.example.fitnesstrackerapp.data.entity.EquipmentType
 import com.example.fitnesstrackerapp.data.entity.Exercise
+import com.example.fitnesstrackerapp.data.entity.ExerciseType
+import com.example.fitnesstrackerapp.data.entity.MuscleGroup
 import com.example.fitnesstrackerapp.data.entity.User
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.*
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.IOException
 import java.util.*
 
@@ -26,7 +31,7 @@ import java.util.*
  * - Data integrity and constraints
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(JUnit4::class)
 class ExerciseDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -39,7 +44,7 @@ class ExerciseDaoTest {
     fun createDb() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -60,12 +65,11 @@ class ExerciseDaoTest {
         val exercise = createTestExercise(
             createdBy = userId,
             name = "Push-ups",
-            type = "Strength",
-            muscleGroups = "Chest, Triceps",
-            difficulty = "Beginner",
+            exerciseType = ExerciseType.STRENGTH,
+            muscleGroup = MuscleGroup.CHEST,
+            difficulty = DifficultyLevel.BEGINNER,
             description = "Classic push-up exercise",
             instructions = "Start in plank position, lower body, push up",
-            caloriesPerMinute = 8.0f
         )
 
         val exerciseId = exerciseDao.insertExercise(exercise)
@@ -74,19 +78,24 @@ class ExerciseDaoTest {
         val retrievedExercise = exerciseDao.getExerciseById(exerciseId)
         Assert.assertNotNull("Retrieved exercise should not be null", retrievedExercise)
         Assert.assertEquals("Push-ups", retrievedExercise?.name)
-        Assert.assertEquals("Strength", retrievedExercise?.type)
-        Assert.assertEquals("Chest, Triceps", retrievedExercise?.muscleGroups)
-        Assert.assertEquals("Beginner", retrievedExercise?.difficulty)
-        Assert.assertEquals(8.0f, retrievedExercise?.caloriesPerMinute ?: 0f, 0.1f)
+        Assert.assertEquals(ExerciseType.STRENGTH, retrievedExercise?.exerciseType)
+        Assert.assertEquals(MuscleGroup.CHEST, retrievedExercise?.muscleGroup)
+        Assert.assertEquals(DifficultyLevel.BEGINNER, retrievedExercise?.difficulty)
     }
 
     @Test
     fun getAllExercises() = runTest {
         val userId = createTestUser()
 
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Running", type = "Cardio"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats", type = "Strength"))
+        exerciseDao.insertExercise(
+            createTestExercise(createdBy = userId, name = "Push-ups", exerciseType = ExerciseType.STRENGTH),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(createdBy = userId, name = "Running", exerciseType = ExerciseType.CARDIO),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(createdBy = userId, name = "Squats", exerciseType = ExerciseType.STRENGTH),
+        )
 
         val allExercises = exerciseDao.getAllExercises().first()
         Assert.assertEquals(3, allExercises.size)
@@ -100,52 +109,65 @@ class ExerciseDaoTest {
     fun getExercisesByType() = runTest {
         val userId = createTestUser()
 
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Running", type = "Cardio"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Bench Press", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Cycling", type = "Cardio"))
+        exerciseDao.insertExercise(
+            createTestExercise(createdBy = userId, name = "Push-ups", exerciseType = ExerciseType.STRENGTH),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(createdBy = userId, name = "Running", exerciseType = ExerciseType.CARDIO),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(createdBy = userId, name = "Yoga", exerciseType = ExerciseType.FLEXIBILITY),
+        )
 
-        val strengthExercises = exerciseDao.getExercisesByType("Strength").first()
-        assertThat(strengthExercises).hasSize(2)
-        assertThat(strengthExercises.map { it.name }).containsExactly("Push-ups", "Bench Press")
+        val strengthExercises = exerciseDao.getExercisesByType(ExerciseType.STRENGTH).first()
+        Assert.assertEquals(1, strengthExercises.size)
+        Assert.assertEquals("Push-ups", strengthExercises[0].name)
 
-        val cardioExercises = exerciseDao.getExercisesByType("Cardio").first()
-        assertThat(cardioExercises).hasSize(2)
-        assertThat(cardioExercises.map { it.name }).containsExactly("Running", "Cycling")
+        val cardioExercises = exerciseDao.getExercisesByType(ExerciseType.CARDIO).first()
+        Assert.assertEquals(1, cardioExercises.size)
+        Assert.assertEquals("Running", cardioExercises[0].name)
     }
 
     @Test
     fun getExercisesByMuscleGroup() = runTest {
         val userId = createTestUser()
 
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Push-ups", 
-            muscleGroups = "Chest, Triceps"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Pull-ups", 
-            muscleGroups = "Back, Biceps"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Bench Press", 
-            muscleGroups = "Chest, Triceps"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Squats", 
-            muscleGroups = "Legs, Glutes"
-        ))
+        exerciseDao.insertExercise(
+            createTestExercise(
+                createdBy = userId,
+                name = "Push-ups",
+                muscleGroup = MuscleGroup.CHEST,
+            ),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(
+                createdBy = userId,
+                name = "Bench Press",
+                muscleGroup = MuscleGroup.CHEST,
+            ),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(
+                createdBy = userId,
+                name = "Pull-ups",
+                muscleGroup = MuscleGroup.BACK,
+            ),
+        )
+        exerciseDao.insertExercise(
+            createTestExercise(
+                createdBy = userId,
+                name = "Squats",
+                muscleGroup = MuscleGroup.LEGS,
+            ),
+        )
 
-        val chestExercises = exerciseDao.getExercisesByMuscleGroup("Chest").first()
+        val chestExercises = exerciseDao.getExercisesByMuscleGroup(MuscleGroup.CHEST).first()
         Assert.assertEquals(2, chestExercises.size)
-        val chestNames = chestExercises.map { it.name }
-        Assert.assertTrue(chestNames.contains("Push-ups"))
-        Assert.assertTrue(chestNames.contains("Bench Press"))
+        val chestExerciseNames = chestExercises.map { it.name }
+        Assert.assertTrue(chestExerciseNames.contains("Push-ups"))
+        Assert.assertTrue(chestExerciseNames.contains("Bench Press"))
 
-        val backExercises = exerciseDao.getExercisesByMuscleGroup("Back").first()
+        val backExercises = exerciseDao.getExercisesByMuscleGroup(MuscleGroup.BACK).first()
         Assert.assertEquals(1, backExercises.size)
         Assert.assertEquals("Pull-ups", backExercises[0].name)
     }
@@ -154,36 +176,35 @@ class ExerciseDaoTest {
     fun getExercisesByDifficulty() = runTest {
         val userId = createTestUser()
 
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", difficulty = "Beginner"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Burpees", difficulty = "Advanced"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats", difficulty = "Beginner"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Pull-ups", difficulty = "Intermediate"))
+        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", difficulty = DifficultyLevel.BEGINNER))
+        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Pull-ups", difficulty = DifficultyLevel.INTERMEDIATE))
+        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Muscle-ups", difficulty = DifficultyLevel.ADVANCED))
 
-        val beginnerExercises = exerciseDao.getExercisesByDifficulty("Beginner").first()
-        assertThat(beginnerExercises).hasSize(2)
-        assertThat(beginnerExercises.map { it.name }).containsExactly("Push-ups", "Squats")
+        val beginnerExercises = exerciseDao.getExercisesByDifficulty(DifficultyLevel.BEGINNER).first()
+        Assert.assertEquals(1, beginnerExercises.size)
+        Assert.assertEquals("Push-ups", beginnerExercises[0].name)
 
-        val advancedExercises = exerciseDao.getExercisesByDifficulty("Advanced").first()
-        assertThat(advancedExercises).hasSize(1)
-        assertThat(advancedExercises[0].name).isEqualTo("Burpees")
+        val advancedExercises = exerciseDao.getExercisesByDifficulty(DifficultyLevel.ADVANCED).first()
+        Assert.assertEquals(1, advancedExercises.size)
+        Assert.assertEquals("Muscle-ups", advancedExercises[0].name)
     }
 
     @Test
-    fun getExercisesCreatedByUser() = runTest {
+    fun getCustomExercisesByUser() = runTest {
         val user1Id = createTestUser("user1@example.com")
         val user2Id = createTestUser("user2@example.com")
 
-        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "Custom Push-ups"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = user2Id, name = "Custom Squats"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "Custom Burpees"))
+        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "User1 Exercise", isCustom = true))
+        exerciseDao.insertExercise(createTestExercise(createdBy = user2Id, name = "User2 Exercise", isCustom = true))
+        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "Predefined Exercise", isCustom = false))
 
-        val user1Exercises = exerciseDao.getExercisesCreatedByUser(user1Id).first()
-        assertThat(user1Exercises).hasSize(2)
-        assertThat(user1Exercises.map { it.name }).containsExactly("Custom Push-ups", "Custom Burpees")
+        val user1Exercises = exerciseDao.getCustomExercisesByUser(user1Id).first()
+        Assert.assertEquals(1, user1Exercises.size)
+        Assert.assertEquals("User1 Exercise", user1Exercises[0].name)
 
-        val user2Exercises = exerciseDao.getExercisesCreatedByUser(user2Id).first()
-        assertThat(user2Exercises).hasSize(1)
-        assertThat(user2Exercises[0].name).isEqualTo("Custom Squats")
+        val user2Exercises = exerciseDao.getCustomExercisesByUser(user2Id).first()
+        Assert.assertEquals(1, user2Exercises.size)
+        Assert.assertEquals("User2 Exercise", user2Exercises[0].name)
     }
 
     @Test
@@ -191,266 +212,92 @@ class ExerciseDaoTest {
         val userId = createTestUser()
 
         exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Pull-ups"))
+        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Diamond Push-ups"))
         exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Lunges"))
 
-        val searchResults = exerciseDao.searchExercises("up").first()
-        assertThat(searchResults).hasSize(2)
-        assertThat(searchResults.map { it.name }).containsExactly("Push-ups", "Pull-ups")
-    }
-
-    @Test
-    fun getExercisesByTypeAndMuscleGroup() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Push-ups", 
-            type = "Strength", 
-            muscleGroups = "Chest, Triceps"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Bench Press", 
-            type = "Strength", 
-            muscleGroups = "Chest, Triceps"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Running", 
-            type = "Cardio", 
-            muscleGroups = "Legs, Cardio"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Squats", 
-            type = "Strength", 
-            muscleGroups = "Legs, Glutes"
-        ))
-
-        val strengthChestExercises = exerciseDao.getExercisesByTypeAndMuscleGroup("Strength", "Chest").first()
-        Assert.assertEquals(2, strengthChestExercises.size)
-        val exerciseNames = strengthChestExercises.map { it.name }
-        Assert.assertTrue(exerciseNames.contains("Push-ups"))
-        Assert.assertTrue(exerciseNames.contains("Bench Press"))
-    }
-
-    @Test
-    fun getExercisesByTypeAndDifficulty() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Push-ups", 
-            type = "Strength", 
-            difficulty = "Beginner"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Bench Press", 
-            type = "Strength", 
-            difficulty = "Intermediate"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Running", 
-            type = "Cardio", 
-            difficulty = "Beginner"
-        ))
-        exerciseDao.insertExercise(createTestExercise(
-            createdBy = userId, 
-            name = "Squats", 
-            type = "Strength", 
-            difficulty = "Beginner"
-        ))
-
-        val beginnerStrengthExercises = exerciseDao.getExercisesByTypeAndDifficulty("Strength", "Beginner").first()
-        assertThat(beginnerStrengthExercises).hasSize(2)
-        assertThat(beginnerStrengthExercises.map { it.name }).containsExactly("Push-ups", "Squats")
+        val searchResults = exerciseDao.searchExercises("push").first()
+        Assert.assertEquals(2, searchResults.size)
+        val resultNames = searchResults.map { it.name }
+        Assert.assertTrue(resultNames.contains("Push-ups"))
+        Assert.assertTrue(resultNames.contains("Diamond Push-ups"))
     }
 
     @Test
     fun updateExercise() = runTest {
         val userId = createTestUser()
-        val exercise = createTestExercise(
-            createdBy = userId,
-            name = "Push-ups",
-            description = "Original description"
-        )
-
+        val exercise = createTestExercise(createdBy = userId, name = "Push-ups")
         val exerciseId = exerciseDao.insertExercise(exercise)
 
-        val updatedExercise = exercise.copy(
-            id = exerciseId,
-            name = "Modified Push-ups",
-            description = "Updated description",
-            updatedAt = Date(System.currentTimeMillis() + 1000)
+        val retrievedExercise = exerciseDao.getExerciseById(exerciseId)
+        Assert.assertNotNull(retrievedExercise)
+
+        val updatedExercise = retrievedExercise!!.copy(
+            name = "Wide Push-ups",
+            description = "A wider variation of push-ups",
+            difficulty = DifficultyLevel.INTERMEDIATE,
         )
 
         exerciseDao.updateExercise(updatedExercise)
 
-        val retrievedExercise = exerciseDao.getExerciseById(exerciseId)
-        assertThat(retrievedExercise?.name).isEqualTo("Modified Push-ups")
-        assertThat(retrievedExercise?.description).isEqualTo("Updated description")
-        assertThat(retrievedExercise?.updatedAt).isEqualTo(updatedExercise.updatedAt)
+        val finalExercise = exerciseDao.getExerciseById(exerciseId)
+        Assert.assertNotNull(finalExercise)
+        Assert.assertEquals("Wide Push-ups", finalExercise?.name)
+        Assert.assertEquals("A wider variation of push-ups", finalExercise?.description)
+        Assert.assertEquals(DifficultyLevel.INTERMEDIATE, finalExercise?.difficulty)
     }
 
     @Test
     fun deleteExercise() = runTest {
         val userId = createTestUser()
-        val exercise = createTestExercise(createdBy = userId, name = "Push-ups")
-
+        val exercise = createTestExercise(createdBy = userId)
         val exerciseId = exerciseDao.insertExercise(exercise)
 
-        // Verify exercise exists
         var retrievedExercise = exerciseDao.getExerciseById(exerciseId)
-        assertThat(retrievedExercise).isNotNull()
+        Assert.assertNotNull(retrievedExercise)
 
-        // Delete exercise
-        exerciseDao.deleteExercise(exercise.copy(id = exerciseId))
+        exerciseDao.deleteExercise(retrievedExercise!!)
 
-        // Verify exercise is deleted
         retrievedExercise = exerciseDao.getExerciseById(exerciseId)
-        assertThat(retrievedExercise).isNull()
+        Assert.assertNull(retrievedExercise)
     }
 
     @Test
     fun deleteExerciseById() = runTest {
         val userId = createTestUser()
-        val exercise = createTestExercise(createdBy = userId, name = "Push-ups")
-
+        val exercise = createTestExercise(createdBy = userId)
         val exerciseId = exerciseDao.insertExercise(exercise)
 
-        // Verify exercise exists
         var retrievedExercise = exerciseDao.getExerciseById(exerciseId)
-        assertThat(retrievedExercise).isNotNull()
+        Assert.assertNotNull(retrievedExercise)
 
-        // Delete exercise by ID
         exerciseDao.deleteExerciseById(exerciseId)
 
-        // Verify exercise is deleted
         retrievedExercise = exerciseDao.getExerciseById(exerciseId)
-        assertThat(retrievedExercise).isNull()
+        Assert.assertNull(retrievedExercise)
     }
 
     @Test
-    fun deleteExercisesCreatedByUser() = runTest {
+    fun deleteCustomExercisesByUser() = runTest {
         val user1Id = createTestUser("user1@example.com")
         val user2Id = createTestUser("user2@example.com")
 
-        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "User1 Exercise1"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "User1 Exercise2"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = user2Id, name = "User2 Exercise1"))
+        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "User1 Ex1", isCustom = true))
+        exerciseDao.insertExercise(createTestExercise(createdBy = user1Id, name = "User1 Ex2", isCustom = true))
+        exerciseDao.insertExercise(createTestExercise(createdBy = user2Id, name = "User2 Ex1", isCustom = true))
 
-        // Verify exercises exist
-        var user1Exercises = exerciseDao.getExercisesCreatedByUser(user1Id).first()
-        var user2Exercises = exerciseDao.getExercisesCreatedByUser(user2Id).first()
+        var user1Exercises = exerciseDao.getCustomExercisesByUser(user1Id).first()
+        var user2Exercises = exerciseDao.getCustomExercisesByUser(user2Id).first()
         assertThat(user1Exercises).hasSize(2)
         assertThat(user2Exercises).hasSize(1)
 
-        // Delete user1's exercises
-        exerciseDao.deleteExercisesCreatedByUser(user1Id)
+        // Delete exercises for user1
+        exerciseDao.deleteCustomExercisesByUser(user1Id)
 
-        // Verify only user1's exercises are deleted
-        user1Exercises = exerciseDao.getExercisesCreatedByUser(user1Id).first()
-        user2Exercises = exerciseDao.getExercisesCreatedByUser(user2Id).first()
+        // Verify exercises are deleted for user1 but not for user2
+        user1Exercises = exerciseDao.getCustomExercisesByUser(user1Id).first()
+        user2Exercises = exerciseDao.getCustomExercisesByUser(user2Id).first()
         assertThat(user1Exercises).isEmpty()
         assertThat(user2Exercises).hasSize(1)
-    }
-
-    @Test
-    fun getExerciseCount() = runTest {
-        val userId = createTestUser()
-
-        assertThat(exerciseDao.getExerciseCount()).isEqualTo(0)
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups"))
-        assertThat(exerciseDao.getExerciseCount()).isEqualTo(1)
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats"))
-        assertThat(exerciseDao.getExerciseCount()).isEqualTo(2)
-    }
-
-    @Test
-    fun getExerciseCountByType() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Running", type = "Cardio"))
-
-        assertThat(exerciseDao.getExerciseCountByType("Strength")).isEqualTo(2)
-        assertThat(exerciseDao.getExerciseCountByType("Cardio")).isEqualTo(1)
-        assertThat(exerciseDao.getExerciseCountByType("Flexibility")).isEqualTo(0)
-    }
-
-    @Test
-    fun getExerciseCountByDifficulty() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", difficulty = "Beginner"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats", difficulty = "Beginner"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Pull-ups", difficulty = "Intermediate"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Burpees", difficulty = "Advanced"))
-
-        assertThat(exerciseDao.getExerciseCountByDifficulty("Beginner")).isEqualTo(2)
-        assertThat(exerciseDao.getExerciseCountByDifficulty("Intermediate")).isEqualTo(1)
-        assertThat(exerciseDao.getExerciseCountByDifficulty("Advanced")).isEqualTo(1)
-    }
-
-    @Test
-    fun getDistinctExerciseTypes() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats", type = "Strength"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Running", type = "Cardio"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Yoga", type = "Flexibility"))
-
-        val types = exerciseDao.getDistinctExerciseTypes()
-        assertThat(types).containsExactly("Cardio", "Flexibility", "Strength")
-    }
-
-    @Test
-    fun getDistinctDifficultyLevels() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", difficulty = "Beginner"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Squats", difficulty = "Beginner"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Pull-ups", difficulty = "Intermediate"))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Burpees", difficulty = "Advanced"))
-
-        val difficulties = exerciseDao.getDistinctDifficultyLevels()
-        assertThat(difficulties).containsExactly("Advanced", "Beginner", "Intermediate")
-    }
-
-    @Test
-    fun getAverageCaloriesPerMinute() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", caloriesPerMinute = 8.0f))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Running", caloriesPerMinute = 12.0f))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Walking", caloriesPerMinute = 4.0f))
-
-        val avgCalories = exerciseDao.getAverageCaloriesPerMinute()
-        assertThat(avgCalories).isWithin(0.1f).of(8.0f) // (8 + 12 + 4) / 3
-    }
-
-    @Test
-    fun getExercisesWithHighestCalories() = runTest {
-        val userId = createTestUser()
-
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Push-ups", caloriesPerMinute = 8.0f))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Running", caloriesPerMinute = 15.0f))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Walking", caloriesPerMinute = 4.0f))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "HIIT", caloriesPerMinute = 18.0f))
-        exerciseDao.insertExercise(createTestExercise(createdBy = userId, name = "Yoga", caloriesPerMinute = 3.0f))
-
-        val highCalorieExercises = exerciseDao.getExercisesWithHighestCalories(3).first()
-        assertThat(highCalorieExercises).hasSize(3)
-        assertThat(highCalorieExercises.map { it.name }).containsExactly("HIIT", "Running", "Push-ups")
-        assertThat(highCalorieExercises.map { it.caloriesPerMinute }).containsExactly(18.0f, 15.0f, 8.0f)
     }
 
     @Test
@@ -463,34 +310,34 @@ class ExerciseDaoTest {
             createTestExercise(
                 createdBy = userId,
                 name = "Exercise1",
-                createdAt = Date(baseTime - (3 * 24 * 60 * 60 * 1000L)) // 3 days ago
-            )
+                createdAt = Date(baseTime - (3 * 24 * 60 * 60 * 1000L)), // 3 days ago
+            ),
         )
         exerciseDao.insertExercise(
             createTestExercise(
                 createdBy = userId,
                 name = "Exercise2",
-                createdAt = Date(baseTime - (1 * 24 * 60 * 60 * 1000L)) // 1 day ago
-            )
+                createdAt = Date(baseTime - (1 * 24 * 60 * 60 * 1000L)), // 1 day ago
+            ),
         )
         exerciseDao.insertExercise(
             createTestExercise(
                 createdBy = userId,
                 name = "Exercise3",
-                createdAt = Date(baseTime) // Now
-            )
+                createdAt = Date(baseTime), // Now
+            ),
         )
 
         val recentExercises = exerciseDao.getRecentExercises(2).first()
         assertThat(recentExercises).hasSize(2)
-        assertThat(recentExercises.map { it.name }).containsExactly("Exercise3", "Exercise2")
+        assertThat(recentExercises.map { it.name }).containsExactly("Exercise3", "Exercise2").inOrder()
     }
 
     @Test
     fun testForeignKeyConstraint() = runTest {
         val exercise = createTestExercise(
             createdBy = 999L, // Non-existent user
-            name = "Invalid Exercise"
+            name = "Invalid Exercise",
         )
 
         try {
@@ -498,7 +345,7 @@ class ExerciseDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint", "no such table")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 
@@ -509,14 +356,14 @@ class ExerciseDaoTest {
         exerciseDao.insertExercise(exercise)
 
         // Verify exercise exists
-        var userExercises = exerciseDao.getExercisesCreatedByUser(userId).first()
+        var userExercises = exerciseDao.getCustomExercisesByUser(userId).first()
         assertThat(userExercises).hasSize(1)
 
         // Delete user (should cascade delete exercises)
         userDao.deleteUserById(userId)
 
         // Verify exercises are also deleted
-        userExercises = exerciseDao.getExercisesCreatedByUser(userId).first()
+        userExercises = exerciseDao.getCustomExercisesByUser(userId).first()
         assertThat(userExercises).isEmpty()
     }
 
@@ -527,33 +374,33 @@ class ExerciseDaoTest {
             passwordHash = "test_hash",
             passwordSalt = "test_salt",
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
         return userDao.insertUser(user)
     }
 
     private fun createTestExercise(
-        createdBy: Long,
         name: String = "Test Exercise",
-        type: String = "Strength",
-        muscleGroups: String = "Chest",
-        difficulty: String = "Beginner",
+        muscleGroup: MuscleGroup = MuscleGroup.CHEST,
+        equipmentType: EquipmentType = EquipmentType.BODYWEIGHT,
+        exerciseType: ExerciseType = ExerciseType.STRENGTH,
+        difficulty: DifficultyLevel = DifficultyLevel.INTERMEDIATE,
         description: String = "Test exercise description",
         instructions: String = "Test instructions",
-        caloriesPerMinute: Float = 8.0f,
-        isPublic: Boolean = true,
-        createdAt: Date = Date()
+        isCustom: Boolean = true,
+        createdBy: Long? = 1L,
+        createdAt: Date = Date(),
     ) = Exercise(
         name = name,
-        type = type,
-        muscleGroups = muscleGroups,
+        muscleGroup = muscleGroup,
+        equipmentType = equipmentType,
+        exerciseType = exerciseType,
         difficulty = difficulty,
         description = description,
         instructions = instructions,
-        caloriesPerMinute = caloriesPerMinute,
-        isPublic = isPublic,
+        isCustom = isCustom,
         createdBy = createdBy,
         createdAt = createdAt,
-        updatedAt = Date()
+        updatedAt = Date(),
     )
 }
