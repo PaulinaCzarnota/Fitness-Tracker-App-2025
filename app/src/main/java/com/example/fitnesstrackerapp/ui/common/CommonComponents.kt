@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.common
+
 /**
  * Common UI Components
  *
@@ -6,7 +8,6 @@
  * - Maintains consistent styling across the app
  * - Implements loading and error states
  */
-package com.example.fitnesstrackerapp.ui.common
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement

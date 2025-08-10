@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.model
+
 /**
  * Food Item model for offline food database in the Fitness Tracker application.
  *
@@ -12,18 +14,14 @@
  * - Food database structure for offline usage
  */
 
-package com.example.fitnesstrackerapp.data.model
-
 /**
- * Food item data class for offline food database
- *
  * Represents a food item with nutritional information per standard serving.
  * This is used to populate the food search database and create food entries
  * with accurate nutritional data.
  *
  * @param name Display name of the food item
  * @param caloriesPerServing Calories per standard serving
- * @param proteinPerServing Protein in grams per serving  
+ * @param proteinPerServing Protein in grams per serving
  * @param carbsPerServing Carbohydrates in grams per serving
  * @param fatPerServing Fat in grams per serving
  * @param fiberPerServing Fiber in grams per serving
@@ -68,7 +66,7 @@ data class FoodItem(
             fat = fatPerServing * quantity,
             fiber = fiberPerServing * quantity,
             sugar = sugarPerServing * quantity,
-            sodium = sodiumPerServing * quantity
+            sodium = sodiumPerServing * quantity,
         )
     }
 
@@ -86,7 +84,9 @@ data class FoodItem(
         return if (caloriesPerServing > 0) {
             val proteinCalories = proteinPerServing * 4
             (proteinCalories / caloriesPerServing) >= 0.2
-        } else false
+        } else {
+            false
+        }
     }
 
     /**
@@ -136,7 +136,7 @@ object FoodDatabase {
             servingSize = "medium (182g)",
             category = "Fruits",
             sugarPerServing = 10.4,
-            sodiumPerServing = 1.0
+            sodiumPerServing = 1.0,
         ),
         FoodItem(
             name = "Banana",
@@ -148,7 +148,7 @@ object FoodDatabase {
             servingSize = "medium (118g)",
             category = "Fruits",
             sugarPerServing = 12.2,
-            sodiumPerServing = 1.0
+            sodiumPerServing = 1.0,
         ),
         FoodItem(
             name = "Orange",
@@ -160,7 +160,7 @@ object FoodDatabase {
             servingSize = "medium (154g)",
             category = "Fruits",
             sugarPerServing = 9.4,
-            sodiumPerServing = 0.0
+            sodiumPerServing = 0.0,
         ),
 
         // Vegetables
@@ -174,7 +174,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Vegetables",
             sugarPerServing = 1.5,
-            sodiumPerServing = 33.0
+            sodiumPerServing = 33.0,
         ),
         FoodItem(
             name = "Sweet Potato",
@@ -186,7 +186,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Vegetables",
             sugarPerServing = 4.2,
-            sodiumPerServing = 7.0
+            sodiumPerServing = 7.0,
         ),
         FoodItem(
             name = "Spinach",
@@ -198,7 +198,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Vegetables",
             sugarPerServing = 0.4,
-            sodiumPerServing = 79.0
+            sodiumPerServing = 79.0,
         ),
 
         // Grains
@@ -212,7 +212,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Grains",
             sugarPerServing = 0.1,
-            sodiumPerServing = 5.0
+            sodiumPerServing = 5.0,
         ),
         FoodItem(
             name = "Brown Rice",
@@ -224,7 +224,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Grains",
             sugarPerServing = 0.4,
-            sodiumPerServing = 5.0
+            sodiumPerServing = 5.0,
         ),
         FoodItem(
             name = "Whole Wheat Bread",
@@ -236,7 +236,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Grains",
             sugarPerServing = 5.4,
-            sodiumPerServing = 540.0
+            sodiumPerServing = 540.0,
         ),
         FoodItem(
             name = "Oatmeal",
@@ -248,7 +248,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Grains",
             sugarPerServing = 0.3,
-            sodiumPerServing = 4.0
+            sodiumPerServing = 4.0,
         ),
 
         // Proteins
@@ -262,7 +262,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Proteins",
             sugarPerServing = 0.0,
-            sodiumPerServing = 74.0
+            sodiumPerServing = 74.0,
         ),
         FoodItem(
             name = "Salmon",
@@ -274,7 +274,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Proteins",
             sugarPerServing = 0.0,
-            sodiumPerServing = 59.0
+            sodiumPerServing = 59.0,
         ),
         FoodItem(
             name = "Eggs",
@@ -286,7 +286,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Proteins",
             sugarPerServing = 1.1,
-            sodiumPerServing = 124.0
+            sodiumPerServing = 124.0,
         ),
         FoodItem(
             name = "Greek Yogurt",
@@ -298,7 +298,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Proteins",
             sugarPerServing = 3.6,
-            sodiumPerServing = 36.0
+            sodiumPerServing = 36.0,
         ),
 
         // Nuts & Seeds
@@ -312,7 +312,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Nuts & Seeds",
             sugarPerServing = 4.4,
-            sodiumPerServing = 1.0
+            sodiumPerServing = 1.0,
         ),
         FoodItem(
             name = "Walnuts",
@@ -324,7 +324,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Nuts & Seeds",
             sugarPerServing = 2.6,
-            sodiumPerServing = 2.0
+            sodiumPerServing = 2.0,
         ),
 
         // Legumes
@@ -338,7 +338,7 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Legumes",
             sugarPerServing = 0.3,
-            sodiumPerServing = 2.0
+            sodiumPerServing = 2.0,
         ),
         FoodItem(
             name = "Lentils",
@@ -350,8 +350,8 @@ object FoodDatabase {
             servingSize = "100g",
             category = "Legumes",
             sugarPerServing = 1.8,
-            sodiumPerServing = 2.0
-        )
+            sodiumPerServing = 2.0,
+        ),
     )
 
     /**
@@ -363,8 +363,8 @@ object FoodDatabase {
         } else {
             getDefaultFoods().filter {
                 it.name.contains(query, ignoreCase = true) ||
-                it.category?.contains(query, ignoreCase = true) == true ||
-                it.brand?.contains(query, ignoreCase = true) == true
+                    it.category?.contains(query, ignoreCase = true) == true ||
+                    it.brand?.contains(query, ignoreCase = true) == true
             }
         }
     }

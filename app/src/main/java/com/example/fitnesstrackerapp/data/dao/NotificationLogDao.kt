@@ -790,7 +790,7 @@ interface NotificationLogDao {
     """,
     )
     fun getDismissedNotifications(userId: Long): Flow<List<NotificationLog>>
-    
+
     /**
      * Gets the count of clicked notifications for a user in a date range.
      * Used by NotificationRepository for interaction rate calculations.

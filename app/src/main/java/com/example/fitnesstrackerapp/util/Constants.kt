@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * Constants and utility classes for the Fitness Tracker application.
  *
@@ -10,8 +12,6 @@
  * These constants help maintain consistency across the application
  * and provide centralized configuration for core functionality.
  */
-
-package com.example.fitnesstrackerapp.util
 
 /**
  * General application constants used throughout the Fitness Tracker app.

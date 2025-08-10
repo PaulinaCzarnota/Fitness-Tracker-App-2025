@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.progress
+
 /**
  * Enhanced Progress Tracking Components with MPAndroidChart Integration
  *
@@ -10,9 +12,6 @@
  * - Comprehensive workout and nutrition analytics
  */
 
-package com.example.fitnesstrackerapp.ui.progress
-
-import android.graphics.Color
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -21,27 +20,44 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 /**
  * Data classes for chart data
@@ -204,7 +220,7 @@ fun GoalProgressIndicator(
         targetValue = progress.coerceIn(0f, 1f),
         animationSpec = tween(
             durationMillis = 1500,
-            easing = LinearEasing
+            easing = LinearEasing,
         ),
         label = "Goal Progress Animation",
     )
@@ -216,9 +232,9 @@ fun GoalProgressIndicator(
         targetValue = if (progress >= 1f) 1f else 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
+            repeatMode = RepeatMode.Reverse,
         ),
-        label = "Pulse Alpha"
+        label = "Pulse Alpha",
     )
 
     Column(
@@ -302,7 +318,7 @@ fun WorkoutProgressChart(
                             Box(
                                 modifier = Modifier
                                     .size(12.dp)
-                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -314,7 +330,7 @@ fun WorkoutProgressChart(
                             Box(
                                 modifier = Modifier
                                     .size(12.dp)
-                                    .background(secondaryColor, RoundedCornerShape(2.dp))
+                                    .background(secondaryColor, RoundedCornerShape(2.dp)),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -336,8 +352,10 @@ fun WorkoutProgressChart(
                             if (index < workoutData.workouts.size && index < workoutData.calories.size) {
                                 val workoutValue = workoutData.workouts[index]
                                 val calorieValue = workoutData.calories[index] / 10f
-                                val maxValue = maxOf(workoutData.workouts.maxOrNull() ?: 1f, 
-                                                   (workoutData.calories.maxOrNull() ?: 10f) / 10f)
+                                val maxValue = maxOf(
+                                    workoutData.workouts.maxOrNull() ?: 1f,
+                                    (workoutData.calories.maxOrNull() ?: 10f) / 10f,
+                                )
 
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -348,7 +366,7 @@ fun WorkoutProgressChart(
                                         modifier = Modifier
                                             .width(20.dp)
                                             .height((workoutValue / maxValue * 150).dp)
-                                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
                                     )
                                     Spacer(modifier = Modifier.height(2.dp))
                                     // Calorie bar
@@ -356,7 +374,7 @@ fun WorkoutProgressChart(
                                         modifier = Modifier
                                             .width(20.dp)
                                             .height((calorieValue / maxValue * 150).dp)
-                                            .background(secondaryColor, RoundedCornerShape(2.dp))
+                                            .background(secondaryColor, RoundedCornerShape(2.dp)),
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
@@ -426,7 +444,7 @@ fun StepsProgressChart(
                             Box(
                                 modifier = Modifier
                                     .size(12.dp)
-                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -438,7 +456,7 @@ fun StepsProgressChart(
                             Box(
                                 modifier = Modifier
                                     .size(12.dp)
-                                    .background(goalColor, RoundedCornerShape(2.dp))
+                                    .background(goalColor, RoundedCornerShape(2.dp)),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -457,9 +475,11 @@ fun StepsProgressChart(
                         verticalAlignment = Alignment.Bottom,
                     ) {
                         stepData.forEach { data ->
-                            val maxValue = maxOf(stepData.maxOfOrNull { it.value } ?: 1f,
-                                               stepData.mapNotNull { it.goal }.maxOrNull() ?: 1f)
-                            
+                            val maxValue = maxOf(
+                                stepData.maxOfOrNull { it.value } ?: 1f,
+                                stepData.mapNotNull { it.goal }.maxOrNull() ?: 1f,
+                            )
+
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.weight(1f),
@@ -470,7 +490,7 @@ fun StepsProgressChart(
                                         modifier = Modifier
                                             .width(30.dp)
                                             .height((goal / maxValue * 150).dp)
-                                            .background(goalColor.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+                                            .background(goalColor.copy(alpha = 0.3f), RoundedCornerShape(4.dp)),
                                     )
                                 }
                                 // Steps bar (foreground)
@@ -478,7 +498,7 @@ fun StepsProgressChart(
                                     modifier = Modifier
                                         .width(30.dp)
                                         .height((data.value / maxValue * 150).dp)
-                                        .background(primaryColor, RoundedCornerShape(4.dp))
+                                        .background(primaryColor, RoundedCornerShape(4.dp)),
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
@@ -564,7 +584,7 @@ fun NutritionProgressChart(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    text = "${proteinPercent}%",
+                                    text = "$proteinPercent%",
                                     color = androidx.compose.ui.graphics.Color.White,
                                     style = MaterialTheme.typography.bodySmall,
                                 )
@@ -597,7 +617,7 @@ fun NutritionProgressChart(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    text = "${carbsPercent}%",
+                                    text = "$carbsPercent%",
                                     color = androidx.compose.ui.graphics.Color.White,
                                     style = MaterialTheme.typography.bodySmall,
                                 )
@@ -630,7 +650,7 @@ fun NutritionProgressChart(
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    text = "${fatPercent}%",
+                                    text = "$fatPercent%",
                                     color = androidx.compose.ui.graphics.Color.White,
                                     style = MaterialTheme.typography.bodySmall,
                                 )
@@ -718,7 +738,7 @@ fun WeeklyComparisonChart(
                             Box(
                                 modifier = Modifier
                                     .size(12.dp)
-                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp))
+                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(2.dp)),
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
@@ -749,7 +769,7 @@ fun WeeklyComparisonChart(
                                         modifier = Modifier
                                             .width(30.dp)
                                             .height((duration / maxValue * 150).dp)
-                                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+                                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
                                     Text(
@@ -796,7 +816,7 @@ private val sampleWorkoutData = WorkoutProgressData(
     workouts = listOf(3f, 2f, 4f, 1f, 5f, 2f, 3f),
     calories = listOf(250f, 180f, 320f, 120f, 400f, 200f, 280f),
     duration = listOf(45f, 30f, 60f, 25f, 75f, 35f, 50f),
-    dates = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    dates = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
 )
 
 private val sampleNutritionData = NutritionProgressData(
@@ -804,7 +824,7 @@ private val sampleNutritionData = NutritionProgressData(
     protein = listOf(120f, 110f, 130f, 115f, 125f),
     carbs = listOf(250f, 220f, 280f, 240f, 260f),
     fat = listOf(80f, 70f, 90f, 75f, 85f),
-    dates = listOf("Day 1", "Day 2", "Day 3", "Day 4", "Day 5")
+    dates = listOf("Day 1", "Day 2", "Day 3", "Day 4", "Day 5"),
 )
 
 private val sampleStepData = listOf(
@@ -814,14 +834,14 @@ private val sampleStepData = listOf(
     ProgressChartData(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -3) }.time, 11200f, goal = 10000f),
     ProgressChartData(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -2) }.time, 7800f, goal = 10000f),
     ProgressChartData(Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }.time, 13500f, goal = 10000f),
-    ProgressChartData(Date(), 10800f, goal = 10000f)
+    ProgressChartData(Date(), 10800f, goal = 10000f),
 )
 
 private val sampleGoalProgress = mapOf(
     "Steps" to 0.85f,
     "Calories" to 0.92f,
     "Workouts" to 0.67f,
-    "Sleep" to 1.0f
+    "Sleep" to 1.0f,
 )
 
 @Preview(name = "Goal Progress Indicator - In Progress")
@@ -832,7 +852,7 @@ fun PreviewGoalProgressIndicatorInProgress() {
             GoalProgressIndicator(
                 goalName = "Steps",
                 progress = 0.75f,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -846,7 +866,7 @@ fun PreviewGoalProgressIndicatorCompleted() {
             GoalProgressIndicator(
                 goalName = "Sleep",
                 progress = 1.0f,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -860,7 +880,7 @@ fun PreviewGoalProgressIndicatorLow() {
             GoalProgressIndicator(
                 goalName = "Calories",
                 progress = 0.25f,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -873,7 +893,7 @@ fun PreviewGoalProgressSection() {
         Surface {
             GoalProgressSection(
                 goalProgress = sampleGoalProgress,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -887,7 +907,7 @@ fun PreviewWorkoutProgressChart() {
             WorkoutProgressChart(
                 workoutData = sampleWorkoutData,
                 title = "Weekly Workout Progress",
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -901,7 +921,7 @@ fun PreviewStepsProgressChart() {
             StepsProgressChart(
                 stepData = sampleStepData,
                 title = "Daily Steps vs Goal",
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -915,7 +935,7 @@ fun PreviewNutritionProgressChart() {
             NutritionProgressChart(
                 nutritionData = sampleNutritionData,
                 title = "Today's Nutrition",
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -929,7 +949,7 @@ fun PreviewWeeklyComparisonChart() {
             WeeklyComparisonChart(
                 workoutData = sampleWorkoutData,
                 title = "This Week vs Last Week",
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -945,7 +965,7 @@ fun PreviewEnhancedProgressScreen() {
                 nutritionData = sampleNutritionData,
                 stepData = sampleStepData,
                 goalProgress = sampleGoalProgress,
-                onPeriodChanged = { }
+                onPeriodChanged = { },
             )
         }
     }
@@ -961,7 +981,7 @@ fun PreviewEnhancedProgressScreenLight() {
                 nutritionData = sampleNutritionData,
                 stepData = sampleStepData,
                 goalProgress = sampleGoalProgress,
-                onPeriodChanged = { }
+                onPeriodChanged = { },
             )
         }
     }
@@ -977,7 +997,7 @@ fun PreviewEnhancedProgressScreenDark() {
                 nutritionData = sampleNutritionData,
                 stepData = sampleStepData,
                 goalProgress = sampleGoalProgress,
-                onPeriodChanged = { }
+                onPeriodChanged = { },
             )
         }
     }

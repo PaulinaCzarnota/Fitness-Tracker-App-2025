@@ -1,11 +1,3 @@
-/**
- * Task Scheduler for Background Operations
- *
- * This class has been superseded by WorkManagerScheduler.
- * Kept for backward compatibility.
- *
- * @deprecated Use WorkManagerScheduler instead
- */
 package com.example.fitnesstrackerapp.scheduler
 
 import android.content.Context
@@ -16,7 +8,7 @@ import android.content.Context
  */
 @Deprecated(
     "Use WorkManagerScheduler instead",
-    ReplaceWith("WorkManagerScheduler")
+    ReplaceWith("WorkManagerScheduler"),
 )
 class TaskScheduler(context: Context) {
     private val workManagerScheduler = WorkManagerScheduler.getInstance(context)

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.theme
+
 /**
  * Enhanced Material 3 Shapes for the Fitness Tracker App
  *
@@ -6,8 +8,6 @@
  * - Consistent radius values following Material Design guidelines
  * - Special shapes for cards, buttons, and interactive elements
  */
-
-package com.example.fitnesstrackerapp.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes

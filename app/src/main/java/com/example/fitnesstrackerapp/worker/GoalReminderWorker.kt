@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.worker
+
 /**
  * Simple Goal Reminder Worker for goal deadline notifications.
  *
@@ -10,7 +12,6 @@
  * - Uses standard WorkManager framework
  * - Error handling and logging
  */
-package com.example.fitnesstrackerapp.worker
 
 import android.content.Context
 import android.util.Log

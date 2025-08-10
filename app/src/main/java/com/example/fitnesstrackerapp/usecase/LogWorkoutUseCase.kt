@@ -126,7 +126,7 @@ class LogWorkoutUseCase(
     /**
      * Gets recent workouts for a user
      */
-    suspend fun getRecentWorkouts(userId: Long, limit: Int = 5): Result<List<Workout>> {
+    fun getRecentWorkouts(userId: Long, limit: Int = 5): Result<List<Workout>> {
         return try {
             // This would ideally be a repository method, but we'll implement it here for now
             workoutRepository.getWorkoutsByUserId(userId)

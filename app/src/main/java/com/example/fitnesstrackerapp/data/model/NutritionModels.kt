@@ -56,7 +56,6 @@ data class NotificationPerformanceMetrics(
     }
 }
 
-
 /**
  * Data model for user interaction patterns by hour.
  * Used for analyzing when users are most likely to interact with notifications.
@@ -167,5 +166,3 @@ data class SystemHealthMetrics(
         }
     }
 }
-
-

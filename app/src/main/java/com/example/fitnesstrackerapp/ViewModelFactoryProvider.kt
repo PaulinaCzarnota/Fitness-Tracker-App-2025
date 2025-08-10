@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp
+
 /**
  * ViewModelFactoryProvider - Centralized ViewModel Factory Provider
  *
@@ -8,8 +10,6 @@
  * Each method creates a custom ViewModelProvider.Factory that properly instantiates
  * the requested ViewModel with its required dependencies.
  */
-
-package com.example.fitnesstrackerapp
 
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -247,7 +247,7 @@ object ViewModelFactoryProvider {
      */
     private fun checkServiceLocatorInitialization(context: android.content.Context) {
         if (!ServiceLocator.get(context).isInitialized()) {
-            throw IllegalStateException("ServiceLocator must be initialized before creating ViewModels")
+            error("ServiceLocator must be initialized before creating ViewModels")
         }
     }
 }

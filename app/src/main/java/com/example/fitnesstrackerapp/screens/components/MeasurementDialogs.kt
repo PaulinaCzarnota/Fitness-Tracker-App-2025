@@ -1,5 +1,12 @@
 package com.example.fitnesstrackerapp.screens.components
 
+/**
+ * Dialog components for measurement input.
+ *
+ * Contains composable dialogs for entering and updating user measurements such as height and weight.
+ * Each dialog provides input validation and user-friendly UI for data entry.
+ */
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
 /**
- * Dialog components for measurement input
+ * Dialog for entering or editing the user's height.
+ *
+ * @param isVisible Whether the dialog should be shown
+ * @param currentHeight The current height value to prefill
+ * @param onHeightChange Callback when a valid height is entered and saved
+ * @param onDismiss Callback when the dialog is dismissed
  */
 @Composable
 fun HeightInputDialog(
@@ -34,6 +46,7 @@ fun HeightInputDialog(
     onDismiss: () -> Unit,
 ) {
     if (isVisible) {
+        // State for the height input field, initialized with the current height
         var heightText by remember { mutableStateOf(currentHeight.toString()) }
 
         Dialog(onDismissRequest = onDismiss) {
@@ -50,6 +63,7 @@ fun HeightInputDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Input field for height in centimeters
                     OutlinedTextField(
                         value = heightText,
                         onValueChange = { heightText = it },
@@ -60,6 +74,7 @@ fun HeightInputDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Action buttons: Cancel and Save
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
@@ -69,6 +84,7 @@ fun HeightInputDialog(
                         }
                         TextButton(
                             onClick = {
+                                // Validate input and call onHeightChange if valid
                                 heightText.toFloatOrNull()?.let { height ->
                                     onHeightChange(height)
                                     onDismiss()
@@ -84,6 +100,14 @@ fun HeightInputDialog(
     }
 }
 
+/**
+ * Dialog for entering or editing the user's weight.
+ *
+ * @param isVisible Whether the dialog should be shown
+ * @param currentWeight The current weight value to prefill
+ * @param onWeightChange Callback when a valid weight is entered and saved
+ * @param onDismiss Callback when the dialog is dismissed
+ */
 @Composable
 fun WeightInputDialog(
     isVisible: Boolean,
@@ -92,6 +116,7 @@ fun WeightInputDialog(
     onDismiss: () -> Unit,
 ) {
     if (isVisible) {
+        // State for the weight input field, initialized with the current weight
         var weightText by remember { mutableStateOf(currentWeight.toString()) }
 
         Dialog(onDismissRequest = onDismiss) {
@@ -108,6 +133,7 @@ fun WeightInputDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Input field for weight in kilograms
                     OutlinedTextField(
                         value = weightText,
                         onValueChange = { weightText = it },
@@ -118,6 +144,7 @@ fun WeightInputDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Action buttons: Cancel and Save
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
@@ -127,6 +154,7 @@ fun WeightInputDialog(
                         }
                         TextButton(
                             onClick = {
+                                // Validate input and call onWeightChange if valid
                                 weightText.toFloatOrNull()?.let { weight ->
                                     onWeightChange(weight)
                                     onDismiss()

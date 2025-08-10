@@ -1,4 +1,13 @@
+package com.example.fitnesstrackerapp
+
 /**
+ * Fitness Tracker App - Main Activity
+ *
+ * @author Paulina Czarnota
+ * @student_number C21365726
+ * @course TU856/3 Mobile Software Development
+ * @due_date 11/08/2025
+ *
  * This is the main Activity class for the Fitness Tracker Android application.
  * It serves as the primary entry point for user interaction and app initialization.
  *
@@ -9,8 +18,6 @@
  * - Configure the main UI theme and structure
  * - Manage activity lifecycle events
  */
-
-package com.example.fitnesstrackerapp
 
 import android.os.Build
 import android.os.Bundle
@@ -28,16 +35,6 @@ import com.example.fitnesstrackerapp.util.PermissionConstants
 import com.example.fitnesstrackerapp.util.PermissionRequestResult
 import com.example.fitnesstrackerapp.util.PermissionUtils
 
-/**
- * Main Activity class that serves as the entry point for the application.
- *
- * This activity is responsible for:
- * - Managing runtime permission requests with proper user feedback
- * - Setting up the splash screen and app initialization
- * - Configuring the main navigation structure
- * - Handling activity lifecycle events
- * - Providing error handling for critical app functionality
- */
 class MainActivity : ComponentActivity() {
     companion object {
         private const val TAG = "MainActivity"

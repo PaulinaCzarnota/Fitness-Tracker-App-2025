@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * MET Table Calculator for comprehensive calorie calculations.
  *
@@ -11,8 +13,6 @@
  * - Support for running, cycling, weightlifting, and other activities
  * - User weight and duration-based calorie calculations
  */
-
-package com.example.fitnesstrackerapp.util
 
 import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import kotlin.math.max

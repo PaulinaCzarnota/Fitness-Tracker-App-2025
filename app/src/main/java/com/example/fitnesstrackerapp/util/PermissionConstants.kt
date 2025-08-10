@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * Permission Constants and Utilities for the Fitness Tracker application.
  *
@@ -11,8 +13,6 @@
  * - Permission request flow helpers
  * - User-friendly permission descriptions
  */
-
-package com.example.fitnesstrackerapp.util
 
 import android.Manifest
 import android.content.Context

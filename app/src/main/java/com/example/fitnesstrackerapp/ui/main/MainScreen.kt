@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.main
+
 /**
  * Main screen container for the authenticated user interface in the Fitness Tracker application.
  *
@@ -12,9 +14,9 @@
  * and implements proper navigation patterns for a smooth user experience.
  */
 
-package com.example.fitnesstrackerapp.ui.main
-
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
@@ -30,8 +32,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -120,12 +122,36 @@ fun MainScreen(
                 HomeScreen(navController = navController, authViewModel = authViewModel)
             }
             composable(Screen.Workout.route) {
-                val activity = LocalContext.current as ComponentActivity
-                WorkoutScreen(authViewModel = authViewModel, activity = activity)
+                val activity = LocalActivity.current as? androidx.activity.ComponentActivity
+                if (activity != null) {
+                    WorkoutScreen(authViewModel = authViewModel, activity = activity)
+                } else {
+                    // Fallback UI or error handling
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Unable to load workout screen",
+                        )
+                    }
+                }
             }
             composable(Screen.Goals.route) {
-                val activity = LocalContext.current as ComponentActivity
-                GoalScreen(activity = activity)
+                val activity = LocalActivity.current as? androidx.activity.ComponentActivity
+                if (activity != null) {
+                    GoalScreen(activity = activity)
+                } else {
+                    // Fallback UI or error handling
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Unable to load goals screen",
+                        )
+                    }
+                }
             }
             composable(Screen.Nutrition.route) {
                 NutritionScreen(authViewModel = authViewModel)

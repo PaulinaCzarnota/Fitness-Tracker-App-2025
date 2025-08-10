@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * Repository for handling exercise-related data operations in the Fitness Tracker application.
  *
@@ -13,8 +15,6 @@
  * - Muscle group and equipment type categorization
  */
 
-package com.example.fitnesstrackerapp.repository
-
 import com.example.fitnesstrackerapp.data.dao.ExerciseDao
 import com.example.fitnesstrackerapp.data.entity.DifficultyLevel
 import com.example.fitnesstrackerapp.data.entity.EquipmentType
@@ -25,8 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 /**
- * Repository for handling exercise-related data operations.
- *
  * Provides a high-level interface for exercise data management, including
  * persistence operations, filtering, searching, and seeding with predefined exercises.
  * All operations are designed to be thread-safe and use coroutines for async execution.

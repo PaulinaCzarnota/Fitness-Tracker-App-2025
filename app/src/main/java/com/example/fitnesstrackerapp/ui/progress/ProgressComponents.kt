@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.progress
+
 /**
  * Progress Tracking UI Components
  *
@@ -9,8 +11,6 @@
  * - Dark/light theme support
  * - Motion transitions and accessibility
  */
-
-package com.example.fitnesstrackerapp.ui.progress
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState

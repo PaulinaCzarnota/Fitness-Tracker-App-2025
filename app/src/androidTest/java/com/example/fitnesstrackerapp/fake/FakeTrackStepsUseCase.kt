@@ -19,7 +19,7 @@ class FakeTrackStepsUseCase {
     /**
      * Records steps for a user.
      */
-    suspend fun recordSteps(
+    fun recordSteps(
         userId: Long,
         stepCount: Int,
         date: Date = Date(),
@@ -44,6 +44,7 @@ class FakeTrackStepsUseCase {
 
     /**
      * Gets today's steps for a user.
+     * Note: This implementation uses the current date and may not match the actual test date if not injected.
      */
     fun getTodaysSteps(userId: Long): Flow<Step?> {
         val today = Date()
@@ -105,7 +106,7 @@ class FakeTrackStepsUseCase {
     /**
      * Calculates weekly step statistics.
      */
-    suspend fun getWeeklyStatistics(userId: Long): Result<StepStatistics> {
+    fun getWeeklyStatistics(userId: Long): Result<StepStatistics> {
         return try {
             val userSteps = steps.values.filter { it.userId == userId }
             val totalSteps = userSteps.sumOf { it.count }

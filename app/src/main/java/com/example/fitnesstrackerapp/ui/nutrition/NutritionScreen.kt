@@ -1,6 +1,7 @@
 package com.example.fitnesstrackerapp.ui.nutrition
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,8 +44,9 @@ import com.example.fitnesstrackerapp.data.entity.MealType
 fun NutritionScreen(
     modifier: Modifier = Modifier,
     authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
+    targetCalories: Int = 2000,
 ) {
-    val activity = LocalContext.current as ComponentActivity
+    val activity = LocalActivity.current as ComponentActivity
     val authState by authViewModel.uiState.collectAsStateWithLifecycle()
     val userId = authState.user?.id ?: 1L
 
@@ -71,7 +72,7 @@ fun NutritionScreen(
         // Daily summary card
         DailySummaryCard(
             totalCalories = uiState.totalCalories.toInt(),
-            targetCalories = 2000,
+            targetCalories = targetCalories,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -195,7 +196,7 @@ fun AddFoodEntryDialog(onDismiss: () -> Unit, onAddFoodEntry: (String, Int, Meal
                         expanded = expandedMealType,
                         onDismissRequest = { expandedMealType = false },
                     ) {
-                        MealType.entries.forEach { mealType ->
+                        MealType.values().forEach { mealType ->
                             DropdownMenuItem(
                                 text = { Text(mealType.name) },
                                 onClick = {

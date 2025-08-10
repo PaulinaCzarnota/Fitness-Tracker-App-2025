@@ -75,7 +75,7 @@ class ManageGoalsUseCase(
             val goal = goalRepository.getById(goalId)
             val isAchieved = goal != null && currentValue >= goal.targetValue
 
-            if (isAchieved && autoComplete && goal != null) {
+            if (isAchieved && autoComplete) {
                 goalRepository.markGoalAsCompleted(goalId, true)
                 return Result.success(GoalProgressUpdate(goal, true))
             }

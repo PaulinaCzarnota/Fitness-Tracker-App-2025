@@ -1,9 +1,10 @@
+package com.example.fitnesstrackerapp.screens
+
 /**
  * Sign-up screen for the Fitness Tracker App.
  *
- * Provides a user interface for new users to register using email and password. Features input validation, password confirmation, secure password fields, loading and error states, and navigation to login. Implements Material Design 3 for accessibility and user experience.
+ * Provides a user interface for new users to register using email and password. Features input validation, secure password fields, loading and error states, and navigation to login. Implements Material Design 3 for accessibility and user experience.
  */
-package com.example.fitnesstrackerapp.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

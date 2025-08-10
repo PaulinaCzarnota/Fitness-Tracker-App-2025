@@ -2,7 +2,7 @@ package com.example.fitnesstrackerapp.data.model
 
 /**
  * Data model for notification performance insights.
- * 
+ *
  * Contains detailed analytics and trends for notification
  * performance optimization and monitoring.
  */
@@ -17,5 +17,6 @@ data class NotificationInsights(
     val clickThroughRate: Double = 0.0,
     val maxRetryCount: Int = 0,
     val commonErrors: List<ErrorFrequency> = emptyList(),
-    val weeklyTrend: Double = 0.0 // Positive means improvement
+    // Positive means improvement
+    val weeklyTrend: Double = 0.0,
 )

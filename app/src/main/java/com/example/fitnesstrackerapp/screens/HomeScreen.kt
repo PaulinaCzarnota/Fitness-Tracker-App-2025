@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.screens
+
 /**
  * Home screen for the Fitness Tracker App.
  *
@@ -5,8 +7,6 @@
  * Retrieves logged-in user data, triggers daily notifications, and uses Material Design 3 with modular composables.
  * Features an enhanced dashboard with fitness metrics and quick action cards.
  */
-
-package com.example.fitnesstrackerapp.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -55,8 +55,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
-// Removed NotificationScheduler import - using SimpleNotificationManager instead
 
 /**
  * Data class representing a quick action card on the home screen.
@@ -129,6 +127,10 @@ fun HomeScreen(
             stepDashboardViewModel.clearError()
         }
     }
+
+    // Note: Daily notifications are handled by WorkManagerScheduler in the background
+    // The notification scheduling is automatically initialized in FitnessApplication
+    // No additional setup needed here as WorkManager handles the scheduling
 
     // Quick actions for navigation
     val quickActions = listOf(
@@ -248,7 +250,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .padding(innerPadding)
                         .padding(horizontal = 32.dp, vertical = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
                 ) {
                     Column(
                         modifier = Modifier
@@ -422,13 +424,13 @@ private fun StatCard(
         WindowWidthSizeClass.Medium -> 140.dp
         else -> 120.dp
     }
-    
+
     val iconSize = when (windowSize?.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 32.dp
         WindowWidthSizeClass.Medium -> 28.dp
         else -> 24.dp
     }
-    
+
     val padding = when (windowSize?.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 16.dp
         WindowWidthSizeClass.Medium -> 14.dp
@@ -436,8 +438,9 @@ private fun StatCard(
     }
 
     Card(
-        modifier = if (windowSize?.widthSizeClass == WindowWidthSizeClass.Expanded || 
-                     windowSize?.widthSizeClass == WindowWidthSizeClass.Medium) {
+        modifier = if (windowSize?.widthSizeClass == WindowWidthSizeClass.Expanded ||
+            windowSize?.widthSizeClass == WindowWidthSizeClass.Medium
+        ) {
             modifier.fillMaxSize()
         } else {
             modifier.width(cardWidth)
@@ -491,13 +494,13 @@ private fun ActionCard(
         WindowWidthSizeClass.Medium -> 160.dp
         else -> 140.dp
     }
-    
+
     val iconSize = when (windowSize?.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 40.dp
         WindowWidthSizeClass.Medium -> 36.dp
         else -> 32.dp
     }
-    
+
     val padding = when (windowSize?.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 20.dp
         WindowWidthSizeClass.Medium -> 18.dp
@@ -506,8 +509,9 @@ private fun ActionCard(
 
     Card(
         onClick = action.onClick,
-        modifier = if (windowSize?.widthSizeClass == WindowWidthSizeClass.Expanded || 
-                     windowSize?.widthSizeClass == WindowWidthSizeClass.Medium) {
+        modifier = if (windowSize?.widthSizeClass == WindowWidthSizeClass.Expanded ||
+            windowSize?.widthSizeClass == WindowWidthSizeClass.Medium
+        ) {
             modifier.fillMaxSize()
         } else {
             modifier.width(cardWidth)

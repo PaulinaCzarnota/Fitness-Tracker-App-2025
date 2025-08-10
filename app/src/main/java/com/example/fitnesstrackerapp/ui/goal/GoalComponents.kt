@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.goal
+
 /**
  * Goal Management UI Components
  *
@@ -9,8 +11,6 @@
  * - Dark/light theme support
  * - Accessibility semantics
  */
-
-package com.example.fitnesstrackerapp.ui.goal
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -125,7 +125,10 @@ fun GoalSummaryCard(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .semantics { contentDescription = "Goal: ${goal.title}, ${(progress.progressPercentage * 100).toInt()}% complete" },
+            .semantics {
+                contentDescription = "Goal: ${goal.title}, " +
+                    "${(progress.progressPercentage * 100).toInt()}% complete"
+            },
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,

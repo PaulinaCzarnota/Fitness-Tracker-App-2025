@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp
+
 /**
  * ServiceLocator - Centralized Dependency Provider
  *
@@ -7,8 +9,6 @@
  * This implementation follows the Service Locator pattern to manage dependencies
  * while maintaining compliance with assignment requirements.
  */
-
-package com.example.fitnesstrackerapp
 
 import android.content.Context
 import android.util.Log
@@ -40,12 +40,6 @@ import com.example.fitnesstrackerapp.usecase.ManageGoalsUseCase
 import com.example.fitnesstrackerapp.usecase.TrackNutritionUseCase
 import com.example.fitnesstrackerapp.usecase.TrackStepsUseCase
 
-/**
- * ServiceLocator provides centralized access to all app dependencies.
- *
- * Implements thread-safe singleton pattern with lazy initialization
- * and proper resource management for memory efficiency.
- */
 class ServiceLocator private constructor(private val appContext: Context) {
     companion object {
         private const val TAG = "ServiceLocator"
@@ -81,7 +75,7 @@ class ServiceLocator private constructor(private val appContext: Context) {
             return instance ?: synchronized(this) {
                 instance ?: run {
                     if (context == null) {
-                        throw IllegalStateException("ServiceLocator not initialized. Call init() first.")
+                        error("ServiceLocator not initialized. Call init() first.")
                     }
                     ServiceLocator(context.applicationContext).also {
                         instance = it

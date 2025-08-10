@@ -1,20 +1,25 @@
 package com.example.fitnesstrackerapp.ui.theme
 
+/**
+ * Typography system for the Fitness Tracker application.
+ *
+ * This file defines the complete Material Design 3 typography scale with consistent
+ * text styles, font weights, and spacing that ensure readability and accessibility
+ * across all devices and user preferences.
+ *
+ * Key Features:
+ * - Complete Material 3 typography scale implementation
+ * - Responsive text sizes for different screen densities
+ * - Accessible line heights and letter spacing
+ * - Clear visual hierarchy for content organization
+ * - Dynamic scaling support for user accessibility preferences
+ */
+
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
-/**
- * Typography definitions for the Fitness Tracker app.
- *
- * Features:
- * - Responsive text sizes
- * - Accessible line heights
- * - Clear visual hierarchy
- * - Support for scaling based on user preferences
- */
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,

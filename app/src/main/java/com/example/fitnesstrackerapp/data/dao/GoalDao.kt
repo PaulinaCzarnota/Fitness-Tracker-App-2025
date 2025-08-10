@@ -56,7 +56,7 @@ interface GoalDao {
      * Alternative update method for compatibility
      */
     @Update
-    suspend fun update(goal: Goal)
+    suspend fun update(goal: Goal): Int
 
     /**
      * Deletes a goal from the database.

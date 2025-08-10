@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Exercise entity and related classes for the Fitness Tracker application.
  *
@@ -13,26 +15,12 @@
  * - Support for both strength and cardio exercises
  */
 
-package com.example.fitnesstrackerapp.data.entity
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.Date
 
-/**
- * Entity representing an exercise definition in the Fitness Tracker application.
- *
- * This entity stores the definition of exercises that can be performed during workouts.
- * It serves as a template for creating workout sets and provides information about
- * how to perform each exercise correctly.
- *
- * Database Features:
- * - Indexed for efficient querying by name and muscle group
- * - Supports both strength training and cardio exercises
- * - Includes metadata for proper exercise execution
- */
 @Entity(
     tableName = "exercises",
     indices = [

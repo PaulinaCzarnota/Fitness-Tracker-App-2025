@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.viewmodel
+
 /**
  * StepCounterViewModel
  *
@@ -12,8 +14,6 @@
  * @property stepRepository Repository for step data operations.
  * @property authRepository Repository for authentication state.
  */
-
-package com.example.fitnesstrackerapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

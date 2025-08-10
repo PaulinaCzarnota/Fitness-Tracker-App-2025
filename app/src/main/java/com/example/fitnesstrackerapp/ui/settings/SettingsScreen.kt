@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.settings
+
 /**
  * Settings Screen
  *
@@ -6,7 +8,6 @@
  * - Handles user preference updates
  * - Displays current settings values
  */
-package com.example.fitnesstrackerapp.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -299,6 +300,7 @@ private fun CalorieTargetDialog(
                     targetText.toIntOrNull()?.let { target ->
                         if (target in 1000..10000) {
                             onTargetSelected(target)
+                            onDismiss()
                         }
                     }
                 },

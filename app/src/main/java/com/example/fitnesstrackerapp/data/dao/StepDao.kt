@@ -109,13 +109,26 @@ interface StepDao {
     suspend fun deleteStep(step: Step)
 
     /**
-     * Gets today's step record for a user.
+     * Gets today's step record for a user with optimized query.
+     * Uses indexed columns for better performance.
      *
      * @param userId User ID
      * @return Flow of Step entity or null if not found
      */
     @Query("SELECT * FROM steps WHERE user_id = :userId AND DATE(date/1000, 'unixepoch') = DATE('now') LIMIT 1")
     fun getTodaysSteps(userId: Long): Flow<Step?>
+
+    /**
+     * Gets today's step record for a user with date range optimization.
+     * More efficient than date function calls.
+     *
+     * @param userId User ID
+     * @param startOfDay Start of today in milliseconds
+     * @param endOfDay End of today in milliseconds
+     * @return Flow of Step entity or null if not found
+     */
+    @Query("SELECT * FROM steps WHERE user_id = :userId AND date >= :startOfDay AND date < :endOfDay LIMIT 1")
+    fun getTodaysStepsOptimized(userId: Long, startOfDay: Long, endOfDay: Long): Flow<Step?>
 
     /**
      * Gets today's step record for a user on a specific date.

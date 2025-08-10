@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * Naming Standardization Utilities
  *
@@ -12,36 +14,28 @@
  * 4. Deprecate old naming patterns while maintaining backwards compatibility
  */
 
-package com.example.fitnesstrackerapp.util
-
-/**
- * Standard naming conventions for the application.
- *
- * This object contains constants and utilities to ensure consistent naming
- * across the entire codebase.
- */
 object NamingStandards {
-    
+
     /**
      * Standard property names for user identification.
      */
     const val USER_ID = "userId"
-    
+
     /**
      * Standard property names for success indicators.
      */
     const val IS_SUCCESS = "isSuccess"
-    
+
     /**
      * Standard property names for completion indicators.
      */
     const val IS_COMPLETED = "isCompleted"
-    
+
     /**
      * Standard property names for active state indicators.
      */
     const val IS_ACTIVE = "isActive"
-    
+
     /**
      * Standard property names for enabled state indicators.
      */
@@ -55,7 +49,7 @@ object NamingStandards {
  */
 @Suppress("unused")
 object DeprecatedNaming {
-    
+
     /**
      * @deprecated Use [NamingStandards.USER_ID] instead.
      * This ensures consistency across all user-related operations.
@@ -63,10 +57,10 @@ object DeprecatedNaming {
     @Deprecated(
         message = "Use 'userId' instead for consistency across the application",
         replaceWith = ReplaceWith("userId"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.WARNING,
     )
     const val UID = "uid"
-    
+
     /**
      * @deprecated Use [NamingStandards.IS_SUCCESS] instead.
      * Shorter form is preferred for consistency with other boolean properties.
@@ -74,7 +68,7 @@ object DeprecatedNaming {
     @Deprecated(
         message = "Use 'isSuccess' instead of 'isSuccessful' for consistency",
         replaceWith = ReplaceWith("isSuccess"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.WARNING,
     )
     const val IS_SUCCESSFUL = "isSuccessful"
 }
@@ -85,18 +79,18 @@ object DeprecatedNaming {
 
 /**
  * Extension property for backwards compatibility with `isSuccessful` pattern.
- * 
+ *
  * @deprecated Use [isSuccess] property instead.
  */
 @Deprecated(
     message = "Use 'isSuccess' property instead",
     replaceWith = ReplaceWith("isSuccess"),
-    level = DeprecationLevel.WARNING
+    level = DeprecationLevel.WARNING,
 )
 @get:Deprecated(
     message = "Use 'isSuccess' property instead",
     replaceWith = ReplaceWith("isSuccess"),
-    level = DeprecationLevel.WARNING
+    level = DeprecationLevel.WARNING,
 )
 val Boolean.isSuccessful: Boolean
     get() = this
@@ -107,7 +101,7 @@ val Boolean.isSuccessful: Boolean
  * This class can be used in tests to ensure naming conventions are followed.
  */
 class NamingConventionChecker {
-    
+
     /**
      * Validates that a property name follows standard conventions.
      *
@@ -116,7 +110,7 @@ class NamingConventionChecker {
      */
     fun validatePropertyName(propertyName: String): List<String> {
         val issues = mutableListOf<String>()
-        
+
         when {
             propertyName == "uid" -> {
                 issues.add("Use 'userId' instead of 'uid' for user identification")
@@ -131,10 +125,10 @@ class NamingConventionChecker {
                 issues.add("Use camelCase for boolean properties (e.g., 'isActive' instead of 'is_active')")
             }
         }
-        
+
         return issues
     }
-    
+
     /**
      * Checks if a property name uses deprecated patterns.
      *
@@ -149,7 +143,7 @@ class NamingConventionChecker {
             "is_successful",
             "is_completed",
             "is_active",
-            "is_enabled"
+            "is_enabled",
         )
     }
 }
@@ -161,13 +155,13 @@ class NamingConventionChecker {
  * from deprecated naming patterns to standard conventions.
  */
 object MigrationGuide {
-    
+
     /**
      * Guidelines for migrating user identification properties.
      */
     const val USER_ID_MIGRATION = """
         Migration from 'uid' to 'userId':
-        
+
         1. Search for all occurrences of 'uid' in your codebase
         2. Replace with 'userId' in:
            - Entity properties
@@ -176,18 +170,18 @@ object MigrationGuide {
            - API response fields
         3. Update database migrations to rename columns
         4. Update tests to use new naming
-        
+
         Example:
         Before: data class User(val uid: Long, ...)
         After:  data class User(val userId: Long, ...)
     """
-    
+
     /**
      * Guidelines for migrating success indicator properties.
      */
     const val SUCCESS_MIGRATION = """
         Migration from 'isSuccessful' to 'isSuccess':
-        
+
         1. Search for all occurrences of 'isSuccessful' in your codebase
         2. Replace with 'isSuccess' in:
            - Entity properties
@@ -196,7 +190,7 @@ object MigrationGuide {
            - API response fields
         3. Ensure backwards compatibility during transition period
         4. Update tests and documentation
-        
+
         Example:
         Before: data class Result(val isSuccessful: Boolean, ...)
         After:  data class Result(val isSuccess: Boolean, ...)

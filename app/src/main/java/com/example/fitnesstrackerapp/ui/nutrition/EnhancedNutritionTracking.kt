@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.nutrition
+
 /**
  * Enhanced Nutrition Tracking System with Offline Food Database
  *
@@ -10,9 +12,6 @@
  * - Custom food entry creation
  */
 
-package com.example.fitnesstrackerapp.ui.nutrition
-
-// MPAndroidChart removed - using Compose-based charts instead
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -491,7 +490,7 @@ fun MacroBreakdownChart(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "${proteinPercent}%",
+                                text = "$proteinPercent%",
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodySmall,
                             )
@@ -523,7 +522,7 @@ fun MacroBreakdownChart(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "${carbsPercent}%",
+                                text = "$carbsPercent%",
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodySmall,
                             )
@@ -555,7 +554,7 @@ fun MacroBreakdownChart(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "${fatPercent}%",
+                                text = "$fatPercent%",
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodySmall,
                             )
@@ -1150,4 +1149,3 @@ fun NutritionSummaryDialog(
         )
     }
 }
-

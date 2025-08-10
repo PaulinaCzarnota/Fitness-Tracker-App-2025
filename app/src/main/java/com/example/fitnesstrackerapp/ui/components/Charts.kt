@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.components
+
 /**
  * Custom Charts Implementation using Compose Canvas
  *
@@ -9,8 +11,6 @@
  * - Animated chart elements with Material 3 colors
  * - Responsive design and accessibility
  */
-
-package com.example.fitnesstrackerapp.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -77,7 +77,7 @@ fun AnimatedLineChart(
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     gridColor: Color = MaterialTheme.colorScheme.outlineVariant,
     showPoints: Boolean = true,
-    animationDuration: Int = 1500,
+    _animationDuration: Int = 1500,
 ) {
     val density = LocalDensity.current
     MaterialTheme.colorScheme.primary
@@ -129,7 +129,8 @@ fun AnimatedLineChart(
         // Calculate points
         val points = data.mapIndexed { index, dataPoint ->
             val x = padding + (index * chartWidth / (data.size - 1).coerceAtLeast(1))
-            val y = padding + chartHeight - ((dataPoint.value - minValue) / valueRange.coerceAtLeast(0.001f)) * chartHeight
+            val normalizedValue = (dataPoint.value - minValue) / valueRange.coerceAtLeast(0.001f)
+            val y = padding + chartHeight - (normalizedValue * chartHeight)
             Offset(x, y)
         }
 
@@ -345,7 +346,7 @@ fun AnimatedBarChart(
     modifier: Modifier = Modifier,
     barColor: Color = MaterialTheme.colorScheme.primary,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    animationDuration: Int = 1000,
+    _animationDuration: Int = 1000,
 ) {
     val animatedValues = data.map { dataPoint ->
         val animatedValue = remember { Animatable(0f) }

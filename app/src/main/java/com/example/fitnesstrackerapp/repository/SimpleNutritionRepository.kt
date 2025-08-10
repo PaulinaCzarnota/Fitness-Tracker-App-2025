@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * Simple Nutrition Repository for managing food entries and nutrition tracking.
  *
@@ -11,8 +13,6 @@
  * making it suitable for offline-first nutrition tracking.
  */
 
-package com.example.fitnesstrackerapp.repository
-
 import android.util.Log
 import com.example.fitnesstrackerapp.data.dao.FoodEntryDao
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.flow
 import java.util.Date
 
 /**
- * Simple repository implementation for nutrition tracking functionality.
- *
  * Provides basic food entry management and nutrition calculations using
  * only local database storage through Room DAO operations.
  *

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.notifications
+
 /**
  * NotificationReceiver BroadcastReceiver for the Fitness Tracker application.
  *
@@ -14,8 +16,6 @@
  * - Maintains user notification preferences
  */
 
-package com.example.fitnesstrackerapp.notifications
-
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -28,8 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * BroadcastReceiver for handling daily notification triggers.
- *
  * This receiver is triggered by the AlarmManager for scheduled notifications
  * including daily reminders, goal notifications, and progress updates.
  * It uses the SimpleNotificationManager to display notifications and

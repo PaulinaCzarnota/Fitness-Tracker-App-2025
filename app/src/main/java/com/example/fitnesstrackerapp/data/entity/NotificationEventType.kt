@@ -2,7 +2,7 @@ package com.example.fitnesstrackerapp.data.entity
 
 /**
  * Enumeration representing notification event types.
- * 
+ *
  * Used to track different types of notification events
  * throughout the notification lifecycle.
  */

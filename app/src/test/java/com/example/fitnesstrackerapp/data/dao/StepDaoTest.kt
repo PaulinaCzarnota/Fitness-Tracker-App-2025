@@ -3,16 +3,14 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.Step
-import com.example.fitnesstrackerapp.data.entity.User
+import com.example.fitnesstrackerapp.util.test.TestHelper
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.*
-import org.junit.runner.RunWith
 import java.io.IOException
 import java.util.*
 
@@ -27,7 +25,6 @@ import java.util.*
  * - Data integrity and constraints
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
 class StepDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -40,7 +37,7 @@ class StepDaoTest {
     fun createDb() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -55,6 +52,35 @@ class StepDaoTest {
         database.close()
     }
 
+    // Helper function to create a test user
+    private suspend fun createTestUser(): Long {
+        val user = TestHelper.createTestUser(email = "steptest@example.com", username = "stepuser", passwordSalt = "salt123")
+        return userDao.insertUser(user)
+    }
+
+    // Helper function to create a test step
+    private fun createTestStep(
+        userId: Long,
+        stepCount: Int = 8000,
+        stepGoal: Int = 10000,
+        date: Date = Date(),
+        caloriesBurned: Float = 300f,
+        distanceMeters: Float = 6400f,
+        activeMinutes: Int = 40,
+    ): Step {
+        return Step(
+            userId = userId,
+            count = stepCount,
+            goal = stepGoal,
+            date = date,
+            caloriesBurned = caloriesBurned,
+            distanceMeters = distanceMeters,
+            activeMinutes = activeMinutes,
+            createdAt = Date(),
+            updatedAt = Date(),
+        )
+    }
+
     @Test
     fun insertAndGetStep() = runTest {
         val userId = createTestUser()
@@ -64,7 +90,7 @@ class StepDaoTest {
             stepGoal = 10000,
             caloriesBurned = 350.0f,
             distanceMeters = 6800.0f,
-            activeMinutes = 42
+            activeMinutes = 42,
         )
 
         val stepId = stepDao.insertStep(step)
@@ -72,8 +98,8 @@ class StepDaoTest {
 
         val stepsForDate = stepDao.getStepsForDate(userId, step.date).first()
         assertThat(stepsForDate).isNotNull()
-        assertThat(stepsForDate?.stepCount).isEqualTo(8500)
-        assertThat(stepsForDate?.stepGoal).isEqualTo(10000)
+        assertThat(stepsForDate?.count).isEqualTo(8500)
+        assertThat(stepsForDate?.goal).isEqualTo(10000)
         assertThat(stepsForDate?.caloriesBurned).isWithin(0.1f).of(350.0f)
         assertThat(stepsForDate?.distanceMeters).isWithin(0.1f).of(6800.0f)
         assertThat(stepsForDate?.activeMinutes).isEqualTo(42)
@@ -93,7 +119,7 @@ class StepDaoTest {
         val userSteps = stepDao.getStepsByUserId(userId).first()
         assertThat(userSteps).hasSize(3)
         // Should be ordered by date DESC
-        assertThat(userSteps.map { it.stepCount }).containsExactly(9200, 8500, 7000)
+        assertThat(userSteps.map { it.count }).containsExactly(9200, 8500, 7000)
     }
 
     @Test
@@ -109,7 +135,7 @@ class StepDaoTest {
         // For testing, we'll use getStepsForDate instead
         val todaySteps = stepDao.getStepsForDate(userId, today).first()
         assertThat(todaySteps).isNotNull()
-        assertThat(todaySteps?.stepCount).isEqualTo(8500)
+        assertThat(todaySteps?.count).isEqualTo(8500)
     }
 
     @Test
@@ -125,7 +151,7 @@ class StepDaoTest {
         stepDao.updateStepCount(userId, date, newStepCount, updatedAt)
 
         val updatedStep = stepDao.getStepsForDate(userId, date).first()
-        assertThat(updatedStep?.stepCount).isEqualTo(newStepCount)
+        assertThat(updatedStep?.count).isEqualTo(newStepCount)
         assertThat(updatedStep?.updatedAt).isEqualTo(updatedAt)
     }
 
@@ -143,12 +169,12 @@ class StepDaoTest {
             caloriesBurned = 200.0f,
             distanceMeters = 4000.0f,
             activeMinutes = 30,
-            createdAt = date
+            createdAt = date,
         )
 
         var stepRecord = stepDao.getStepsForDate(userId, date).first()
-        assertThat(stepRecord?.stepCount).isEqualTo(5000)
-        assertThat(stepRecord?.stepGoal).isEqualTo(10000)
+        assertThat(stepRecord?.count).isEqualTo(5000)
+        assertThat(stepRecord?.goal).isEqualTo(10000)
 
         // Update with new data
         stepDao.insertOrUpdateSteps(
@@ -159,11 +185,11 @@ class StepDaoTest {
             caloriesBurned = 320.0f,
             distanceMeters = 6400.0f,
             activeMinutes = 48,
-            createdAt = date
+            createdAt = date,
         )
 
         stepRecord = stepDao.getStepsForDate(userId, date).first()
-        assertThat(stepRecord?.stepCount).isEqualTo(8000)
+        assertThat(stepRecord?.count).isEqualTo(8000)
         assertThat(stepRecord?.caloriesBurned).isWithin(0.1f).of(320.0f)
     }
 
@@ -187,7 +213,7 @@ class StepDaoTest {
 
         val stepsInRange = stepDao.getStepsInDateRange(userId, startDate, endDate).first()
         assertThat(stepsInRange).hasSize(3)
-        assertThat(stepsInRange.map { it.stepCount }).containsExactly(9200, 8500, 7000)
+        assertThat(stepsInRange.map { it.count }).containsExactly(9200, 8500, 7000)
     }
 
     @Test
@@ -196,17 +222,19 @@ class StepDaoTest {
 
         // Insert 5 step records
         (1..5).forEach { i ->
-            stepDao.insertStep(createTestStep(
-                userId = userId,
-                date = Date(System.currentTimeMillis() - (i * 24 * 60 * 60 * 1000L)),
-                stepCount = 7000 + (i * 500)
-            ))
+            stepDao.insertStep(
+                createTestStep(
+                    userId = userId,
+                    date = Date(System.currentTimeMillis() - (i * 24 * 60 * 60 * 1000L)),
+                    stepCount = 7000 + (i * 500),
+                ),
+            )
         }
 
         val recentSteps = stepDao.getRecentSteps(userId, 3).first()
         assertThat(recentSteps).hasSize(3)
         // Should be ordered by date DESC
-        assertThat(recentSteps.map { it.stepCount }).containsExactly(7500, 8000, 8500)
+        assertThat(recentSteps.map { it.count }).containsExactly(7500, 8000, 8500)
     }
 
     @Test
@@ -250,9 +278,9 @@ class StepDaoTest {
         val userId = createTestUser()
 
         stepDao.insertStep(createTestStep(userId = userId, stepCount = 12000, stepGoal = 10000)) // Achieved
-        stepDao.insertStep(createTestStep(userId = userId, stepCount = 8500, stepGoal = 10000))  // Not achieved
+        stepDao.insertStep(createTestStep(userId = userId, stepCount = 8500, stepGoal = 10000)) // Not achieved
         stepDao.insertStep(createTestStep(userId = userId, stepCount = 10500, stepGoal = 10000)) // Achieved
-        stepDao.insertStep(createTestStep(userId = userId, stepCount = 9800, stepGoal = 10000))  // Not achieved
+        stepDao.insertStep(createTestStep(userId = userId, stepCount = 9800, stepGoal = 10000)) // Not achieved
 
         val achievedDays = stepDao.getGoalAchievedDays(userId)
         assertThat(achievedDays).isEqualTo(2)
@@ -263,9 +291,9 @@ class StepDaoTest {
         val userId = createTestUser()
 
         stepDao.insertStep(createTestStep(userId = userId, stepCount = 12000, stepGoal = 10000)) // Achieved
-        stepDao.insertStep(createTestStep(userId = userId, stepCount = 8500, stepGoal = 10000))  // Not achieved
+        stepDao.insertStep(createTestStep(userId = userId, stepCount = 8500, stepGoal = 10000)) // Not achieved
         stepDao.insertStep(createTestStep(userId = userId, stepCount = 10500, stepGoal = 10000)) // Achieved
-        stepDao.insertStep(createTestStep(userId = userId, stepCount = 9800, stepGoal = 10000))  // Not achieved
+        stepDao.insertStep(createTestStep(userId = userId, stepCount = 9800, stepGoal = 10000)) // Not achieved
 
         val achievementRate = stepDao.getGoalAchievementRate(userId)
         assertThat(achievementRate).isWithin(0.1f).of(50.0f) // 2 out of 4 = 50%
@@ -316,7 +344,7 @@ class StepDaoTest {
         val weekEnd = Date(baseTime)
 
         stepDao.insertStep(createTestStep(userId = userId, date = Date(baseTime - (5 * 24 * 60 * 60 * 1000L)), stepCount = 12000, stepGoal = 10000)) // Achieved
-        stepDao.insertStep(createTestStep(userId = userId, date = Date(baseTime - (3 * 24 * 60 * 60 * 1000L)), stepCount = 8500, stepGoal = 10000))  // Not achieved
+        stepDao.insertStep(createTestStep(userId = userId, date = Date(baseTime - (3 * 24 * 60 * 60 * 1000L)), stepCount = 8500, stepGoal = 10000)) // Not achieved
         stepDao.insertStep(createTestStep(userId = userId, date = Date(baseTime - (1 * 24 * 60 * 60 * 1000L)), stepCount = 10500, stepGoal = 10000)) // Achieved
 
         val achievedDays = stepDao.getWeeklyGoalAchievedDays(userId, weekStart, weekEnd)
@@ -332,7 +360,7 @@ class StepDaoTest {
         val currentMonthStep = createTestStep(
             userId = userId,
             date = Date(),
-            stepCount = 8500
+            stepCount = 8500,
         )
 
         // Insert step for previous month
@@ -340,7 +368,7 @@ class StepDaoTest {
         val previousMonthStep = createTestStep(
             userId = userId,
             date = calendar.time,
-            stepCount = 7000
+            stepCount = 7000,
         )
 
         stepDao.insertStep(currentMonthStep)
@@ -383,13 +411,13 @@ class StepDaoTest {
         val userId = createTestUser()
 
         stepDao.insertStep(createTestStep(userId = userId, stepCount = 12000, stepGoal = 10000)) // Achieved
-        stepDao.insertStep(createTestStep(userId = userId, stepCount = 8500, stepGoal = 10000))  // Not achieved
+        stepDao.insertStep(createTestStep(userId = userId, stepCount = 8500, stepGoal = 10000)) // Not achieved
         stepDao.insertStep(createTestStep(userId = userId, stepCount = 10500, stepGoal = 10000)) // Achieved
 
         val achievedSteps = stepDao.getStepsWithGoalAchieved(userId).first()
         assertThat(achievedSteps).hasSize(2)
-        assertThat(achievedSteps.map { it.stepCount }).containsExactly(12000, 10500)
-        assertThat(achievedSteps.all { it.stepCount >= it.stepGoal }).isTrue()
+        assertThat(achievedSteps.map { it.count }).containsExactly(12000, 10500)
+        assertThat(achievedSteps.all { it.count >= it.goal }).isTrue()
     }
 
     @Test
@@ -402,7 +430,7 @@ class StepDaoTest {
 
         val bestDay = stepDao.getBestStepDay(userId)
         assertThat(bestDay).isNotNull()
-        assertThat(bestDay?.stepCount).isEqualTo(15000)
+        assertThat(bestDay?.count).isEqualTo(15000)
     }
 
     @Test
@@ -430,7 +458,7 @@ class StepDaoTest {
         val baseTime = System.currentTimeMillis()
 
         val recentDate = Date(baseTime - (2 * 24 * 60 * 60 * 1000L)) // 2 days ago
-        val oldDate = Date(baseTime - (10 * 24 * 60 * 60 * 1000L))   // 10 days ago
+        val oldDate = Date(baseTime - (10 * 24 * 60 * 60 * 1000L)) // 10 days ago
 
         stepDao.insertStep(createTestStep(userId = userId, date = recentDate, stepCount = 8000))
         stepDao.insertStep(createTestStep(userId = userId, date = oldDate, stepCount = 7000))
@@ -441,7 +469,7 @@ class StepDaoTest {
 
         val remainingSteps = stepDao.getStepsByUserId(userId).first()
         assertThat(remainingSteps).hasSize(1)
-        assertThat(remainingSteps[0].stepCount).isEqualTo(8000)
+        assertThat(remainingSteps[0].count).isEqualTo(8000)
     }
 
     @Test
@@ -481,7 +509,7 @@ class StepDaoTest {
     fun testForeignKeyConstraint() = runTest {
         val step = createTestStep(
             userId = 999L, // Non-existent user
-            stepCount = 8000
+            stepCount = 8000,
         )
 
         try {
@@ -489,7 +517,7 @@ class StepDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint", "no such table")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 
@@ -510,36 +538,4 @@ class StepDaoTest {
         userSteps = stepDao.getStepsByUserId(userId).first()
         assertThat(userSteps).isEmpty()
     }
-
-    private suspend fun createTestUser(): Long {
-        val user = User(
-            email = "step_test@example.com",
-            username = "stepuser",
-            passwordHash = "test_hash",
-            passwordSalt = "test_salt",
-            createdAt = Date(),
-            updatedAt = Date()
-        )
-        return userDao.insertUser(user)
-    }
-
-    private fun createTestStep(
-        userId: Long,
-        stepCount: Int = 8000,
-        stepGoal: Int = 10000,
-        date: Date = Date(),
-        caloriesBurned: Float = 300.0f,
-        distanceMeters: Float = 6400.0f,
-        activeMinutes: Int = 40
-    ) = Step(
-        userId = userId,
-        stepCount = stepCount,
-        stepGoal = stepGoal,
-        date = date,
-        caloriesBurned = caloriesBurned,
-        distanceMeters = distanceMeters,
-        activeMinutes = activeMinutes,
-        createdAt = Date(),
-        updatedAt = Date()
-    )
 }

@@ -1,10 +1,11 @@
+package com.example.fitnesstrackerapp.ui.viewmodel
+
 /**
  * Step Dashboard ViewModel
  *
  * Manages the connection between UI Dashboard and StepCounterService.
  * Provides real-time step data binding and service lifecycle management.
  */
-package com.example.fitnesstrackerapp.ui.viewmodel
 
 import android.app.Application
 import android.content.ComponentName

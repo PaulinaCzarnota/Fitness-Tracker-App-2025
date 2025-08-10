@@ -1,20 +1,4 @@
-/**
- * Enhanced StepRepository
- *
- * Purpose:
- * - Manages step data for the FitnessTrackerApp with enhanced functionality
- * - Provides integration with workouts and goals for comprehensive fitness tracking
- * - Supports batch operations for battery optimization
- * - Offers advanced analytics and statistics for step data
- */
-
 package com.example.fitnesstrackerapp.repository
-
-import com.example.fitnesstrackerapp.data.dao.StepDao
-import com.example.fitnesstrackerapp.data.entity.Step
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import java.util.Date
 
 /**
  * Repository for managing step tracking data in the Fitness Tracker App.
@@ -22,8 +6,22 @@ import java.util.Date
  * Handles upsert and query operations for step data, providing a clean API for step tracking features.
  * Designed for use with Kotlin coroutines and Flow for reactive data updates.
  *
+ * Purpose:
+ * - Manages step data for the FitnessTrackerApp with enhanced functionality
+ * - Provides integration with workouts and goals for comprehensive fitness tracking
+ * - Supports batch operations for battery optimization
+ * - Offers advanced analytics and statistics for step data
+ *
  * @property stepDao The DAO for accessing step data in the Room database
  */
+
+import com.example.fitnesstrackerapp.data.dao.StepDao
+import com.example.fitnesstrackerapp.data.entity.Step
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import java.util.Calendar
+import java.util.Date
+
 class StepRepository(private val stepDao: StepDao) {
     /**
      * Upserts a step entity (inserts or updates if existing).
@@ -55,12 +53,25 @@ class StepRepository(private val stepDao: StepDao) {
     suspend fun deleteStep(step: Step) = stepDao.deleteStep(step)
 
     /**
-     * Retrieves today's step data for a user.
+     * Retrieves today's step data for a user with performance optimization.
+     * Uses date range query for better performance than date functions.
      *
      * @param userId The ID of the user.
      * @return A Flow emitting a [Step] object or null if no entry exists for today.
      */
-    fun getTodaysSteps(userId: Long): Flow<Step?> = stepDao.getTodaysSteps(userId)
+    fun getTodaysSteps(userId: Long): Flow<Step?> {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val startOfDay = calendar.timeInMillis
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        val endOfDay = calendar.timeInMillis
+
+        return stepDao.getTodaysStepsOptimized(userId, startOfDay, endOfDay)
+    }
 
     /**
      * Retrieves the step entry for a specific date.

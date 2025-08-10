@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * Fitness Calculations Utility
  *
@@ -6,8 +8,6 @@
  * - Handles unit conversions
  * - Provides data formatting utilities
  */
-
-package com.example.fitnesstrackerapp.util
 
 import com.example.fitnesstrackerapp.settings.MeasurementUnit
 import kotlin.math.pow

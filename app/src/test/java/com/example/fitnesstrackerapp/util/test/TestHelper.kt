@@ -169,7 +169,7 @@ object TestHelper {
         type: com.example.fitnesstrackerapp.data.entity.NotificationType = com.example.fitnesstrackerapp.data.entity.NotificationType.WORKOUT_REMINDER,
         title: String = "Test Notification",
         message: String = "This is a test notification",
-        priority: com.example.fitnesstrackerapp.data.entity.NotificationPriority = com.example.fitnesstrackerapp.data.entity.NotificationPriority.DEFAULT,
+        priority: com.example.fitnesstrackerapp.data.entity.NotificationPriority = com.example.fitnesstrackerapp.data.entity.NotificationPriority.MEDIUM,
         scheduledTime: java.util.Date = java.util.Date(),
         channelId: String = "test_channel",
         relatedEntityId: Long? = null,
@@ -207,7 +207,7 @@ object TestHelper {
         deliveryDurationMs: Long? = null,
         priorityLevel: Int = 2,
         eventTimestamp: java.util.Date = java.util.Date(),
-        createdAt: java.util.Date = java.util.Date()
+        createdAt: java.util.Date = java.util.Date(),
     ) = com.example.fitnesstrackerapp.data.entity.NotificationLog(
         id = id,
         userId = userId,
@@ -222,28 +222,78 @@ object TestHelper {
         deliveryDurationMs = deliveryDurationMs,
         priorityLevel = priorityLevel,
         eventTimestamp = eventTimestamp,
-        createdAt = createdAt
+        createdAt = createdAt,
     )
 
     /**
-     * Creates a test Step entity with customizable parameters.
+     * Creates a test NutritionEntry entity with customizable parameters.
      */
-    fun createTestStep(
+    fun createTestNutritionEntry(
         id: Long = 0,
         userId: Long = TEST_USER_ID,
-        stepCount: Int = 1000,
-        date: java.util.Date = java.util.Date(),
-        distance: Float = 0.8f,
-        caloriesBurned: Int = 50,
-    ) = com.example.fitnesstrackerapp.data.entity.Step(
+        foodName: String = "Test Food",
+        brandName: String? = null,
+        servingSize: Double = 1.0,
+        servingUnit: String = "serving",
+        caloriesPerServing: Double = 100.0,
+        proteinGrams: Double = 5.0,
+        carbsGrams: Double = 15.0,
+        fatGrams: Double = 3.0,
+        saturatedFatGrams: Double = 1.0,
+        transFatGrams: Double = 0.0,
+        cholesterolMg: Double = 0.0,
+        fiberGrams: Double = 2.0,
+        sugarGrams: Double = 5.0,
+        addedSugarsGrams: Double = 0.0,
+        sodiumMg: Double = 100.0,
+        potassiumMg: Double = 200.0,
+        vitaminCMg: Double = 10.0,
+        vitaminDMcg: Double = 2.0,
+        calciumMg: Double = 50.0,
+        ironMg: Double = 1.0,
+        mealType: com.example.fitnesstrackerapp.data.entity.MealType = com.example.fitnesstrackerapp.data.entity.MealType.LUNCH,
+        dateConsumed: java.util.Date = java.util.Date(),
+        notes: String? = null,
+        barcode: String? = null,
+        recipeId: Long? = null,
+        isHomemade: Boolean = false,
+        confidenceLevel: Double = 1.0,
+        createdAt: java.util.Date = java.util.Date(),
+        updatedAt: java.util.Date = java.util.Date(),
+        loggedAt: java.util.Date = java.util.Date(),
+    ) = com.example.fitnesstrackerapp.data.entity.NutritionEntry(
         id = id,
         userId = userId,
-        stepCount = stepCount,
-        distance = distance,
-        caloriesBurned = caloriesBurned,
-        date = date,
-        createdAt = date,
-        updatedAt = date,
+        foodName = foodName,
+        brandName = brandName,
+        servingSize = servingSize,
+        servingUnit = servingUnit,
+        caloriesPerServing = caloriesPerServing,
+        proteinGrams = proteinGrams,
+        carbsGrams = carbsGrams,
+        fatGrams = fatGrams,
+        saturatedFatGrams = saturatedFatGrams,
+        transFatGrams = transFatGrams,
+        cholesterolMg = cholesterolMg,
+        fiberGrams = fiberGrams,
+        sugarGrams = sugarGrams,
+        addedSugarsGrams = addedSugarsGrams,
+        sodiumMg = sodiumMg,
+        potassiumMg = potassiumMg,
+        vitaminCMg = vitaminCMg,
+        vitaminDMcg = vitaminDMcg,
+        calciumMg = calciumMg,
+        ironMg = ironMg,
+        mealType = mealType,
+        dateConsumed = dateConsumed,
+        notes = notes,
+        barcode = barcode,
+        recipeId = recipeId,
+        isHomemade = isHomemade,
+        confidenceLevel = confidenceLevel,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        loggedAt = loggedAt,
     )
 
     /**
@@ -279,50 +329,6 @@ object TestHelper {
     }
 
     /**
-     * Creates test WorkoutSet entities with customizable parameters.
-     */
-    fun createTestWorkoutSet(
-        id: Long = 0,
-        workoutId: Long = 1L,
-        exerciseId: Long = 1L,
-        reps: Int = 10,
-        weight: Double = 50.0,
-        duration: Int = 60,
-        restTime: Int = 30,
-    ) = com.example.fitnesstrackerapp.data.entity.WorkoutSet(
-        id = id,
-        workoutId = workoutId,
-        exerciseId = exerciseId,
-        setNumber = 1,
-        reps = reps,
-        weight = weight,
-        duration = duration,
-        restTime = restTime,
-        createdAt = java.util.Date(),
-    )
-
-    /**
-     * Creates test Exercise entities with customizable parameters.
-     */
-    fun createTestExercise(
-        id: Long = 0,
-        name: String = "Test Exercise",
-        category: String = "Strength",
-        muscleGroups: List<String> = listOf("Chest", "Triceps"),
-        difficulty: String = "Beginner",
-    ) = com.example.fitnesstrackerapp.data.entity.Exercise(
-        id = id,
-        name = name,
-        category = category,
-        description = "A test exercise",
-        muscleGroups = muscleGroups,
-        difficulty = difficulty,
-        equipment = "None",
-        instructions = "Perform as instructed",
-        createdAt = java.util.Date(),
-    )
-
-    /**
      * Creates a mock AuthRepository for testing
      */
     fun createMockAuthRepository() = mockk<com.example.fitnesstrackerapp.repository.AuthRepository> {
@@ -350,37 +356,4 @@ object TestHelper {
     }
 }
 
-object TestData {
-    const val TEST_USER_ID = 1L
-    private const val TEST_EMAIL = "test@example.com"
-    const val TEST_PASSWORD = "Test123!"
-    const val VALID_EMAIL = "valid@example.com"
-    const val INVALID_EMAIL = "invalid-email"
-    const val WEAK_PASSWORD = "123"
-    const val STRONG_PASSWORD = "StrongPassword123!"
-    const val VALID_NAME = "Test User"
 
-    // Mock crypto data for tests
-    const val MOCK_SALT = "mocksalt12345678"
-    const val MOCK_HASH = "mockhash12345678"
-    const val MOCK_HEX_STRING = "6d6f636b686173683132333435363738"
-
-    // Test data for nutrition
-    const val TEST_FOOD_NAME = "Test Food"
-    const val TEST_CALORIES = 250.0
-    const val TEST_PROTEIN = 10.5
-    const val TEST_CARBS = 30.0
-    const val TEST_FAT = 8.0
-
-    // Test data for workouts
-    const val TEST_WORKOUT_TITLE = "Morning Run"
-    const val TEST_WORKOUT_DURATION = 30
-    const val TEST_WORKOUT_DISTANCE = 5.0f
-    const val TEST_WORKOUT_CALORIES = 300
-
-    // Test data for goals
-    const val TEST_GOAL_TITLE = "Lose Weight"
-    const val TEST_GOAL_TARGET = 10.0
-    const val TEST_GOAL_CURRENT = 2.0
-    const val TEST_GOAL_UNIT = "kg"
-}

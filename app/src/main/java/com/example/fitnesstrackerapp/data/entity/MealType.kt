@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Meal Type enumeration for the Fitness Tracker application.
  *
@@ -10,12 +12,6 @@
  * - Daily nutrition analysis and reporting
  * - Meal timing optimization for fitness goals
  * - Dietary pattern analysis and recommendations
- */
-
-package com.example.fitnesstrackerapp.data.entity
-
-/**
- * Enumeration of meal types in the Fitness Tracker application.
  *
  * Each meal type represents a different eating occasion with specific
  * timing and nutritional considerations for comprehensive diet tracking:

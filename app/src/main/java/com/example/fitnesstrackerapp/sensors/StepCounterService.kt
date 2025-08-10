@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.sensors
+
 /**
  * Real-time Step Tracking Service
  *
@@ -8,7 +10,6 @@
  * - Service binding for UI Dashboard fragment integration
  * - Automatic goal tracking and achievement notifications
  */
-package com.example.fitnesstrackerapp.sensors
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -525,4 +526,3 @@ class StepCounterService : Service(), SensorEventListener {
         Log.d(TAG, "Daily steps reset")
     }
 }
-

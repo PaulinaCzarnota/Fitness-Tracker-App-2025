@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Nutrition Entry entity and related classes for the Fitness Tracker application.
  *
@@ -14,8 +16,6 @@
  * - Foreign key relationship with User entity for data integrity
  */
 
-package com.example.fitnesstrackerapp.data.entity
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -25,8 +25,6 @@ import java.util.Calendar
 import java.util.Date
 
 /**
- * Entity representing a nutrition entry for dietary tracking in the Fitness Tracker application.
- *
  * This entity stores comprehensive nutrition information including food details,
  * nutritional values, serving information, and meal categorization. All nutrition entries
  * are associated with a specific user through foreign key relationship.

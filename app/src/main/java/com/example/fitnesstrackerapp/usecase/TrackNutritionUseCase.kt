@@ -120,7 +120,7 @@ class TrackNutritionUseCase(
     /**
      * Calculates weekly nutrition statistics
      */
-    suspend fun getWeeklyNutritionStats(userId: Long): Result<WeeklyNutritionStats> {
+    fun getWeeklyNutritionStats(userId: Long): Result<WeeklyNutritionStats> {
         return try {
             val calendar = Calendar.getInstance()
             calendar.time

@@ -126,21 +126,21 @@ class NutritionViewModel(
                 _uiState.value = _uiState.value.copy(isLoading = true)
                 repository.getAllFoodEntriesForUser(userId).collect { entries ->
                     // Filter entries for the specific date (simplified - in real app would use date range query)
-                    val todayEntries = entries.filter { 
+                    val todayEntries = entries.filter {
                         val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
                         val entryDate = dateFormat.format(it.dateConsumed)
                         val targetDate = dateFormat.format(date)
                         entryDate == targetDate
                     }
-                    
+
                     val totalCalories = todayEntries.sumOf { it.getTotalCalories() }
                     val totalProtein = todayEntries.sumOf { it.getTotalProtein() }
                     val totalCarbs = todayEntries.sumOf { it.getTotalCarbs() }
                     val totalFat = todayEntries.sumOf { it.getTotalFat() }
                     val totalFiber = todayEntries.sumOf { it.getTotalFiber() }
-                    
+
                     val entriesByMeal = todayEntries.groupBy { it.mealType }
-                    
+
                     // Create nutrition summary
                     val nutritionSummary = NutritionSummary(
                         totalCalories = totalCalories,
@@ -149,7 +149,7 @@ class NutritionViewModel(
                         totalFat = totalFat,
                         totalFiber = totalFiber,
                         totalSugar = todayEntries.sumOf { it.getTotalSugar() },
-                        totalSodium = todayEntries.sumOf { it.getTotalSodium() }
+                        totalSodium = todayEntries.sumOf { it.getTotalSodium() },
                     )
 
                     _uiState.value = _uiState.value.copy(
@@ -207,7 +207,7 @@ class NutritionViewModel(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
-                
+
                 // Add some sample food entries for today
                 val sampleEntries = listOf(
                     FoodEntry(
@@ -222,7 +222,7 @@ class NutritionViewModel(
                         fiberGrams = 6.0,
                         sugarGrams = 12.0,
                         mealType = MealType.BREAKFAST,
-                        dateConsumed = Date()
+                        dateConsumed = Date(),
                     ),
                     FoodEntry(
                         userId = userId,
@@ -236,7 +236,7 @@ class NutritionViewModel(
                         fiberGrams = 0.0,
                         sugarGrams = 9.0,
                         mealType = MealType.BREAKFAST,
-                        dateConsumed = Date()
+                        dateConsumed = Date(),
                     ),
                     FoodEntry(
                         userId = userId,
@@ -250,7 +250,7 @@ class NutritionViewModel(
                         fiberGrams = 4.0,
                         sugarGrams = 6.0,
                         mealType = MealType.LUNCH,
-                        dateConsumed = Date()
+                        dateConsumed = Date(),
                     ),
                     FoodEntry(
                         userId = userId,
@@ -264,7 +264,7 @@ class NutritionViewModel(
                         fiberGrams = 3.0,
                         sugarGrams = 1.0,
                         mealType = MealType.SNACK,
-                        dateConsumed = Date()
+                        dateConsumed = Date(),
                     ),
                     FoodEntry(
                         userId = userId,
@@ -278,22 +278,21 @@ class NutritionViewModel(
                         fiberGrams = 5.0,
                         sugarGrams = 3.0,
                         mealType = MealType.DINNER,
-                        dateConsumed = Date()
-                    )
+                        dateConsumed = Date(),
+                    ),
                 )
-                
+
                 // Add each entry to the repository
                 sampleEntries.forEach { entry ->
                     repository.addFoodEntry(entry)
                 }
-                
+
                 // Reload data to reflect the changes
                 loadFoodEntriesForDate(Date())
-                
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to seed default data: ${e.message}",
-                    isLoading = false
+                    isLoading = false,
                 )
             }
         }

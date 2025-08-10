@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Goal entity and related classes for the Fitness Tracker application.
  *
@@ -14,8 +16,6 @@
  * - Foreign key relationship with User entity for data integrity
  */
 
-package com.example.fitnesstrackerapp.data.entity
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -25,18 +25,6 @@ import java.util.Calendar
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-/**
- * Entity representing a fitness goal in the Fitness Tracker application.
- *
- * This entity stores comprehensive goal information including target values,
- * current progress, deadlines, and reminder settings. All goals are associated
- * with a specific user through foreign key relationship.
- *
- * Database Features:
- * - Indexed for efficient querying by user, goal type, status, and target date
- * - Foreign key constraint ensures data integrity with User entity
- * - Cascading delete removes goals when user is deleted
- */
 @Entity(
     tableName = "goals",
     foreignKeys = [
@@ -106,7 +94,7 @@ data class Goal(
      */
     @Deprecated(
         "Use isCompleted() extension function for enhanced goal-type specific completion logic",
-        ReplaceWith("this.isCompleted()", "com.example.fitnesstrackerapp.data.entity.isCompleted")
+        ReplaceWith("this.isCompleted()", "com.example.fitnesstrackerapp.data.entity.isCompleted"),
     )
     fun isCompletedLegacy(): Boolean {
         return currentValue >= targetValue || status == GoalStatus.COMPLETED

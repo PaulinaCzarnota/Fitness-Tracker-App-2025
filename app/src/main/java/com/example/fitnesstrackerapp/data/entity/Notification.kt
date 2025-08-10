@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Notification entity and related classes for the Fitness Tracker application.
  *
@@ -14,8 +16,6 @@
  * - Foreign key relationship with User entity for data integrity
  */
 
-package com.example.fitnesstrackerapp.data.entity
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -24,13 +24,10 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 /**
- * Enumeration representing different types of notifications in the fitness app.
+ * Enumeration representing notification priority levels.
  *
- * Each type corresponds to specific app functionality and has different
- * priority levels and handling requirements.
- *
+ * Defines the urgency and importance of notifications.
  * Room stores enum values as text by default using enum.name.
- * This ensures consistency and readability in the database.
  */
 enum class NotificationType {
     WORKOUT_REMINDER,
@@ -46,7 +43,6 @@ enum class NotificationType {
     WORKOUT_STREAK,
     INACTIVE_USER_ENGAGEMENT,
 }
-
 
 /**
  * Enumeration representing notification delivery status.

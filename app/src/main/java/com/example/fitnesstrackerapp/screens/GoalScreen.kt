@@ -76,7 +76,7 @@ fun GoalScreen(
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        // Header
+        // Header section: displays the title for the goals screen
         Text(
             text = "My Goals",
             style = MaterialTheme.typography.headlineMedium,
@@ -85,7 +85,7 @@ fun GoalScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Add new goal button
+        // Add new goal button: opens the dialog to add a new goal
         Button(
             onClick = { showAddGoalDialog = true },
             modifier = Modifier.fillMaxWidth(),
@@ -97,7 +97,7 @@ fun GoalScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Goals section
+        // Goals section: displays the list of current goals
         if (uiState.goals.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -318,7 +318,7 @@ private fun AddGoalDialog(
                         expanded = expandedGoalType,
                         onDismissRequest = { expandedGoalType = false },
                     ) {
-                        GoalType.entries.forEach { goalType ->
+                        GoalType.values().forEach { goalType ->
                             DropdownMenuItem(
                                 text = { Text(goalType.name) },
                                 onClick = {

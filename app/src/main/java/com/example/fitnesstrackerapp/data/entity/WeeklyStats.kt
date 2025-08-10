@@ -1,11 +1,10 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Weekly Statistics Data Class
  *
  * Represents aggregated weekly fitness data
- */
-package com.example.fitnesstrackerapp.data.entity
-
-/**
+ *
  * Data class representing weekly workout statistics
  *
  * @property workoutCount Total number of workouts in the week

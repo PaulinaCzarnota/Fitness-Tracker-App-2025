@@ -1,10 +1,11 @@
+package com.example.fitnesstrackerapp.screens
+
 /**
  * Forgot password screen for the Fitness Tracker App.
  *
  * Provides a user interface for users to reset their password via email.
  * Features input validation, loading states, and success/error messaging.
  */
-package com.example.fitnesstrackerapp.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -150,6 +151,7 @@ private fun RequestResetStep(
     uiState: AuthViewModel.AuthUiState,
     viewModel: AuthViewModel,
 ) {
+    // Title for the forgot password step
     Text(
         text = "Forgot Password",
         style = MaterialTheme.typography.headlineMedium,
@@ -159,6 +161,7 @@ private fun RequestResetStep(
 
     Spacer(modifier = Modifier.height(8.dp))
 
+    // Instructional text for the user
     Text(
         text = "Enter your email address and we'll send you a reset token to create a new password.",
         style = MaterialTheme.typography.bodyMedium,
@@ -167,6 +170,7 @@ private fun RequestResetStep(
 
     Spacer(modifier = Modifier.height(32.dp))
 
+    // Email input field with validation and icon
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,
@@ -193,6 +197,7 @@ private fun RequestResetStep(
         isError = email.isNotBlank() && !viewModel.isValidEmail(email),
     )
 
+    // Show error message if email is invalid
     if (email.isNotBlank() && !viewModel.isValidEmail(email)) {
         Text(
             text = "Please enter a valid email address",
@@ -206,6 +211,7 @@ private fun RequestResetStep(
 
     Spacer(modifier = Modifier.height(32.dp))
 
+    // Request reset button
     Button(
         onClick = onRequestReset,
         modifier = Modifier
@@ -225,6 +231,7 @@ private fun RequestResetStep(
 
     Spacer(modifier = Modifier.height(16.dp))
 
+    // Navigation button to go back to login
     TextButton(onClick = onNavigateToLogin) {
         Text("Back to Login")
     }
@@ -377,6 +384,7 @@ private fun EnterTokenStep(
         isError = confirmPassword.isNotBlank() && newPassword != confirmPassword,
     )
 
+    // Show error message if passwords do not match
     if (confirmPassword.isNotBlank() && newPassword != confirmPassword) {
         Text(
             text = "Passwords do not match",
@@ -390,6 +398,7 @@ private fun EnterTokenStep(
 
     Spacer(modifier = Modifier.height(32.dp))
 
+    // Reset Password button
     Button(
         onClick = onResetPassword,
         modifier = Modifier
@@ -409,6 +418,7 @@ private fun EnterTokenStep(
 
     Spacer(modifier = Modifier.height(16.dp))
 
+    // Navigation buttons to go back or resend token
     Row {
         TextButton(onClick = onBackToRequest) {
             Text("Back")

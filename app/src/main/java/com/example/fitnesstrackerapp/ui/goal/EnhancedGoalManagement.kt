@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.goal
+
 /**
  * Enhanced Goal Management System with WorkManager Integration
  *
@@ -8,8 +10,6 @@
  * - Progress visualization and achievement notifications
  * - Goal categories: steps, workouts, weight loss, muscle gain, etc.
  */
-
-package com.example.fitnesstrackerapp.ui.goal
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -419,13 +419,13 @@ fun GoalCard(
             .fillMaxWidth()
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = when {
-                    goal.isCompleted() -> MaterialTheme.colorScheme.tertiaryContainer
-                    isOverdue -> MaterialTheme.colorScheme.errorContainer
-                    else -> MaterialTheme.colorScheme.surface
-                },
-            ),
+        colors = CardDefaults.cardColors(
+            containerColor = when {
+                goal.isCompleted() -> MaterialTheme.colorScheme.tertiaryContainer
+                isOverdue -> MaterialTheme.colorScheme.errorContainer
+                else -> MaterialTheme.colorScheme.surface
+            },
+        ),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -851,7 +851,9 @@ fun CreateGoalDialog(
                                 onCreateGoal(title, description, target, targetDate, reminderEnabled)
                             }
                         },
-                        enabled = targetValue.isNotBlank() && title.isNotBlank() && (targetValue.toFloatOrNull() ?: 0f) > 0,
+                        enabled = targetValue.isNotBlank() &&
+                            title.isNotBlank() &&
+                            (targetValue.toFloatOrNull() ?: 0f) > 0,
                         modifier = Modifier.weight(1f),
                     ) {
                         Text("Create Goal")

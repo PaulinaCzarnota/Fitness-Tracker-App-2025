@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Step entity and related classes for the Fitness Tracker application.
  *
@@ -14,8 +16,6 @@
  * - Foreign key relationship with User entity for data integrity
  */
 
-package com.example.fitnesstrackerapp.data.entity
-
 import android.annotation.SuppressLint
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -26,8 +26,6 @@ import java.util.Calendar
 import java.util.Date
 
 /**
- * Entity representing daily step tracking data in the Fitness Tracker application.
- *
  * This entity stores comprehensive step information including daily counts,
  * distance calculations, calorie estimates, and goal tracking. All step records
  * are associated with a specific user and date through foreign key relationship.

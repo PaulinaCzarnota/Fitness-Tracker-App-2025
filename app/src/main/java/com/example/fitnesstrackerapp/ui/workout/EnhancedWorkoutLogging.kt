@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Enhanced Workout Logging System with MET Table Integration
  *
@@ -9,8 +11,6 @@
  * - Personal record tracking
  * - Workout templates and routines
  */
-
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

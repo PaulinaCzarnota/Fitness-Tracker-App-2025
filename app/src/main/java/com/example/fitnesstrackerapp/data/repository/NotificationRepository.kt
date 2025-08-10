@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import java.util.Calendar
 import java.util.Date
-// import javax.inject.Inject // REMOVED - using ServiceLocator
-// import javax.inject.Singleton // REMOVED - using ServiceLocator
 
 /**
  * Repository for notification logging operations.
@@ -32,8 +30,7 @@ import java.util.Date
  * - Caching layer for frequently accessed data
  * - Real-time reactive data streams
  *
- * Usage:
- * ```kotlin
+ * Usage example:
  * class NotificationService @Inject constructor(
  *     private val notificationRepository: NotificationRepository
  * ) {
@@ -48,11 +45,9 @@ import java.util.Date
  *         )
  *     }
  * }
- * ```
  *
  * @property notificationLogDao DAO for notification log database operations
  */
-// @Singleton // REMOVED - using ServiceLocator
 class NotificationRepository
 // @Inject // REMOVED - using ServiceLocator
 constructor(
@@ -92,7 +87,7 @@ constructor(
         errorCode: String? = null,
         retryCount: Int = 0,
         metadata: String? = null,
-        deliveryChannel: NotificationDeliveryChannel = NotificationDeliveryChannel.PUSH
+        deliveryChannel: NotificationDeliveryChannel = NotificationDeliveryChannel.PUSH,
     ): Long {
         val notificationLog = NotificationLog(
             userId = userId,
@@ -103,7 +98,7 @@ constructor(
             isSuccess = isSuccessful,
             errorCode = errorCode,
             errorMessage = errorMessage,
-            retryCount = retryCount
+            retryCount = retryCount,
         )
         return notificationLogDao.insertNotificationLog(notificationLog)
     }
@@ -284,14 +279,14 @@ constructor(
         val today = Date()
         val calendar = Calendar.getInstance()
         calendar.time = today
-        
+
         // Set to start of day
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
         val startOfDay = calendar.time
-        
+
         // Set to end of day
         calendar.set(Calendar.HOUR_OF_DAY, 23)
         calendar.set(Calendar.MINUTE, 59)
@@ -337,7 +332,7 @@ constructor(
         endDate: Date,
     ): Double {
         val stats = getNotificationDeliveryStats(userId, startDate, endDate)
-        
+
         return if (stats != null && stats.totalDelivered > 0) {
             // Get count of clicked notifications from logs
             val clickedCount = notificationLogDao.getClickedNotificationCount(userId, startDate, endDate)

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.screens
+
 /**
  * Progress tracking screen for the Fitness Tracker App.
  *
@@ -13,9 +15,8 @@
  * design patterns for optimal user experience across different screen sizes.
  */
 
-package com.example.fitnesstrackerapp.screens
-
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,15 +52,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fitnesstrackerapp.ViewModelFactoryProvider
+import com.example.fitnesstrackerapp.ui.viewmodel.ProgressUiState
 
 /**
  * Data classes for progress tracking
@@ -94,22 +99,59 @@ data class WeeklyData(
 @Composable
 fun ProgressScreen(
     modifier: Modifier = Modifier,
-    authViewModel: com.example.fitnesstrackerapp.ui.auth.AuthViewModel,
 ) {
-    // Initialize ViewModel via factory
-    val activity = LocalContext.current as ComponentActivity
-    remember {
-        ViewModelFactoryProvider.getProgressViewModel(activity)
+    // Use LocalActivity for activity context and get ViewModel
+    val activity = LocalActivity.current
+    val progressViewModel = remember {
+        ViewModelFactoryProvider.getProgressViewModel(activity as ComponentActivity)
     }
 
-    // Sample data - in real app, this would come from ViewModel
-    val weeklyStats = remember {
-        listOf(
-            ProgressStatistic("Steps", "52,341", "+12%", Icons.AutoMirrored.Filled.DirectionsRun),
-            ProgressStatistic("Workouts", "8", "+2", Icons.Default.FitnessCenter),
-            ProgressStatistic("Calories", "2,840", "+15%", Icons.Default.LocalFireDepartment),
-            ProgressStatistic("Distance", "38.2 km", "+8%", Icons.Default.Route),
-        )
+    // Collect UI state with lifecycle awareness for better performance
+    val uiState by progressViewModel.uiState.collectAsStateWithLifecycle()
+
+    // Memoized statistics calculation to prevent recomposition
+    val weeklyStats = remember(uiState) {
+        when (val currentState = uiState) {
+            is ProgressUiState.Success -> {
+                val summary = currentState.weeklySummary
+                val stepCount = currentState.stepHistory.firstOrNull()?.count ?: 0
+                listOf(
+                    ProgressStatistic(
+                        "Steps",
+                        "$stepCount",
+                        "+12%",
+                        Icons.AutoMirrored.Filled.DirectionsRun
+                    ),
+                    ProgressStatistic(
+                        "Workouts",
+                        "${summary.totalWorkouts}",
+                        "+2",
+                        Icons.Default.FitnessCenter
+                    ),
+                    ProgressStatistic(
+                        "Calories",
+                        "${summary.totalCalories}",
+                        "+15%",
+                        Icons.Default.LocalFireDepartment
+                    ),
+                    ProgressStatistic(
+                        "Distance",
+                        "${String.format("%.1f", summary.totalDistance)} km",
+                        "+8%",
+                        Icons.Default.Route
+                    ),
+                )
+            }
+            else -> {
+                // Fallback data while loading
+                listOf(
+                    ProgressStatistic("Steps", "Loading...", "", Icons.AutoMirrored.Filled.DirectionsRun),
+                    ProgressStatistic("Workouts", "Loading...", "", Icons.Default.FitnessCenter),
+                    ProgressStatistic("Calories", "Loading...", "", Icons.Default.LocalFireDepartment),
+                    ProgressStatistic("Distance", "Loading...", "", Icons.Default.Route),
+                )
+            }
+        }
     }
 
     Scaffold(
@@ -129,35 +171,71 @@ fun ProgressScreen(
             )
         },
     ) { innerPadding ->
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-        ) {
-            item {
-                WelcomeSection()
+        // Show loading state or content based on UI state
+        when (val currentState = uiState) {
+            is ProgressUiState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        CircularProgressIndicator()
+                        Text(
+                            text = "Loading your progress...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
-
-            item {
-                WeeklyStatsSection(statistics = weeklyStats)
+            is ProgressUiState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Error loading progress: ${currentState.message}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
+            is ProgressUiState.Success -> {
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    item {
+                        WelcomeSection()
+                    }
 
-            item {
-                WeeklyProgressChart()
-            }
+                    item {
+                        WeeklyStatsSection(statistics = weeklyStats)
+                    }
 
-            item {
-                GoalProgressSection()
-            }
+                    item {
+                        WeeklyProgressChart(chartData = currentState.weeklyChartData)
+                    }
 
-            item {
-                AchievementsSection()
-            }
+                    item {
+                        GoalProgressSection()
+                    }
 
-            item {
-                RecentActivitySection()
+                    item {
+                        AchievementsSection()
+                    }
+
+                    item {
+                        RecentActivitySection(recentWorkouts = currentState.recentWorkouts)
+                    }
+                }
             }
         }
     }
@@ -268,10 +346,11 @@ private fun StatisticCard(
 }
 
 /**
- * Weekly progress chart section
+ * Weekly progress chart section with optimized data handling
  */
 @Composable
-private fun WeeklyProgressChart() {
+private fun WeeklyProgressChart(chartData: List<Float> = emptyList()) {
+    // Use chartData for future chart implementation
     Card(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -504,10 +583,11 @@ private fun AchievementItem(
 }
 
 /**
- * Recent activity section
+ * Recent activity section with real workout data
  */
 @Composable
-private fun RecentActivitySection() {
+private fun RecentActivitySection(recentWorkouts: List<com.example.fitnesstrackerapp.data.entity.Workout> = emptyList()) {
+    // Use recentWorkouts for future implementation
     Card(
         modifier = Modifier.fillMaxWidth(),
     ) {

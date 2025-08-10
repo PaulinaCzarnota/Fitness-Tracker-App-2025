@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.auth
+
 /**
  * User authentication screen for the Fitness Tracker application.
  *
@@ -11,8 +13,6 @@
  * The screen integrates with AuthViewModel for state management and
  * authentication operations through the repository layer.
  */
-
-package com.example.fitnesstrackerapp.ui.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

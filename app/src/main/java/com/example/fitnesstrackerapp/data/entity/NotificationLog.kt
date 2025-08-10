@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Notification Log entity and related classes for the Fitness Tracker application.
  *
@@ -13,8 +15,6 @@
  * - Performance metrics for notification optimization
  * - Foreign key relationship with Notification and User entities
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

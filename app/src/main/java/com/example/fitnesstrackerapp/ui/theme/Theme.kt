@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.theme
+
 /**
  * Material 3 theme implementation for the Fitness Tracker application.
  *
@@ -11,10 +13,6 @@
  * The theme supports both static Material 3 colors and dynamic colors
  * that adapt to the user's system wallpaper on Android 12+ devices.
  */
-
-@file:Suppress("DEPRECATION")
-
-package com.example.fitnesstrackerapp.ui.theme
 
 import android.app.Activity
 import android.os.Build

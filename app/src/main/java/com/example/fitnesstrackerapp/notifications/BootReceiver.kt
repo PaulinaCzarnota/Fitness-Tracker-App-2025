@@ -59,7 +59,7 @@ class BootReceiver : BroadcastReceiver() {
      * Restores all notification schedules after device boot.
      * Re-registers alarms for daily reminders, goal notifications, and progress updates.
      */
-    private suspend fun restoreNotificationSchedules(context: Context) {
+    private fun restoreNotificationSchedules(context: Context) {
         try {
             val serviceLocator = ServiceLocator.get(context)
             val taskScheduler = TaskScheduler(context)
@@ -153,7 +153,7 @@ class BootReceiver : BroadcastReceiver() {
     /**
      * Restores background tasks and services if needed.
      */
-    private suspend fun restoreBackgroundTasks(context: Context) {
+    private fun restoreBackgroundTasks(context: Context) {
         try {
             // Check if step counter service should be running
             val sharedPrefs = context.getSharedPreferences("fitness_tracker_prefs", Context.MODE_PRIVATE)

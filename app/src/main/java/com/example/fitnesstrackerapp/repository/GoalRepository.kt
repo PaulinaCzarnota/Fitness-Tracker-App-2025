@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * GoalRepository
  *
@@ -18,7 +20,6 @@
  * @see Goal The entity class this repository manages.
  * @see GoalDao The underlying DAO used for database operations.
  */
-package com.example.fitnesstrackerapp.repository
 
 import com.example.fitnesstrackerapp.data.dao.GoalDao
 import com.example.fitnesstrackerapp.data.entity.Goal
@@ -37,7 +38,7 @@ class GoalRepository(private val goalDao: GoalDao) {
      * @throws Exception For database operation failures.
      */
     suspend fun insert(goal: Goal): Long {
-        require(true) { "Goal must have a valid user ID" }
+        require(goal.userId > 0) { "Goal must have a valid user ID" }
         return goalDao.insert(goal)
     }
 
@@ -51,9 +52,8 @@ class GoalRepository(private val goalDao: GoalDao) {
      * @throws Exception For database operation failures.
      */
     suspend fun update(goal: Goal): Int {
-        require(true) { "Goal must have a valid ID" }
-        goalDao.update(goal)
-        return 1 // Return 1 to indicate successful update
+        require(goal.id > 0) { "Goal must have a valid ID" }
+        return goalDao.update(goal)
     }
 
     /**

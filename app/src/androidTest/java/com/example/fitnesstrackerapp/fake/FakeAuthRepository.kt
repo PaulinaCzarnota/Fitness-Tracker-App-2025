@@ -5,7 +5,7 @@ import com.example.fitnesstrackerapp.repository.AuthResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.*
+import java.util.Date
 
 /**
  * Fake AuthRepository for testing purposes
@@ -17,7 +17,12 @@ class FakeAuthRepository {
 
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
-    val authState: StateFlow<User?> = _currentUser.asStateFlow()
+
+    /**
+     * For interface compatibility: exposes the current user as authState.
+     * Both properties point to the same MutableStateFlow instance.
+     */
+    val authState get() = currentUser
 
     private var shouldFailLogin = false
     private var shouldFailRegister = false
@@ -30,7 +35,7 @@ class FakeAuthRepository {
         shouldFailRegister = shouldFail
     }
 
-    suspend fun login(email: String, password: String, rememberMe: Boolean = false): AuthResult {
+    fun login(email: String, password: String, rememberMe: Boolean = false): AuthResult {
         return if (shouldFailLogin) {
             AuthResult.Error("Login failed")
         } else {
@@ -43,7 +48,7 @@ class FakeAuthRepository {
                 firstName = "Test",
                 lastName = "User",
                 registrationDate = Date(),
-                isActive = true
+                isActive = true,
             )
             _currentUser.value = user
             _isAuthenticated.value = true
@@ -51,7 +56,7 @@ class FakeAuthRepository {
         }
     }
 
-    suspend fun register(email: String, password: String, name: String, rememberMe: Boolean = false): AuthResult {
+    fun register(email: String, password: String, name: String, rememberMe: Boolean = false): AuthResult {
         return if (shouldFailRegister) {
             AuthResult.Error("Registration failed")
         } else {
@@ -64,7 +69,7 @@ class FakeAuthRepository {
                 firstName = name.split(" ").firstOrNull(),
                 lastName = if (name.split(" ").size > 1) name.split(" ").drop(1).joinToString(" ") else null,
                 registrationDate = Date(),
-                isActive = true
+                isActive = true,
             )
             _currentUser.value = user
             _isAuthenticated.value = true
@@ -72,12 +77,12 @@ class FakeAuthRepository {
         }
     }
 
-    suspend fun logout() {
+    fun logout() {
         _currentUser.value = null
         _isAuthenticated.value = false
     }
 
-    suspend fun updateProfile(user: User): AuthResult {
+    fun updateProfile(user: User): AuthResult {
         _currentUser.value = user
         return AuthResult.Success("Profile updated")
     }

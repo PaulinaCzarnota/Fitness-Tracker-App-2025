@@ -458,25 +458,18 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
         serviceScope.launch {
             try {
                 val userId = getCurrentUserId()
-                val today = getTodayDateAtMidnight()
-                val currentTime = Date()
 
-                // Get the latest data point from batch
+                // Get the latest data point from batch for efficiency
                 val latestData = stepDataBatch.lastOrNull()
                 if (latestData != null) {
-                    val stepEntry = Step(
+                    // Use optimized update method instead of insert to avoid duplicates
+                    stepRepository.updateTodaySteps(
                         userId = userId,
-                        count = latestData.stepCount,
-                        goal = _dailyGoal.value,
-                        date = today,
+                        stepCount = latestData.stepCount,
                         caloriesBurned = latestData.calories,
                         distanceMeters = latestData.distance,
-                        activeMinutes = StepUtils.estimateActiveMinutes(latestData.stepCount),
-                        createdAt = currentTime,
-                        updatedAt = currentTime,
+                        goal = _dailyGoal.value
                     )
-
-                    stepRepository.insertStep(stepEntry)
 
                     // Clear the batch after successful save
                     stepDataBatch.clear()
@@ -490,15 +483,7 @@ class BatteryOptimizedStepService : Service(), SensorEventListener {
         }
     }
 
-    private fun getTodayDateAtMidnight(): Date {
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        return calendar.time
-    }
+    // Removed unused getTodayDateAtMidnight function - date handling is now done in repository
 
     private fun updateNotification(steps: Int, goal: Int) {
         val notification = createNotification(steps, goal)

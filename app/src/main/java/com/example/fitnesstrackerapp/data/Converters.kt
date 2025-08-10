@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data
+
 /**
  * Type Converters for Room Database in the Fitness Tracker application.
  *
@@ -12,8 +14,6 @@
  * - Optimized for database storage and retrieval performance
  * - Consistent error handling and validation
  */
-
-package com.example.fitnesstrackerapp.data
 
 import androidx.room.TypeConverter
 import com.example.fitnesstrackerapp.data.entity.ActivityLevel
@@ -37,8 +37,6 @@ import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import java.util.Date
 
 /**
- * Type converters for Room database.
- *
  * Handles conversion between complex types and primitive types that can be stored
  * in SQLite database. All converters are null-safe and handle edge cases gracefully.
  *

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.settings
+
 /**
  * Settings Manager
  *
@@ -6,7 +8,6 @@
  * - Handles measurement units and notifications
  * - Provides default values and data validation
  */
-package com.example.fitnesstrackerapp.settings
 
 import android.content.Context
 import androidx.datastore.core.DataStore

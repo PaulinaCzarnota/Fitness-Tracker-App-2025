@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.components
+
 /**
  * BottomNavigationBar
  *
@@ -5,8 +7,6 @@
  * - Displays a Material 3 navigation bar at the bottom of the screen in the FitnessTrackerApp
  * - Provides quick access to core screens using NavigationBarItem
  */
-
-package com.example.fitnesstrackerapp.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun

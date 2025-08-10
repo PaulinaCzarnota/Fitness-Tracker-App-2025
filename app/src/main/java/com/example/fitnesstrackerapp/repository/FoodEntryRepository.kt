@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * FoodEntry Repository
  *
@@ -17,7 +19,6 @@
  *
  * @property foodEntryDao The Data Access Object for food entry database operations.
  */
-package com.example.fitnesstrackerapp.repository
 
 import com.example.fitnesstrackerapp.data.dao.FoodEntryDao
 import com.example.fitnesstrackerapp.data.entity.FoodEntry
@@ -31,8 +32,6 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 /**
- * Repository for managing food entry and nutrition tracking operations.
- *
  * Provides a comprehensive API for food logging, nutrition analysis,
  * and dietary tracking with proper validation and error handling.
  */

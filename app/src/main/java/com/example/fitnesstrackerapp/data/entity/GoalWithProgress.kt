@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Goal with Progress Data Class
  *
@@ -6,8 +8,6 @@
  * - Provides progress tracking and analysis methods
  * - Used for displaying goal progress in UI components
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.Embedded
 
@@ -18,7 +18,8 @@ data class GoalWithProgress(
     val isOnTrack: Boolean = false,
 ) {
     /**
-     * Calculate if the goal is achievable based on current progress
+     * Calculate if the goal is achievable based on current progress.
+     * This is a simple heuristic and does not guarantee achievability.
      */
     fun isAchievable(): Boolean {
         if (goal.isAchieved) return true
@@ -31,7 +32,8 @@ data class GoalWithProgress(
     }
 
     /**
-     * Get motivational message based on progress
+     * Get motivational message based on progress.
+     * Thresholds are arbitrary and can be adjusted for your app's tone.
      */
     fun getMotivationalMessage(): String {
         return when {

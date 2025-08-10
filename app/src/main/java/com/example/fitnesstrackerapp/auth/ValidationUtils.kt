@@ -24,7 +24,9 @@ object ValidationUtils {
     }
 
     /**
-     * Comprehensive password strength validation
+     * Comprehensive password strength validation.
+     * Checks for minimum and maximum length, and can be extended to check for
+     * uppercase, lowercase, digits, and special characters as needed.
      */
     fun validatePasswordStrength(password: String): ValidationResult {
         if (password.length < MIN_PASSWORD_LENGTH) {

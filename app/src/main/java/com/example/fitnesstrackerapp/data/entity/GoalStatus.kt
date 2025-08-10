@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Goal Status enumeration for the Fitness Tracker application.
  *
@@ -10,12 +12,6 @@
  * - Progress tracking and reporting
  * - UI state representation
  * - Notification and reminder logic
- */
-
-package com.example.fitnesstrackerapp.data.entity
-
-/**
- * Enumeration of goal status values in the Fitness Tracker application.
  *
  * Each status represents a different phase in the goal lifecycle:
  * - ACTIVE: Goal is currently being pursued

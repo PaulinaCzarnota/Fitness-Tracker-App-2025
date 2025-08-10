@@ -1,16 +1,17 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * Step Tracking Utility Functions
  *
  * Provides common helper functions for step-related calculations
  * shared across sensor services and other components.
  */
-package com.example.fitnesstrackerapp.util
 
 object StepUtils {
     // Default constants for step calculations
     private const val DEFAULT_STEP_LENGTH_METERS = 0.76f
     private const val DEFAULT_CALORIES_PER_STEP = 0.04f
-    
+
     /**
      * Calculates distance traveled based on step count
      * @param steps Number of steps taken
@@ -20,7 +21,7 @@ object StepUtils {
     fun calculateDistance(steps: Int, stepLengthMeters: Float = DEFAULT_STEP_LENGTH_METERS): Float {
         return steps * stepLengthMeters
     }
-    
+
     /**
      * Calculates calories burned from walking/running steps
      * @param steps Number of steps taken
@@ -30,7 +31,7 @@ object StepUtils {
     fun calculateCalories(steps: Int, caloriesPerStep: Float = DEFAULT_CALORIES_PER_STEP): Float {
         return steps * caloriesPerStep
     }
-    
+
     /**
      * Calculates progress percentage toward a goal
      * @param currentSteps Current step count
@@ -44,7 +45,7 @@ object StepUtils {
             0f
         }
     }
-    
+
     /**
      * Estimates active minutes based on step count
      * Uses rough estimate of 100 steps = 1 minute of activity
@@ -54,7 +55,7 @@ object StepUtils {
     fun estimateActiveMinutes(steps: Int): Int {
         return (steps / 100).coerceAtMost(1440)
     }
-    
+
     /**
      * Formats step count with appropriate units
      * @param steps Number of steps
@@ -66,7 +67,7 @@ object StepUtils {
             else -> "$steps steps"
         }
     }
-    
+
     /**
      * Formats distance with appropriate units and precision
      * @param distanceMeters Distance in meters
@@ -81,7 +82,7 @@ object StepUtils {
             String.format("%.0f m", distanceMeters)
         }
     }
-    
+
     /**
      * Formats calories with appropriate precision
      * @param calories Number of calories

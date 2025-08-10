@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.notification
+
 /**
  * Simple Notification Manager for Fitness Tracker App.
  *
@@ -14,8 +16,6 @@
  * This implementation focuses on core notification functionality while
  * maintaining compatibility with Android API levels 21+.
  */
-
-package com.example.fitnesstrackerapp.notification
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -34,8 +34,6 @@ import com.example.fitnesstrackerapp.MainActivity
 import com.example.fitnesstrackerapp.R
 
 /**
- * Simple notification manager for handling fitness-related notifications.
- *
  * Provides methods to create and manage notifications for goals, workouts,
  * and progress updates using standard Android notification APIs.
  *

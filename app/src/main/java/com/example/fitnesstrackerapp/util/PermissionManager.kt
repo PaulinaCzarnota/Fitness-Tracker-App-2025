@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.util
+
 /**
  * Runtime Permission Manager for the Fitness Tracker application.
  *
@@ -12,8 +14,6 @@
  * - Graceful degradation when permissions are denied
  * - Integration with activity lifecycle
  */
-
-package com.example.fitnesstrackerapp.util
 
 import android.content.Intent
 import android.net.Uri

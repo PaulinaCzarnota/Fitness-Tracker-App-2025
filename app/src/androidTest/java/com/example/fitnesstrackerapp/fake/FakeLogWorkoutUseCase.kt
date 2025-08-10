@@ -17,7 +17,7 @@ class FakeLogWorkoutUseCase {
     /**
      * Starts a new workout session.
      */
-    suspend fun startWorkout(
+    fun startWorkout(
         userId: Long,
         workoutType: WorkoutType,
         title: String,
@@ -41,7 +41,7 @@ class FakeLogWorkoutUseCase {
     /**
      * Completes a workout session with calculated calories.
      */
-    suspend fun completeWorkout(
+    fun completeWorkout(
         workoutId: Long,
         endTime: Date,
         caloriesBurned: Int = 0,
@@ -74,7 +74,7 @@ class FakeLogWorkoutUseCase {
     /**
      * Deletes a workout.
      */
-    suspend fun deleteWorkout(workoutId: Long): Result<Unit> {
+    fun deleteWorkout(workoutId: Long): Result<Unit> {
         return try {
             workouts.remove(workoutId)
             Result.success(Unit)
@@ -86,7 +86,7 @@ class FakeLogWorkoutUseCase {
     /**
      * Gets workout statistics for a user.
      */
-    suspend fun getWorkoutStatistics(userId: Long): Result<WorkoutStatistics> {
+    fun getWorkoutStatistics(userId: Long): Result<WorkoutStatistics> {
         return try {
             val userWorkouts = workouts.values.filter { it.userId == userId }
             val stats = WorkoutStatistics(

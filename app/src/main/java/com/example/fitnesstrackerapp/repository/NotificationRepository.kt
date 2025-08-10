@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * Notification Repository
  *
@@ -18,7 +20,6 @@
  *
  * @property notificationDao The Data Access Object for notification database operations.
  */
-package com.example.fitnesstrackerapp.repository
 
 import com.example.fitnesstrackerapp.data.dao.NotificationDao
 import com.example.fitnesstrackerapp.data.entity.Notification
@@ -29,8 +30,6 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 /**
- * Repository for managing notification operations and scheduling.
- *
  * Provides a comprehensive API for notification management, delivery tracking,
  * and user engagement analytics with proper validation and error handling.
  */

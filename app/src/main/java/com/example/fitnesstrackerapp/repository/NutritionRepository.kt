@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.repository
+
 /**
  * Repository for handling nutrition-related data operations in the Fitness Tracker application.
  *
@@ -16,8 +18,6 @@
  * - Data caching for improved performance
  */
 
-package com.example.fitnesstrackerapp.repository
-
 import com.example.fitnesstrackerapp.data.dao.NutritionEntryDao
 import com.example.fitnesstrackerapp.data.entity.MealType
 import com.example.fitnesstrackerapp.data.entity.NutritionEntry
@@ -32,8 +32,6 @@ import java.util.Calendar
 import java.util.Date
 
 /**
- * Repository for handling nutrition-related data operations.
- *
  * Provides a high-level interface for nutrition data management, including
  * persistence operations, nutritional analysis, and dietary insights.
  * All operations are designed to be thread-safe and use coroutines for async execution.

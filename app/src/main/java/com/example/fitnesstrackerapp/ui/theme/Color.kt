@@ -1,5 +1,20 @@
 package com.example.fitnesstrackerapp.ui.theme
 
+/**
+ * Color palette definitions for the Fitness Tracker application theme.
+ *
+ * This file defines the complete Material Design 3 color scheme for both light and dark themes,
+ * including fitness-specific color extensions and semantic color mappings for consistency
+ * across the application.
+ *
+ * Key Features:
+ * - Complete Material 3 color scheme implementation
+ * - Fitness-focused green primary color scheme
+ * - Dark and light theme variants
+ * - Semantic colors for status indicators and achievements
+ * - Gradient colors for charts and progress visualization
+ */
+
 import androidx.compose.ui.graphics.Color
 
 // Enhanced Fitness-focused Material 3 Color Scheme

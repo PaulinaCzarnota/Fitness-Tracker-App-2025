@@ -1,5 +1,6 @@
 package com.example.fitnesstrackerapp.usecase
 
+import android.annotation.SuppressLint
 import com.example.fitnesstrackerapp.data.entity.Step
 import com.example.fitnesstrackerapp.repository.StepRepository
 import kotlinx.coroutines.flow.Flow
@@ -58,7 +59,7 @@ class TrackStepsUseCase(
     /**
      * Updates step goal
      */
-    suspend fun updateStepGoal(userId: Long, newGoal: Int): Result<Unit> {
+    fun updateStepGoal(_userId: Long, _newGoal: Int): Result<Unit> {
         return try {
             // This would need to be implemented in the repository
             // For now, we'll return success as a placeholder
@@ -96,7 +97,7 @@ class TrackStepsUseCase(
     /**
      * Calculates weekly step statistics
      */
-    suspend fun getWeeklyStatistics(userId: Long): Result<StepStatistics> {
+    fun getWeeklyStatistics(_userId: Long): Result<StepStatistics> {
         return try {
             // Calculate date range for the past week
             val now = Date()
@@ -162,6 +163,7 @@ class TrackStepsUseCase(
     /**
      * Formats step count for display
      */
+    @SuppressLint("DefaultLocale")
     fun formatStepCount(steps: Int): String {
         return when {
             steps >= 10000 -> "${steps / 1000}K+ steps"
@@ -268,7 +270,7 @@ class TrackStepsUseCase(
     /**
      * Calculates step consistency score (0-100).
      */
-    suspend fun calculateConsistencyScore(
+    fun calculateConsistencyScore(
         userId: Long,
         days: Int = 30,
     ): Result<ConsistencyScore> {
@@ -318,10 +320,10 @@ class TrackStepsUseCase(
     /**
      * Integrates step data with workout sessions.
      */
-    suspend fun integrateWithWorkout(
-        userId: Long,
-        workoutId: Long,
-        stepsDuringWorkout: Int,
+    fun integrateWithWorkout(
+        _userId: Long,
+        _workoutId: Long,
+        _stepsDuringWorkout: Int,
     ): Result<Unit> {
         return try {
             // This would integrate with WorkoutRepository
@@ -337,7 +339,7 @@ class TrackStepsUseCase(
     /**
      * Syncs step data with fitness goals.
      */
-    suspend fun syncWithGoals(
+    fun syncWithGoals(
         userId: Long,
         currentSteps: Int,
         dailyGoal: Int,

@@ -1,10 +1,11 @@
+package com.example.fitnesstrackerapp.sensors
+
 /**
  * Step Service Manager
  *
  * Utility class for managing the lifecycle of StepCounterService.
  * Provides convenient methods for starting, stopping, and checking service status.
  */
-package com.example.fitnesstrackerapp.sensors
 
 import android.app.ActivityManager
 import android.content.Context

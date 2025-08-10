@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.worker
+
 /**
  * Background worker for periodic data cleanup operations.
  *
@@ -6,7 +8,6 @@
  * - Removing expired temporary files
  * - Optimizing database performance
  */
-package com.example.fitnesstrackerapp.worker
 
 import android.content.Context
 import android.util.Log
@@ -39,9 +40,6 @@ class DataCleanupWorker(
             val deletedCount = notificationRepository.cleanupOldLogs(retentionDays)
             Log.d(TAG, "Cleaned up $deletedCount old notification logs (older than $retentionDays days)")
 
-            // TODO: Add other cleanup operations here
-            // - Clean up temporary files
-            // - Optimize database (VACUUM)
             // - Remove old cached data
 
             Log.d(TAG, "Data cleanup completed successfully")

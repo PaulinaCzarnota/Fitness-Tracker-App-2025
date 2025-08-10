@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.components
+
 /**
  * Shared UI Components
  *
@@ -9,8 +11,6 @@
  * - Charts and data visualization helpers
  * - Motion transitions and animations
  */
-
-package com.example.fitnesstrackerapp.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring

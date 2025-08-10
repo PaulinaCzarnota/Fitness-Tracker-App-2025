@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.notifications
+
 /**
  * NotificationActionReceiver BroadcastReceiver for the Fitness Tracker application.
  *
@@ -15,8 +17,6 @@
  * - Provides feedback to users through additional notifications or UI updates
  */
 
-package com.example.fitnesstrackerapp.notifications
-
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -29,8 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * BroadcastReceiver for handling notification action interactions.
- *
  * This receiver processes actions triggered from notification buttons,
  * allowing users to interact with the app directly from notifications
  * without opening the main application. It handles various fitness-related

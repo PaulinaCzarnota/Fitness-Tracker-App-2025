@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.dao
+
 /**
  * Exercise Data Access Object for the Fitness Tracker application.
  *
@@ -12,8 +14,6 @@
  * - Support for user-created custom exercises
  * - Batch operations for seeding exercise database
  */
-
-package com.example.fitnesstrackerapp.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

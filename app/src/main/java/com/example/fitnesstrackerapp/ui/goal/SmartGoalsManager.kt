@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.goal
+
 /**
  * SMART Goals Manager
  *
@@ -15,8 +17,6 @@
  * - Goal recommendations based on user history
  * - Progress tracking with milestone alerts
  */
-
-package com.example.fitnesstrackerapp.ui.goal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

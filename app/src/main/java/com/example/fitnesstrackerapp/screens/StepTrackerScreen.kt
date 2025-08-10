@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.screens
+
 /**
  * Step tracking screen for the Fitness Tracker App.
  *
@@ -13,10 +15,6 @@
  * with the device's step detector sensor for accurate real-time tracking.
  */
 
-@file:Suppress("KDocUnresolvedReference")
-
-package com.example.fitnesstrackerapp.screens
-
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -24,6 +22,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -86,16 +85,6 @@ import com.example.fitnesstrackerapp.ViewModelFactoryProvider
 import com.example.fitnesstrackerapp.ui.viewmodel.StepCounterViewModel
 
 /**
- * Data class representing step statistics for display
- */
-data class StepStatistic(
-    val label: String,
-    val value: String,
-    val icon: ImageVector,
-    val color: Color,
-)
-
-/**
  * Constants for step tracking
  */
 private object StepTrackingConstants {
@@ -128,18 +117,18 @@ fun StepTrackerScreen(
 ) {
     val context = LocalContext.current
 
-    // Initialize ViewModel via factory
-    val activity = LocalContext.current as ComponentActivity
+    // Use LocalActivity for safe activity context acquisition
+    val activity = LocalActivity.current
     val stepCounterViewModel: StepCounterViewModel = remember {
-        ViewModelFactoryProvider.getStepCounterViewModel(activity, 1L) // Default user ID
+        ViewModelFactoryProvider.getStepCounterViewModel(activity as ComponentActivity, 1L) // Default user ID
     }
 
     // Collect step count and other state
     val stepCount by stepCounterViewModel.stepCount.collectAsStateWithLifecycle()
-    val dailyGoal = StepTrackingConstants.DEFAULT_DAILY_GOAL
     var showResetDialog by remember { mutableStateOf(false) }
 
     // Calculate derived values
+    val dailyGoal = StepTrackingConstants.DEFAULT_DAILY_GOAL
     val progressPercentage = (stepCount.toFloat() / dailyGoal).coerceIn(0f, 1f)
     val distanceKm = (stepCount * StepTrackingConstants.AVERAGE_STEP_LENGTH_METERS) / 1000
     val caloriesBurned = (stepCount * StepTrackingConstants.CALORIES_PER_STEP).toInt()
@@ -200,7 +189,6 @@ fun StepTrackerScreen(
             // Main step counter with circular progress
             StepCounterCard(
                 stepCount = stepCount,
-                dailyGoal = dailyGoal,
                 progressPercentage = progressPercentage,
             )
 
@@ -256,7 +244,6 @@ fun StepTrackerScreen(
 @Composable
 private fun StepCounterCard(
     stepCount: Int,
-    dailyGoal: Int,
     progressPercentage: Float,
 ) {
     Card(
@@ -309,7 +296,7 @@ private fun StepCounterCard(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Goal: $dailyGoal",
+                        text = "Goal: ${StepTrackingConstants.DEFAULT_DAILY_GOAL}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

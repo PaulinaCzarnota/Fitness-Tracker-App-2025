@@ -2,7 +2,7 @@ package com.example.fitnesstrackerapp.data.entity
 
 /**
  * Enumeration representing notification delivery channels.
- * 
+ *
  * Tracks which delivery channel was used for the notification
  * to help optimize delivery strategies.
  */

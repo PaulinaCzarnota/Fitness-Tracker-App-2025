@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.sensors
+
 /**
  * Enhanced Step Service Manager
  *
@@ -9,7 +11,6 @@
  * - Service health monitoring and recovery
  * - Integration with WorkoutRepository and GoalRepository
  */
-package com.example.fitnesstrackerapp.sensors
 
 import android.app.ActivityManager
 import android.content.ComponentName

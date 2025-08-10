@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.profile
+
 /**
  * Profile Screen
  *
@@ -7,7 +9,6 @@
  * - Provides settings management and logout functionality
  * - Allows profile editing and goal management
  */
-package com.example.fitnesstrackerapp.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

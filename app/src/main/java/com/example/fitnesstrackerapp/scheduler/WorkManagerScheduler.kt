@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.scheduler
+
 /**
  * WorkManager Scheduler for Fitness Tracker Background Tasks.
  *
@@ -13,8 +15,8 @@
  * - Automatic retry and error handling
  * - Flexible notification timing
  */
-package com.example.fitnesstrackerapp.scheduler
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.work.BackoffPolicy
@@ -52,6 +54,7 @@ class WorkManagerScheduler(private val context: Context) {
         const val DEFAULT_EVENING_SUMMARY_HOUR = 21
         const val DEFAULT_WORKOUT_REMINDER_HOUR = 18
 
+        @SuppressLint("StaticFieldLeak")
         @Volatile
         private var INSTANCE: WorkManagerScheduler? = null
 

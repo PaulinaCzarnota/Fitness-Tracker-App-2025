@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Goal Extensions for enhanced completion logic
  *
@@ -14,52 +16,39 @@
  * - Performance optimized calculations
  */
 
-package com.example.fitnesstrackerapp.data.entity
-
 import kotlin.math.max
 
-/**
- * Enhanced completion check that handles goal-type specific logic
- *
- * This extension provides intelligent completion detection based on goal type:
- * - Distance goals: Considers both target distance and performance metrics
- * - Calorie goals: Handles both burn and intake scenarios
- * - Step goals: Accounts for step count variations and accuracy
- * - Other goals: Uses standard target/current value comparison
- *
- * @return true if the goal is completed according to its type-specific criteria
- */
 fun Goal.isCompleted(): Boolean {
     // First check explicit completion status
     if (status == GoalStatus.COMPLETED) {
         return true
     }
-    
+
     // Handle negative or zero target values (invalid goals)
     if (targetValue <= 0) {
         return false
     }
-    
+
     // Protect against negative current values (data integrity)
     val safeCurrentValue = max(0.0, currentValue)
-    
+
     // Apply goal-type specific completion logic
     return when (goalType) {
         // Distance-based goals (running, walking, etc.)
         in GoalType.getDistanceTypes() -> {
             isDistanceGoalCompleted(safeCurrentValue)
         }
-        
+
         // Calorie-based goals (burn, weight management)
         in GoalType.getCalorieTypes() -> {
             isCalorieGoalCompleted(safeCurrentValue)
         }
-        
+
         // Step-based goals
         in GoalType.getStepTypes() -> {
             isStepGoalCompleted(safeCurrentValue)
         }
-        
+
         // Standard goals (weight, duration, frequency, etc.)
         else -> {
             safeCurrentValue >= targetValue
@@ -141,10 +130,10 @@ private fun Goal.isStepGoalCompleted(currentValue: Double): Boolean {
  */
 fun Goal.getEnhancedProgressPercentage(): Double {
     if (targetValue <= 0) return 0.0
-    
+
     val safeCurrentValue = max(0.0, currentValue)
     val rawPercentage = (safeCurrentValue / targetValue * 100.0)
-    
+
     return when {
         // Cap overachievement display at reasonable level (200% max)
         rawPercentage > 200.0 -> 200.0
@@ -191,7 +180,7 @@ fun Goal.getOverachievementPercentage(): Double {
 fun Goal.isCompletionStatusConsistent(): Boolean {
     val calculatedCompletion = isCompleted()
     val statusCompletion = status == GoalStatus.COMPLETED
-    
+
     return calculatedCompletion == statusCompletion
 }
 
@@ -208,7 +197,7 @@ data class GoalCompletionStatus(
     val isOverachieved: Boolean,
     val overachievementPercentage: Double,
     val completionReason: String,
-    val hasEdgeCaseHandling: Boolean
+    val hasEdgeCaseHandling: Boolean,
 )
 
 /**
@@ -219,7 +208,7 @@ fun Goal.getCompletionStatus(): GoalCompletionStatus {
     val progress = getEnhancedProgressPercentage()
     val overachieved = isOverachieved()
     val overachievementPercent = getOverachievementPercentage()
-    
+
     val reason = when {
         status == GoalStatus.COMPLETED -> "Explicitly marked as completed"
         targetValue <= 0 -> "Invalid target value (≤ 0)"
@@ -230,16 +219,16 @@ fun Goal.getCompletionStatus(): GoalCompletionStatus {
         completed -> "Standard goal completion achieved"
         else -> "Goal not yet completed"
     }
-    
-    val hasEdgeCase = currentValue < 0 || targetValue <= 0 || 
-                     goalType in GoalType.getSpecialCompletionTypes()
-    
+
+    val hasEdgeCase = currentValue < 0 || targetValue <= 0 ||
+        goalType in GoalType.getSpecialCompletionTypes()
+
     return GoalCompletionStatus(
         isCompleted = completed,
         progressPercentage = progress,
         isOverachieved = overachieved,
         overachievementPercentage = overachievementPercent,
         completionReason = reason,
-        hasEdgeCaseHandling = hasEdgeCase
+        hasEdgeCaseHandling = hasEdgeCase,
     )
 }

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Data entity classes for the Fitness Tracker application user management.
  *
@@ -12,8 +14,6 @@
  * - Security features for account protection
  * - Helper methods for BMI, age calculations, and validation
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

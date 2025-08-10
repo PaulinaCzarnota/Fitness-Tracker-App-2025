@@ -172,7 +172,7 @@ abstract class AppDatabase : RoomDatabase() {
                         )
                             .setQueryExecutor(Executors.newFixedThreadPool(4))
                             .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5) // Add migrations
-                            .fallbackToDestructiveMigration() // Only for development
+                            .fallbackToDestructiveMigration(false) // Only for development
                             .build()
 
                         INSTANCE = newInstance

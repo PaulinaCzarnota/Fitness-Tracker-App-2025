@@ -1,4 +1,13 @@
+package com.example.fitnesstrackerapp
+
 /**
+ * Fitness Tracker App - Application Class
+ *
+ * @author Paulina Czarnota
+ * @student_number C21365726
+ * @course TU856/3 Mobile Software Development
+ * @due_date 11/08/2025
+ *
  * Main Application class for the Fitness Tracker Android application.
  *
  * This class serves as the entry point for application-wide initialization and configuration.
@@ -9,8 +18,6 @@
  * - Configure Room database and repository layer
  * - Handle application-level exceptions and crash reporting
  */
-
-package com.example.fitnesstrackerapp
 
 import android.app.Application
 import android.util.Log

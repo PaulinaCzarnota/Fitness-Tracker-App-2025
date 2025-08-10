@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.layout
+
 /**
  * Responsive Layout Utilities for Fitness Tracker App
  *
@@ -8,8 +10,6 @@
  * - Constraint-based layouts for complex UIs
  * - Material 3 breakpoint specifications
  */
-
-package com.example.fitnesstrackerapp.ui.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

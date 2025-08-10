@@ -7,6 +7,8 @@ package com.example.fitnesstrackerapp.util.test
  * across all test classes and avoid magic numbers/strings.
  */
 object TestData {
+    // All properties are currently unused and only for reference. Suppress warnings for unused properties.
+    @Suppress("unused")
     // Email addresses
     const val VALID_EMAIL = "test@example.com"
     const val INVALID_EMAIL = "invalid-email"
