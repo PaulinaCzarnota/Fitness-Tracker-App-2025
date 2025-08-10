@@ -3,18 +3,22 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.GoalStatus
+import com.example.fitnesstrackerapp.data.entity.GoalType
 import com.example.fitnesstrackerapp.util.test.TestHelper
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.*
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.util.*
+import java.util.Date
 
 /**
  * Comprehensive unit tests for GoalDao.
@@ -27,7 +31,7 @@ import java.util.*
  * - Data integrity and constraints
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class GoalDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -506,7 +510,7 @@ class GoalDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint", "no such table")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 

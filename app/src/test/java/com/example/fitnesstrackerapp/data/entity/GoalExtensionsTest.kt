@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Comprehensive Test Suite for Goal Extensions
  *
@@ -15,8 +17,6 @@
  * - Progress calculation accuracy
  * - Completion status consistency
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -71,7 +71,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.STEP_COUNT,
             targetValue = 10000.0,
-            currentValue = 9901.0 // 0.99% under target
+            currentValue = 9901.0, // 0.99% under target
         )
         assertTrue("Step count goal within 1% tolerance should be completed", goal.isCompleted())
     }
@@ -101,7 +101,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.WEIGHT_LOSS,
             targetValue = 5.0, // 5kg to lose
-            currentValue = 5.0  // 5kg lost
+            currentValue = 5.0, // 5kg lost
         )
         assertTrue("Weight loss goal meeting target should be completed", goal.isCompleted())
     }
@@ -111,7 +111,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.WEIGHT_GAIN,
             targetValue = 3.0, // 3kg to gain
-            currentValue = 3.5  // 3.5kg gained (overachievement)
+            currentValue = 3.5, // 3.5kg gained (overachievement)
         )
         assertTrue("Weight gain goal exceeding target should be completed", goal.isCompleted())
         assertTrue("Weight gain overachievement should be detected", goal.isOverachieved())
@@ -142,10 +142,12 @@ class GoalExtensionsTest {
         val goal = createStepGoal(targetValue = 8000.0, currentValue = 20000.0) // 250% of target
         assertTrue("Step goal with massive overachievement should be completed", goal.isCompleted())
         assertTrue("Massive step overachievement should be detected", goal.isOverachieved())
-        
+
         val overachievementPercent = goal.getOverachievementPercentage()
-        assertTrue("Overachievement percentage should be calculated correctly", 
-                  abs(overachievementPercent - 150.0) < 0.1) // 150% over target
+        assertTrue(
+            "Overachievement percentage should be calculated correctly",
+            abs(overachievementPercent - 150.0) < 0.1,
+        ) // 150% over target
     }
 
     // MARK: - Edge Case Tests
@@ -155,10 +157,10 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.WEIGHT_LOSS,
             targetValue = 5.0,
-            currentValue = -2.0 // Invalid negative value
+            currentValue = -2.0, // Invalid negative value
         )
         assertFalse("Goal with negative current value should not be completed", goal.isCompleted())
-        
+
         val status = goal.getCompletionStatus()
         assertTrue("Edge case handling should be detected", status.hasEdgeCaseHandling)
         assertEquals("Progress should be 0 for negative current value", 0.0, status.progressPercentage, 0.01)
@@ -169,14 +171,17 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.CALORIE_BURN,
             targetValue = 0.0, // Invalid zero target
-            currentValue = 100.0
+            currentValue = 100.0,
         )
         assertFalse("Goal with zero target value should not be completed", goal.isCompleted())
-        
+
         val status = goal.getCompletionStatus()
         assertTrue("Edge case handling should be detected", status.hasEdgeCaseHandling)
-        assertEquals("Invalid target value reason should be provided", 
-                    "Invalid target value (≤ 0)", status.completionReason)
+        assertEquals(
+            "Invalid target value reason should be provided",
+            "Invalid target value (≤ 0)",
+            status.completionReason,
+        )
     }
 
     @Test
@@ -184,7 +189,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.STEP_COUNT,
             targetValue = -5000.0, // Invalid negative target
-            currentValue = 8000.0
+            currentValue = 8000.0,
         )
         assertFalse("Goal with negative target value should not be completed", goal.isCompleted())
     }
@@ -195,14 +200,19 @@ class GoalExtensionsTest {
             goalType = GoalType.DISTANCE_RUNNING,
             targetValue = 10.0,
             currentValue = 5.0, // Only 50% complete
-            status = GoalStatus.COMPLETED // But explicitly marked as completed
+            status = GoalStatus.COMPLETED, // But explicitly marked as completed
         )
-        assertTrue("Explicitly completed goal should return true regardless of progress", 
-                  goal.isCompleted())
-        
+        assertTrue(
+            "Explicitly completed goal should return true regardless of progress",
+            goal.isCompleted(),
+        )
+
         val status = goal.getCompletionStatus()
-        assertEquals("Explicit completion reason should be provided", 
-                    "Explicitly marked as completed", status.completionReason)
+        assertEquals(
+            "Explicit completion reason should be provided",
+            "Explicitly marked as completed",
+            status.completionReason,
+        )
     }
 
     // MARK: - Progress Calculation Tests
@@ -212,7 +222,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.WEIGHT_LOSS,
             targetValue = 10.0,
-            currentValue = 7.5
+            currentValue = 7.5,
         )
         val progress = goal.getEnhancedProgressPercentage()
         assertEquals("Progress should be 75%", 75.0, progress, 0.01)
@@ -223,7 +233,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.STEP_COUNT,
             targetValue = 5000.0,
-            currentValue = 15000.0 // 300% of target
+            currentValue = 15000.0, // 300% of target
         )
         val progress = goal.getEnhancedProgressPercentage()
         assertEquals("Progress should be capped at 200%", 200.0, progress, 0.01)
@@ -234,7 +244,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.CALORIE_BURN,
             targetValue = 10000.0,
-            currentValue = 1.0 // Very small progress
+            currentValue = 1.0, // Very small progress
         )
         val progress = goal.getEnhancedProgressPercentage()
         assertEquals("Micro progress should be shown as 0.1%", 0.1, progress, 0.01)
@@ -245,7 +255,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.FITNESS,
             targetValue = 0.0, // Invalid
-            currentValue = 50.0
+            currentValue = 50.0,
         )
         val progress = goal.getEnhancedProgressPercentage()
         assertEquals("Zero target should result in 0% progress", 0.0, progress, 0.01)
@@ -258,10 +268,12 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.WORKOUT_FREQUENCY,
             targetValue = 4.0, // 4 workouts per week
-            currentValue = 4.5 // 112.5% of target
+            currentValue = 4.5, // 112.5% of target
         )
-        assertTrue("Goal with 112.5% achievement should be detected as overachieved", 
-                  goal.isOverachieved())
+        assertTrue(
+            "Goal with 112.5% achievement should be detected as overachieved",
+            goal.isOverachieved(),
+        )
     }
 
     @Test
@@ -269,10 +281,12 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.ENDURANCE,
             targetValue = 30.0, // 30 minutes
-            currentValue = 32.0 // 106.7% of target
+            currentValue = 32.0, // 106.7% of target
         )
-        assertFalse("Goal with 106.7% achievement should not be overachieved", 
-                   goal.isOverachieved())
+        assertFalse(
+            "Goal with 106.7% achievement should not be overachieved",
+            goal.isOverachieved(),
+        )
     }
 
     @Test
@@ -280,12 +294,16 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.FLEXIBILITY,
             targetValue = 5.0,
-            currentValue = 6.0 // 120% of target
+            currentValue = 6.0, // 120% of target
         )
-        assertTrue("Goal should be overachieved with 115% threshold", 
-                  goal.isOverachieved(1.15))
-        assertFalse("Goal should not be overachieved with 125% threshold", 
-                   goal.isOverachieved(1.25))
+        assertTrue(
+            "Goal should be overachieved with 115% threshold",
+            goal.isOverachieved(1.15),
+        )
+        assertFalse(
+            "Goal should not be overachieved with 125% threshold",
+            goal.isOverachieved(1.25),
+        )
     }
 
     @Test
@@ -293,7 +311,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.STRENGTH_TRAINING,
             targetValue = 100.0,
-            currentValue = 130.0 // 130% of target = 30% overachievement
+            currentValue = 130.0, // 130% of target = 30% overachievement
         )
         val overachievementPercent = goal.getOverachievementPercentage()
         assertEquals("Overachievement should be 30%", 30.0, overachievementPercent, 0.01)
@@ -304,7 +322,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.HYDRATION,
             targetValue = 8.0, // 8 liters
-            currentValue = 6.0  // 75% complete
+            currentValue = 6.0, // 75% complete
         )
         val overachievementPercent = goal.getOverachievementPercentage()
         assertEquals("Incomplete goal should have 0% overachievement", 0.0, overachievementPercent, 0.01)
@@ -317,7 +335,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.WORKOUT_FREQUENCY,
             targetValue = 5.0, // 5 workouts per week
-            currentValue = 5.0  // Exactly 5 workouts
+            currentValue = 5.0, // Exactly 5 workouts
         )
         assertTrue("Standard goal meeting target should be completed", goal.isCompleted())
     }
@@ -327,7 +345,7 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.OTHER,
             targetValue = 20.0,
-            currentValue = 25.0
+            currentValue = 25.0,
         )
         assertTrue("Other goal type exceeding target should be completed", goal.isCompleted())
     }
@@ -339,15 +357,18 @@ class GoalExtensionsTest {
         val goal = createGoal(
             goalType = GoalType.DISTANCE_RUNNING,
             targetValue = 5.0,
-            currentValue = 4.95 // Within tolerance
+            currentValue = 4.95, // Within tolerance
         )
-        
+
         val status = goal.getCompletionStatus()
         assertTrue("Goal should be completed", status.isCompleted)
         assertTrue("Goal should have enhanced progress >90%", status.progressPercentage > 90.0)
         assertFalse("Goal should not be overachieved", status.isOverachieved)
-        assertEquals("Should have distance completion reason", 
-                    "Distance goal completed (with 2% tolerance)", status.completionReason)
+        assertEquals(
+            "Should have distance completion reason",
+            "Distance goal completed (with 2% tolerance)",
+            status.completionReason,
+        )
         assertTrue("Should have edge case handling for distance type", status.hasEdgeCaseHandling)
     }
 
@@ -358,12 +379,14 @@ class GoalExtensionsTest {
             goalType = GoalType.CALORIE_BURN,
             targetValue = 300.0,
             currentValue = 350.0, // Clearly completed
-            status = GoalStatus.ACTIVE // But status is still active
+            status = GoalStatus.ACTIVE, // But status is still active
         )
-        
+
         assertTrue("Goal should be calculated as completed", inconsistentGoal.isCompleted())
-        assertFalse("Goal should have inconsistent status", 
-                   inconsistentGoal.isCompletionStatusConsistent())
+        assertFalse(
+            "Goal should have inconsistent status",
+            inconsistentGoal.isCompletionStatusConsistent(),
+        )
     }
 
     // MARK: - Helper Methods
@@ -384,7 +407,7 @@ class GoalExtensionsTest {
         goalType: GoalType,
         targetValue: Double,
         currentValue: Double,
-        status: GoalStatus = GoalStatus.ACTIVE
+        status: GoalStatus = GoalStatus.ACTIVE,
     ): Goal {
         return Goal(
             userId = userId,
@@ -395,7 +418,7 @@ class GoalExtensionsTest {
             currentValue = currentValue,
             unit = getUnitForGoalType(goalType),
             targetDate = testDate,
-            status = status
+            status = status,
         )
     }
 
