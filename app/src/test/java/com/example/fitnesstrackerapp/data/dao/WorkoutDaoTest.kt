@@ -3,7 +3,6 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
 import com.google.common.truth.Truth.assertThat
@@ -26,7 +25,7 @@ import java.util.*
  * - Data integrity and constraints
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class WorkoutDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -39,7 +38,7 @@ class WorkoutDaoTest {
     fun createDb() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -63,7 +62,7 @@ class WorkoutDaoTest {
             title = "Morning Run",
             duration = 30,
             distance = 5.0f,
-            caloriesBurned = 300
+            caloriesBurned = 300,
         )
 
         val workoutId = workoutDao.insertWorkout(workout)
@@ -85,8 +84,8 @@ class WorkoutDaoTest {
         // Insert multiple workouts for the user
         val workouts = listOf(
             createTestWorkout(userId = userId, title = "Workout 1", workoutType = WorkoutType.RUNNING),
-            createTestWorkout(userId = userId, title = "Workout 2", workoutType = WorkoutType.STRENGTH_TRAINING),
-            createTestWorkout(userId = userId, title = "Workout 3", workoutType = WorkoutType.CYCLING)
+            createTestWorkout(userId = userId, title = "Workout 2", workoutType = WorkoutType.WEIGHTLIFTING),
+            createTestWorkout(userId = userId, title = "Workout 3", workoutType = WorkoutType.CYCLING),
         )
 
         workouts.forEach { workout ->
@@ -105,7 +104,7 @@ class WorkoutDaoTest {
 
         workoutDao.insertWorkout(createTestWorkout(userId = userId, title = "Run 1", workoutType = WorkoutType.RUNNING))
         workoutDao.insertWorkout(createTestWorkout(userId = userId, title = "Run 2", workoutType = WorkoutType.RUNNING))
-        workoutDao.insertWorkout(createTestWorkout(userId = userId, title = "Strength", workoutType = WorkoutType.STRENGTH_TRAINING))
+        workoutDao.insertWorkout(createTestWorkout(userId = userId, title = "Strength", workoutType = WorkoutType.WEIGHTLIFTING))
 
         val runningWorkouts = workoutDao.getWorkoutsByType(userId, WorkoutType.RUNNING).first()
         assertThat(runningWorkouts).hasSize(2)
@@ -135,17 +134,17 @@ class WorkoutDaoTest {
         val workout1 = createTestWorkout(
             userId = userId,
             title = "Old Workout",
-            startTime = Date(baseTime - (10 * 24 * 60 * 60 * 1000L)) // 10 days ago
+            startTime = Date(baseTime - (10 * 24 * 60 * 60 * 1000L)), // 10 days ago
         )
         val workout2 = createTestWorkout(
             userId = userId,
             title = "Recent Workout",
-            startTime = Date(baseTime - (2 * 24 * 60 * 60 * 1000L)) // 2 days ago
+            startTime = Date(baseTime - (2 * 24 * 60 * 60 * 1000L)), // 2 days ago
         )
         val workout3 = createTestWorkout(
             userId = userId,
             title = "Today Workout",
-            startTime = Date(baseTime)
+            startTime = Date(baseTime),
         )
 
         workoutDao.insertWorkout(workout1)
@@ -239,12 +238,12 @@ class WorkoutDaoTest {
 
         workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.RUNNING))
         workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.RUNNING))
-        workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.STRENGTH_TRAINING))
+        workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.WEIGHTLIFTING))
 
         val runningCount = workoutDao.getWorkoutCountByType(userId, WorkoutType.RUNNING)
         assertThat(runningCount).isEqualTo(2)
 
-        val strengthCount = workoutDao.getWorkoutCountByType(userId, WorkoutType.STRENGTH_TRAINING)
+        val strengthCount = workoutDao.getWorkoutCountByType(userId, WorkoutType.WEIGHTLIFTING)
         assertThat(strengthCount).isEqualTo(1)
     }
 
@@ -254,12 +253,12 @@ class WorkoutDaoTest {
 
         workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.RUNNING, caloriesBurned = 300))
         workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.RUNNING, caloriesBurned = 250))
-        workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.STRENGTH_TRAINING, caloriesBurned = 200))
+        workoutDao.insertWorkout(createTestWorkout(userId = userId, workoutType = WorkoutType.WEIGHTLIFTING, caloriesBurned = 200))
 
         val runningCalories = workoutDao.getTotalCaloriesByType(userId, WorkoutType.RUNNING)
         assertThat(runningCalories).isEqualTo(550)
 
-        val strengthCalories = workoutDao.getTotalCaloriesByType(userId, WorkoutType.STRENGTH_TRAINING)
+        val strengthCalories = workoutDao.getTotalCaloriesByType(userId, WorkoutType.WEIGHTLIFTING)
         assertThat(strengthCalories).isEqualTo(200)
     }
 
@@ -271,13 +270,13 @@ class WorkoutDaoTest {
         // Insert workouts in current month and previous month
         val currentMonthWorkout = createTestWorkout(
             userId = userId,
-            startTime = Date() // Current time
+            startTime = Date(), // Current time
         )
-        
+
         calendar.add(Calendar.MONTH, -1)
         val previousMonthWorkout = createTestWorkout(
             userId = userId,
-            startTime = calendar.time
+            startTime = calendar.time,
         )
 
         workoutDao.insertWorkout(currentMonthWorkout)
@@ -329,7 +328,7 @@ class WorkoutDaoTest {
             userId = userId,
             title = "Ongoing",
             startTime = currentTime,
-            endTime = null
+            endTime = null,
         )
 
         // Completed workout
@@ -337,7 +336,7 @@ class WorkoutDaoTest {
             userId = userId,
             title = "Completed",
             startTime = Date(currentTime.time - 60000),
-            endTime = currentTime
+            endTime = currentTime,
         )
 
         workoutDao.insertWorkout(ongoingWorkout)
@@ -359,7 +358,7 @@ class WorkoutDaoTest {
             userId = userId,
             title = "Completed",
             startTime = Date(currentTime.time - 60000),
-            endTime = currentTime
+            endTime = currentTime,
         )
 
         // Ongoing workout
@@ -367,7 +366,7 @@ class WorkoutDaoTest {
             userId = userId,
             title = "Ongoing",
             startTime = currentTime,
-            endTime = null
+            endTime = null,
         )
 
         workoutDao.insertWorkout(completedWorkout)
@@ -388,7 +387,7 @@ class WorkoutDaoTest {
             title = "To Complete",
             startTime = startTime,
             endTime = null,
-            duration = 0
+            duration = 0,
         )
 
         val workoutId = workoutDao.insertWorkout(workout)
@@ -410,7 +409,7 @@ class WorkoutDaoTest {
             userId = userId,
             title = "Original",
             duration = 30,
-            caloriesBurned = 200
+            caloriesBurned = 200,
         )
 
         val workoutId = workoutDao.insertWorkout(workout)
@@ -419,7 +418,7 @@ class WorkoutDaoTest {
             title = "Updated",
             duration = 45,
             caloriesBurned = 300,
-            updatedAt = Date()
+            updatedAt = Date(),
         )
 
         workoutDao.updateWorkout(updatedWorkout)
@@ -493,7 +492,7 @@ class WorkoutDaoTest {
     fun testForeignKeyConstraint() = runTest {
         val workout = createTestWorkout(
             userId = 999L, // Non-existent user
-            title = "Invalid Workout"
+            title = "Invalid Workout",
         )
 
         try {
@@ -501,7 +500,7 @@ class WorkoutDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint", "no such table")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 
@@ -561,7 +560,7 @@ class WorkoutDaoTest {
             passwordHash = "test_hash",
             passwordSalt = "test_salt",
             createdAt = Date(),
-            updatedAt = Date()
+            updatedAt = Date(),
         )
         return userDao.insertUser(user)
     }
@@ -577,7 +576,7 @@ class WorkoutDaoTest {
         caloriesBurned: Int = 200,
         steps: Int = 3000,
         avgHeartRate: Int? = 150,
-        maxHeartRate: Int? = 180
+        maxHeartRate: Int? = 180,
     ) = Workout(
         userId = userId,
         workoutType = workoutType,
@@ -591,6 +590,6 @@ class WorkoutDaoTest {
         avgHeartRate = avgHeartRate,
         maxHeartRate = maxHeartRate,
         createdAt = Date(),
-        updatedAt = Date()
+        updatedAt = Date(),
     )
 }
