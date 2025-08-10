@@ -3,7 +3,6 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
 import com.example.fitnesstrackerapp.util.test.TestHelper
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.*
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.IOException
 import java.util.*
 
@@ -27,7 +27,7 @@ import java.util.*
  * - Calorie and macro nutrient summaries
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(JUnit4::class)
 class FoodEntryDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -74,7 +74,8 @@ class FoodEntryDaoTest {
         val foodEntryId = foodEntryDao.insertFoodEntry(foodEntry)
         assertThat(foodEntryId).isGreaterThan(0)
 
-        val retrievedEntry = foodEntryDao.getFoodEntryById(foodEntryId)
+        // Use correct method to get entry by ID
+        val retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == foodEntryId }
         assertThat(retrievedEntry).isNotNull()
         assertThat(retrievedEntry?.foodName).isEqualTo("Grilled Chicken")
         assertThat(retrievedEntry?.caloriesPerServing).isEqualTo(165.0)
@@ -112,23 +113,24 @@ class FoodEntryDaoTest {
     fun getFoodEntriesByMealType() = runTest {
         val user = TestHelper.createTestUser(email = "mealtype@test.com", username = "mealtypeuser")
         val userId = userDao.insertUser(user)
+        val targetDate = Date()
 
         // Insert entries for different meal types
         foodEntryDao.insertFoodEntry(
-            TestHelper.createTestFoodEntry(userId = userId, foodName = "Breakfast Item 1", mealType = MealType.BREAKFAST),
+            TestHelper.createTestFoodEntry(userId = userId, foodName = "Breakfast Item 1", mealType = MealType.BREAKFAST).copy(dateConsumed = targetDate),
         )
         foodEntryDao.insertFoodEntry(
-            TestHelper.createTestFoodEntry(userId = userId, foodName = "Breakfast Item 2", mealType = MealType.BREAKFAST),
+            TestHelper.createTestFoodEntry(userId = userId, foodName = "Breakfast Item 2", mealType = MealType.BREAKFAST).copy(dateConsumed = targetDate),
         )
         foodEntryDao.insertFoodEntry(
-            TestHelper.createTestFoodEntry(userId = userId, foodName = "Lunch Item", mealType = MealType.LUNCH),
+            TestHelper.createTestFoodEntry(userId = userId, foodName = "Lunch Item", mealType = MealType.LUNCH).copy(dateConsumed = targetDate),
         )
 
-        val breakfastEntries = foodEntryDao.getFoodEntriesByMealType(userId, MealType.BREAKFAST).first()
+        val breakfastEntries = foodEntryDao.getFoodEntriesByMealType(userId, MealType.BREAKFAST, targetDate).first()
         assertThat(breakfastEntries).hasSize(2)
         assertThat(breakfastEntries.all { it.mealType == MealType.BREAKFAST }).isTrue()
 
-        val lunchEntries = foodEntryDao.getFoodEntriesByMealType(userId, MealType.LUNCH).first()
+        val lunchEntries = foodEntryDao.getFoodEntriesByMealType(userId, MealType.LUNCH, targetDate).first()
         assertThat(lunchEntries).hasSize(1)
         assertThat(lunchEntries[0].foodName).isEqualTo("Lunch Item")
     }
@@ -164,7 +166,8 @@ class FoodEntryDaoTest {
         foodEntryDao.insertFoodEntry(todayEntry2)
         foodEntryDao.insertFoodEntry(yesterdayEntry)
 
-        val todayEntries = foodEntryDao.getFoodEntriesByDate(userId, targetDate).first()
+        // Use correct method for date
+        val todayEntries = foodEntryDao.getFoodEntriesForDate(userId, targetDate).first()
         assertThat(todayEntries).hasSize(2)
         assertThat(todayEntries.map { it.foodName }).containsExactly("Today Lunch", "Today Breakfast")
     }
@@ -194,8 +197,8 @@ class FoodEntryDaoTest {
             TestHelper.createTestFoodEntry(userId = userId, foodName = "Day 4").copy(dateConsumed = day4),
         )
 
-        // Query for entries from day2 to day3 (inclusive)
-        val entriesInRange = foodEntryDao.getFoodEntriesByDateRange(userId, day2, day3).first()
+        // Use correct method for date range
+        val entriesInRange = foodEntryDao.getFoodEntriesForDateRange(userId, day2, day3).first()
         assertThat(entriesInRange).hasSize(2)
         assertThat(entriesInRange.map { it.foodName }).containsExactly("Day 3", "Day 2")
     }
@@ -233,7 +236,8 @@ class FoodEntryDaoTest {
             foodEntryDao.insertFoodEntry(entry)
         }
 
-        val totalCalories = foodEntryDao.getTotalCaloriesByDate(userId, targetDate)
+        // Use correct method for total calories
+        val totalCalories = foodEntryDao.getTotalCaloriesForDate(userId, targetDate) ?: 0.0
         // 300 + 500 + (400 * 1.5) = 1400
         assertThat(totalCalories).isEqualTo(1400.0)
     }
@@ -275,7 +279,8 @@ class FoodEntryDaoTest {
             foodEntryDao.insertFoodEntry(entry)
         }
 
-        val nutritionSummary = foodEntryDao.getNutritionSummaryByDate(userId, targetDate)
+        // Use correct method for nutrition summary (single date as range)
+        val nutritionSummary = foodEntryDao.getNutritionSummaryForDateRange(userId, targetDate, targetDate)
         assertThat(nutritionSummary).isNotNull()
         assertThat(nutritionSummary?.totalCalories).isEqualTo(381.0) // 165 + 216
         assertThat(nutritionSummary?.totalProtein).isEqualTo(36.0) // 31 + 5
@@ -308,11 +313,11 @@ class FoodEntryDaoTest {
 
         // Should be ordered by consumption count DESC
         assertThat(mostConsumed[0].foodName).isEqualTo("Apple")
-        assertThat(mostConsumed[0].consumptionCount).isEqualTo(3)
+        assertThat(mostConsumed[0].frequency).isEqualTo(3)
         assertThat(mostConsumed[1].foodName).isEqualTo("Banana")
-        assertThat(mostConsumed[1].consumptionCount).isEqualTo(2)
+        assertThat(mostConsumed[1].frequency).isEqualTo(2)
         assertThat(mostConsumed[2].foodName).isEqualTo("Orange")
-        assertThat(mostConsumed[2].consumptionCount).isEqualTo(1)
+        assertThat(mostConsumed[2].frequency).isEqualTo(1)
     }
 
     @Test
@@ -367,13 +372,13 @@ class FoodEntryDaoTest {
             ).copy(dateConsumed = targetDate),
         )
 
-        val breakfastCalories = foodEntryDao.getCaloriesByMealType(userId, MealType.BREAKFAST, targetDate)
+        val breakfastCalories = foodEntryDao.getMealDistributionForDate(userId, targetDate).find { it.mealType == MealType.BREAKFAST.name }?.calories ?: 0.0
         assertThat(breakfastCalories).isEqualTo(300.0)
 
-        val lunchCalories = foodEntryDao.getCaloriesByMealType(userId, MealType.LUNCH, targetDate)
+        val lunchCalories = foodEntryDao.getMealDistributionForDate(userId, targetDate).find { it.mealType == MealType.LUNCH.name }?.calories ?: 0.0
         assertThat(lunchCalories).isEqualTo(500.0)
 
-        val dinnerCalories = foodEntryDao.getCaloriesByMealType(userId, MealType.DINNER, targetDate)
+        val dinnerCalories = foodEntryDao.getMealDistributionForDate(userId, targetDate).find { it.mealType == MealType.DINNER.name }?.calories ?: 0.0
         assertThat(dinnerCalories).isEqualTo(0.0) // No dinner entries
     }
 
@@ -398,7 +403,7 @@ class FoodEntryDaoTest {
         )
         foodEntryDao.updateFoodEntry(updatedEntry)
 
-        val retrievedEntry = foodEntryDao.getFoodEntryById(entryId)
+        val retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == entryId }
         assertThat(retrievedEntry?.foodName).isEqualTo("Updated Food")
         assertThat(retrievedEntry?.caloriesPerServing).isEqualTo(150.0)
         assertThat(retrievedEntry?.servingSize).isEqualTo(2.0)
@@ -413,14 +418,14 @@ class FoodEntryDaoTest {
         val entryId = foodEntryDao.insertFoodEntry(foodEntry)
 
         // Verify entry exists
-        var retrievedEntry = foodEntryDao.getFoodEntryById(entryId)
+        var retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == entryId }
         assertThat(retrievedEntry).isNotNull()
 
         // Delete the entry
         foodEntryDao.deleteFoodEntry(foodEntry.copy(id = entryId))
 
         // Verify entry is deleted
-        retrievedEntry = foodEntryDao.getFoodEntryById(entryId)
+        retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == entryId }
         assertThat(retrievedEntry).isNull()
     }
 
@@ -433,14 +438,14 @@ class FoodEntryDaoTest {
         val entryId = foodEntryDao.insertFoodEntry(foodEntry)
 
         // Verify entry exists
-        var retrievedEntry = foodEntryDao.getFoodEntryById(entryId)
+        var retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == entryId }
         assertThat(retrievedEntry).isNotNull()
 
         // Delete by ID
         foodEntryDao.deleteFoodEntryById(entryId)
 
         // Verify entry is deleted
-        retrievedEntry = foodEntryDao.getFoodEntryById(entryId)
+        retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == entryId }
         assertThat(retrievedEntry).isNull()
     }
 
@@ -475,7 +480,7 @@ class FoodEntryDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint", "no such table")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 
@@ -497,7 +502,7 @@ class FoodEntryDaoTest {
         )
 
         val entryId = foodEntryDao.insertFoodEntry(foodEntry)
-        val retrievedEntry = foodEntryDao.getFoodEntryById(entryId)
+        val retrievedEntry = foodEntryDao.getFoodEntriesByUserId(userId).first().find { it.id == entryId }
 
         assertThat(retrievedEntry).isNotNull()
 
@@ -534,13 +539,13 @@ class FoodEntryDaoTest {
 
         // Verify each meal type has entries
         MealType.entries.forEach { mealType ->
-            val entries = foodEntryDao.getFoodEntriesByMealType(userId, mealType).first()
+            val entries = foodEntryDao.getFoodEntriesByMealType(userId, mealType, targetDate).first()
             assertThat(entries).hasSize(1)
             assertThat(entries[0].mealType).isEqualTo(mealType)
         }
 
         // Check total calories for the day
-        val totalCalories = foodEntryDao.getTotalCaloriesByDate(userId, targetDate)
+        val totalCalories = foodEntryDao.getTotalCaloriesForDate(userId, targetDate) ?: 0.0
         val expectedTotal = MealType.entries.size * 200.0
         assertThat(totalCalories).isEqualTo(expectedTotal)
     }
