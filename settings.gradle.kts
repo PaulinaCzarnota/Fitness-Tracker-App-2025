@@ -1,41 +1,34 @@
 /**
- * Root Gradle Settings (Kotlin DSL) for FitnessTrackerApp
+ * Root Gradle Settings for FitnessTrackerApp
  *
- * Responsibilities:
- * - Sets up secure and optimized plugin & dependency resolution.
- * - Avoids duplicate repository definitions.
- * - Enforces repository mode and clean module structure.
- * - Prevents issues related to version catalog multiple-from() calls.
+ * - Centralizes plugin and dependency repository configuration.
+ * - Enforces repository mode to avoid project-level repositories.
  * - Ensures all modules are included and project is named correctly.
  */
 
 pluginManagement {
     repositories {
-        // Google's Maven repository for Android Gradle Plugin, Jetpack, Firebase, etc.
+        // Google's Maven repository for Android, Jetpack, Firebase, and other Google libraries
         google {
             content {
                 includeGroupByRegex("com\\.android.*")   // Android build tools
                 includeGroupByRegex("androidx.*")        // Jetpack libraries
-                includeGroupByRegex("com\\.google.*")    // Firebase, Play Services, etc.
+                includeGroupByRegex("com\\.google.*")    // Google libraries (Firebase, Play Services, etc.)
             }
         }
-        // Maven Central repository for Kotlin libraries and other essentials
+        // Maven Central for Kotlin libraries and other dependencies
         mavenCentral()
-        // Gradle Plugin Portal for third-party Gradle plugins like Kotlin, Hilt, etc.
+        // Gradle Plugin Portal for third-party Gradle plugins
         gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
-    /**
-     * Enforce centralized repository management for all modules.
-     * - Prevents accidental use of project-level repositories.
-     * - Ensures all dependencies are resolved from the defined repositories.
-     */
+    // Enforce centralized repository management for all modules
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
 
     repositories {
-        // Standard repositories needed for Android + Kotlin
+        // Standard repositories for Android and Kotlin
         google()
         mavenCentral()
         // JitPack repository for GitHub-hosted libraries like MPAndroidChart

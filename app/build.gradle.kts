@@ -4,10 +4,7 @@ import java.util.Properties
 /**
  * App Module Gradle Build Script (Kotlin DSL)
  *
- * Responsibilities:
- * - Configures the Android application plugin, Kotlin, Compose, DI, and all dependencies for the app.
- * - Sets up build types, Java/Kotlin compatibility, Compose, and packaging options.
- * - Follows consistent Javadoc-style comment structure.
+ * - Configures plugins, Android settings, and dependencies for the app module.
  */
 
 plugins {
@@ -15,12 +12,14 @@ plugins {
     alias(libs.plugins.android.application)
     // Kotlin Android plugin
     alias(libs.plugins.kotlin.android)
+    // Kotlin Compose Compiler plugin (required for Kotlin 2.0+)
+    alias(libs.plugins.kotlin.compose)
+    // KSP plugin for annotation processing (Room, etc.)
+    alias(libs.plugins.ksp)
     // Dokka plugin for generating HTML documentation from KDoc
     alias(libs.plugins.dokka)
     // Spotless plugin for code formatting
     alias(libs.plugins.spotless)
-    // ktlint plugin for Kotlin linting - temporarily disabled for build
-    // alias(libs.plugins.ktlint)
     // Detekt plugin for static analysis
     alias(libs.plugins.detekt)
     // Dependency updates plugin
@@ -30,14 +29,9 @@ plugins {
 }
 
 android {
-    /**
-     * Android configuration block
-     *
-     * - Sets namespace, SDK versions, and default config.
-     * - Configures build types, Java/Kotlin compatibility, Compose, and packaging.
-     */
+    // Android configuration: namespace, SDK versions, build types, Compose, etc.
     namespace = "com.example.fitnesstrackerapp"
-    compileSdk = 34
+    compileSdk = 36
 
     // Load keystore properties
     val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -153,8 +147,7 @@ android {
 /**
  * JaCoCo Code Coverage Configuration
  *
- * Provides comprehensive code coverage reporting for unit and integration tests.
- * Generates both XML and HTML reports with >80% coverage target.
+ * Provides code coverage reporting for unit and integration tests.
  */
 jacoco {
     toolVersion = "0.8.10"
@@ -179,7 +172,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/BuildConfig.*",
             "**/Manifest*.*",
             "**/*Test*.*",
-            "**/*\$MockitoMock\$*.*",
+            "**/*\$MockitoMock$*.*",
             "**/databinding/**",
             "**/android/databinding/**",
             "**/androidx/databinding/**",
@@ -191,7 +184,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*Component*.*",
             "**/*BR*.*",
             "**/Manifest*.*",
-            "**/*\$Lambda\$*.*",
+            "**/*\$Lambda$*.*",
             "**/*Companion*.*",
             "**/*Module*.*",
             "**/*Dagger*.*",
@@ -202,7 +195,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*_ViewBinding*.*",
             "**/*Binding*.*",
             "**/*\$Result.*",
-            "**/*\$Result\$*.*",
+            "**/*\$Result$*.*",
         )
     }
 
@@ -213,7 +206,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/BuildConfig.*",
             "**/Manifest*.*",
             "**/*Test*.*",
-            "**/*\$MockitoMock\$*.*",
+            "**/*\$MockitoMock$*.*",
             "**/databinding/**",
             "**/android/databinding/**",
             "**/androidx/databinding/**",
@@ -225,7 +218,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*Component*.*",
             "**/*BR*.*",
             "**/Manifest*.*",
-            "**/*\$Lambda\$*.*",
+            "**/*\$Lambda$*.*",
             "**/*Companion*.*",
             "**/*Module*.*",
             "**/*Dagger*.*",
@@ -236,7 +229,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
             "**/*_ViewBinding*.*",
             "**/*Binding*.*",
             "**/*\$Result.*",
-            "**/*\$Result\$*.*",
+            "**/*\$Result$*.*",
         )
     }
 
@@ -285,7 +278,7 @@ tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
                 "**/BuildConfig.*",
                 "**/Manifest*.*",
                 "**/*Test*.*",
-                "**/*\$MockitoMock\$*.*",
+                "**/*\$MockitoMock$*.*",
                 "**/databinding/**",
                 "**/android/databinding/**",
                 "**/androidx/databinding/**",
@@ -298,7 +291,7 @@ tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
                 "**/BuildConfig.*",
                 "**/Manifest*.*",
                 "**/*Test*.*",
-                "**/*\$MockitoMock\$*.*",
+                "**/*\$MockitoMock$*.*",
                 "**/databinding/**",
                 "**/android/databinding/**",
                 "**/androidx/databinding/**",
@@ -334,7 +327,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     implementation(libs.androidx.core.splashscreen)
-    // ksp(libs.room.compiler) // REMOVED - not using KSP/Hilt
+    ksp(libs.room.compiler) // Re-enabled for Room annotation processing
     testImplementation(libs.room.testing)
 
     // Compose UI
@@ -358,15 +351,15 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
 
     // Additional Material 3 and Animation dependencies for UI/UX overhaul
-    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.2")
     implementation("androidx.compose.animation:animation")
     implementation("androidx.compose.animation:animation-graphics")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
     // Navigation compose version is managed by BOM now
 
     // Motion Layout and Advanced Animation Support
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
+    implementation("com.airbnb.android:lottie-compose:6.6.7")
 
     // Biometric Authentication
     implementation(libs.androidx.biometric)
@@ -377,8 +370,6 @@ dependencies {
     // Security
     implementation(libs.androidx.security.crypto)
 
-    // Note: Error prone annotations removed as they are non-standard
-
     // Multidex support for devices with API < 21
     implementation(libs.androidx.multidex)
 
@@ -388,15 +379,15 @@ dependencies {
     // Espresso for UI testing
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
-    androidTestImplementation("androidx.test.espresso:espresso-accessibility:3.5.1")
-    androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-accessibility:3.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.7.0")
 
     // Compose Testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
@@ -404,21 +395,34 @@ dependencies {
     testImplementation(libs.room.testing)
 
     // WorkManager Testing
-    testImplementation("androidx.work:work-testing:2.9.0")
-    androidTestImplementation("androidx.work:work-testing:2.9.0")
+    testImplementation("androidx.work:work-testing:2.10.3")
+    androidTestImplementation("androidx.work:work-testing:2.10.3")
 
     // Test dependencies for Robolectric, MockK, Google Truth
-    testImplementation("org.robolectric:robolectric:4.13")
-    testImplementation("io.mockk:mockk:1.13.14")
+    testImplementation("org.robolectric:robolectric:4.15.1")
+    testImplementation("io.mockk:mockk:1.14.5")
     testImplementation("com.google.truth:truth:1.4.4")
-    androidTestImplementation("io.mockk:mockk-android:1.13.14")
+    androidTestImplementation("io.mockk:mockk-android:1.14.5")
     androidTestImplementation("com.google.truth:truth:1.4.4")
+
+    // JUnit 5 (Jupiter) for unit testing
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.4")
+
+    // Truth for assertions
+    testImplementation("com.google.truth:truth:1.4.4")
+
+    // (Optional) Mockito for mocking
+    testImplementation(libs.mockito.core)
+
+    // AndroidX Test Core (if needed)
+    testImplementation(libs.androidx.test.core)
 
     // Standard Android testing libraries only
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
-    testImplementation("androidx.test:core:1.5.0")
+    testImplementation(libs.androidx.test.core)
 }
 
 /**
@@ -464,18 +468,10 @@ spotless {
     format("xml") {
         target("**/*.xml")
         targetExclude("**/build/**/*.xml")
-        indentWithSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
 }
-
-/**
- * ktlint configuration for Kotlin linting
- *
- * Temporarily disabled to focus on core functionality
- */
-// ktlint configuration disabled since plugin is commented out
 
 /**
  * CI Configuration
@@ -605,38 +601,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
  * Dokka configuration for generating HTML documentation from KDoc
  *
  * Generates comprehensive HTML documentation from KDoc comments
- * including class diagrams, inheritance trees, and API documentation.
+ * using Dokka V2 syntax.
  */
-tasks.dokkaHtml.configure {
-    outputDirectory.set(layout.buildDirectory.dir("dokka"))
-
-    dokkaSourceSets {
-        named("main") {
-            moduleName.set("Fitness Tracker App")
-            moduleVersion.set("1.0")
-
-            // Include source code in documentation
-            includeNonPublic.set(false)
-            skipEmptyPackages.set(true)
-            skipDeprecated.set(false)
-            reportUndocumented.set(true)
-
-            // Package documentation
-            documentedVisibilities.set(
-                setOf(
-                    org.jetbrains.dokka.DokkaConfiguration.Visibility.PUBLIC,
-                    org.jetbrains.dokka.DokkaConfiguration.Visibility.PROTECTED,
-                ),
-            )
-
-            // External documentation links
-            externalDocumentationLink {
-                url.set(uri("https://developer.android.com/reference/").toURL())
-            }
-
-            externalDocumentationLink {
-                url.set(uri("https://kotlinlang.org/api/latest/jvm/stdlib/").toURL())
-            }
-        }
-    }
-}
+// Dokka V2 configuration - simplified to avoid compatibility issues
+// Documentation will be generated in build/dokka/html by default

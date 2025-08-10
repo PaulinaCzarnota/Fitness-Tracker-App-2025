@@ -14,6 +14,9 @@ plugins {
     // Kotlin plugin for Android (applied in :app module)
     alias(libs.plugins.kotlin.android) apply false
     
+    // Kotlin Compose Compiler plugin (required for Kotlin 2.0+)
+    alias(libs.plugins.kotlin.compose) apply false
+    
     // KSP plugin for annotation processing
     alias(libs.plugins.ksp) apply false
     
