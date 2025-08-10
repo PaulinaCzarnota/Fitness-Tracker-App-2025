@@ -4,16 +4,23 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.MealType
+import com.example.fitnesstrackerapp.data.entity.NotificationStatus
+import com.example.fitnesstrackerapp.data.entity.NotificationType
+import com.example.fitnesstrackerapp.data.entity.WorkoutType
+import com.example.fitnesstrackerapp.data.entity.isCompleted
 import com.example.fitnesstrackerapp.util.test.TestHelper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.*
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.util.*
+import java.util.Date
 
 /**
  * Comprehensive unit tests for AppDatabase and all DAOs.
@@ -22,7 +29,7 @@ import java.util.*
  * and data integrity using in-memory database for fast execution.
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class AppDatabaseTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -225,7 +232,7 @@ class AppDatabaseTest {
         Assert.assertEquals(
             "Target value should match",
             10.0,
-            retrievedGoal?.targetValue,
+            retrievedGoal?.targetValue ?: 0.0,
             0.01,
         )
     }
@@ -253,7 +260,7 @@ class AppDatabaseTest {
         Assert.assertEquals(
             "Progress should be 75%",
             75.0f,
-            retrievedGoal?.getProgressPercentage(),
+            retrievedGoal?.getProgressPercentage() ?: 0.0f,
             0.1f,
         )
         Assert.assertFalse("Goal should not be completed", retrievedGoal?.isCompleted() ?: true)

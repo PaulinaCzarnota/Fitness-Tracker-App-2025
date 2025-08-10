@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.auth
+
 /**
  * Comprehensive instrumented tests for authentication UI components
  *
@@ -11,18 +13,9 @@
  * - Form validation and user feedback
  */
 
-package com.example.fitnesstrackerapp.ui.auth
-
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-// Note: Firebase removed as per assignment requirements
-import com.example.fitnesstrackerapp.fake.FakeAuthRepository
-import com.example.fitnesstrackerapp.ui.auth.AuthViewModel
-import com.example.fitnesstrackerapp.ui.auth.LoginScreen
-// import com.example.fitnesstrackerapp.ui.auth.SignUpScreen // Removed to fix compilation
-import com.example.fitnesstrackerapp.ui.theme.FitnessTrackerTheme
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
