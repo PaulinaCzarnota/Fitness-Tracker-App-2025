@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.navigation
+
 /**
  * Adaptive Navigation Component for Fitness Tracker App
  *
@@ -10,9 +12,7 @@
  * - Accessibility support with proper semantics
  */
 
-package com.example.fitnesstrackerapp.ui.navigation
-
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -65,7 +65,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -472,6 +471,7 @@ private fun ExpandedNavigation(
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun getWindowSizeClass(): WindowSizeClass {
-    val activity = LocalContext.current as ComponentActivity
+    val activity = LocalActivity.current
+    requireNotNull(activity) { "Activity context is required for window size calculation." }
     return calculateWindowSizeClass(activity = activity)
 }
