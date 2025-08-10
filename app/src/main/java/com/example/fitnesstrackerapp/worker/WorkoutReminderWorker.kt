@@ -1,10 +1,11 @@
+package com.example.fitnesstrackerapp.worker
+
 /**
  * Simple Workout Reminder Worker for workout notifications.
  *
  * This worker sends notifications to remind users about their scheduled workouts.
  * It uses only standard Android SDK components and the SimpleNotificationManager.
  */
-package com.example.fitnesstrackerapp.worker
 
 import android.content.Context
 import android.util.Log
@@ -14,15 +15,6 @@ import androidx.work.workDataOf
 import com.example.fitnesstrackerapp.notification.SimpleNotificationManager
 import com.example.fitnesstrackerapp.util.PermissionUtils
 
-/**
- * Worker for handling workout reminder notifications.
- *
- * This worker sends basic workout reminder notifications using the
- * SimpleNotificationManager to ensure compatibility with standard Android SDK.
- *
- * @param context The application context
- * @param params Worker parameters from WorkManager
- */
 class WorkoutReminderWorker(
     context: Context,
     params: WorkerParameters,

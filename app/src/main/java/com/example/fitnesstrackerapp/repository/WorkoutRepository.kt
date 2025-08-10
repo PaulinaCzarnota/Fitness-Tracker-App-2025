@@ -1,19 +1,3 @@
-/**
- * Repository for handling workout-related data operations in the Fitness Tracker application.
- *
- * This repository provides a clean API for workout data management, abstracting the
- * database layer and providing business logic for workout operations. It handles
- * CRUD operations, statistics calculation, and data aggregation for workout tracking.
- *
- * Key Features:
- * - Complete CRUD operations for workout entities
- * - Date range filtering and workout history
- * - Statistical calculations and analytics
- * - Weekly stats computation with proper date handling
- * - Workout type categorization and filtering
- * - Performance metrics and duration calculations
- */
-
 package com.example.fitnesstrackerapp.repository
 
 import com.example.fitnesstrackerapp.data.dao.WorkoutDao

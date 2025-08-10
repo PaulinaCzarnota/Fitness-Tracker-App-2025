@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Enhanced Workout Management Screen
  *
@@ -9,8 +11,6 @@
  * - Custom notes and workout details
  * - Support for running, cycling, weightlifting, and other activities
  */
-
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,10 +26,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DirectionsBike
-import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -467,7 +466,7 @@ private fun WorkoutStatItem(
 internal fun getWorkoutIcon(workoutType: WorkoutType): androidx.compose.ui.graphics.vector.ImageVector {
     return when (workoutType) {
         WorkoutType.RUNNING -> Icons.Default.FitnessCenter
-        WorkoutType.CYCLING -> Icons.Default.DirectionsBike
+        WorkoutType.CYCLING -> Icons.AutoMirrored.Filled.DirectionsBike
         WorkoutType.WEIGHTLIFTING -> Icons.Default.FitnessCenter
         WorkoutType.SWIMMING -> Icons.Default.Pool
         WorkoutType.YOGA -> Icons.Default.SelfImprovement

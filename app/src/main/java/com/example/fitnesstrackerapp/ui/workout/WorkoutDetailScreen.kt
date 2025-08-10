@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Detailed Workout View Screen
  *
@@ -9,8 +11,6 @@
  * - Performance analysis and comparisons
  * - Quick actions for editing and sharing
  */
-
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

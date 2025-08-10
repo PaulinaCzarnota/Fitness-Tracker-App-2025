@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Workout Screen
  *
@@ -7,7 +9,6 @@
  * - Provides workout creation and management
  * - Tracks workout progress and timing
  */
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,8 +31,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -137,13 +140,7 @@ fun WorkoutScreen(
     if (showNewWorkoutDialog) {
         NewWorkoutDialog(
             onDismiss = { showNewWorkoutDialog = false },
-            onConfirm = { type, duration, _, _ ->
-                // Convert String to WorkoutType enum and match WorkoutViewModel.startWorkout(type: WorkoutType, title: String)
-                val workoutType = try {
-                    WorkoutType.valueOf(type)
-                } catch (e: IllegalArgumentException) {
-                    WorkoutType.OTHER
-                }
+            onConfirm = { workoutType, duration, _, _ ->
                 val workoutTitle = "${workoutType.name} - ${duration}min"
                 workoutViewModel.startWorkout(workoutType, workoutTitle)
                 showNewWorkoutDialog = false
@@ -199,9 +196,10 @@ private fun ActiveWorkoutCard(
 @Composable
 private fun NewWorkoutDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, Int, Int, String) -> Unit,
+    onConfirm: (WorkoutType, Int, Int, String) -> Unit,
 ) {
-    var workoutType by remember { mutableStateOf("RUNNING") }
+    var workoutType by remember { mutableStateOf(WorkoutType.RUNNING) }
+    var expanded by remember { mutableStateOf(false) }
     var duration by remember { mutableStateOf("") }
     var distance by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
@@ -215,16 +213,33 @@ private fun NewWorkoutDialog(
             ) {
                 // Workout type dropdown
                 ExposedDropdownMenuBox(
-                    expanded = false,
-                    onExpandedChange = { },
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded },
                 ) {
                     OutlinedTextField(
-                        value = workoutType,
-                        onValueChange = { },
+                        value = workoutType.name,
+                        onValueChange = {},
                         readOnly = true,
                         label = { Text("Workout Type") },
-                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(),
                     )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        WorkoutType.entries.forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type.name) },
+                                onClick = {
+                                    workoutType = type
+                                    expanded = false
+                                },
+                            )
+                        }
+                    }
                 }
 
                 OutlinedTextField(

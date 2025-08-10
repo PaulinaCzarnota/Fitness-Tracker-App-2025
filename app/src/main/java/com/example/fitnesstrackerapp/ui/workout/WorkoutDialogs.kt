@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Workout Management Dialog Components
  *
@@ -7,8 +9,6 @@
  * - DeleteWorkoutDialog: Confirmation dialog for workout deletion
  * - Utility components for workout type selection and intensity settings
  */
-
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -82,7 +82,7 @@ fun CreateWorkoutDialog(
 
     // Generate title based on workout type and duration
     LaunchedEffect(workoutType, duration) {
-        if (title.isEmpty() || title.matches(Regex("^[A-Z_]+( - \\d+ min)?\$"))) {
+        if (title.isEmpty() || title.matches(Regex("^[A-Z_]+( - \\d+ min)?$"))) {
             val durationText = if (duration.isNotBlank()) " - $duration min" else ""
             title = "${workoutType.name.replace("_", " ")}$durationText"
         }
@@ -701,8 +701,8 @@ fun WorkoutTypeSelectionDialog(
         title = { Text("Select Workout Type") },
         text = {
             LazyColumn {
-                items(WorkoutType.values().size) { index ->
-                    val workoutType = WorkoutType.values()[index]
+                items(WorkoutType.entries.size) { index ->
+                    val workoutType = WorkoutType.entries[index]
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -743,7 +743,7 @@ fun IntensitySelectionDialog(
         title = { Text("Select Workout Intensity") },
         text = {
             Column {
-                WorkoutIntensity.values().forEach { intensity ->
+                WorkoutIntensity.entries.forEach { intensity ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Workout Management ViewModel
  *
@@ -8,8 +10,6 @@
  * - LiveData-based reactive UI updates
  * - Error handling and user feedback
  */
-
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * WorkoutSet entity and related classes for the Fitness Tracker application.
  *
@@ -12,8 +14,6 @@
  * - Support for different set types (normal, warm-up, drop sets, etc.)
  * - Performance metrics and progression tracking
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

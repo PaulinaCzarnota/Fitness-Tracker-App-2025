@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.scheduler
+
 /**
  * Workout Scheduler
  *
@@ -7,8 +9,6 @@
  * - Coordinates with WorkManager for periodic tasks
  * - Handles goal reminder scheduling
  */
-
-package com.example.fitnesstrackerapp.scheduler
 
 import android.content.Context
 import androidx.work.Constraints

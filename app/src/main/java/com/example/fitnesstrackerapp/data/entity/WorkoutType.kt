@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Workout Type enumeration for the Fitness Tracker application.
  *
@@ -12,8 +14,6 @@
  * - Progress analytics and reporting
  * - Calorie calculation algorithms
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 /**
  * Enumeration of supported workout types in the Fitness Tracker application.

@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.data.entity
+
 /**
  * Workout entity and related classes for the Fitness Tracker application.
  *
@@ -13,8 +15,6 @@
  * - Calculated fields for pace, speed, and calories per minute
  * - Foreign key relationship with User entity for data integrity
  */
-
-package com.example.fitnesstrackerapp.data.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

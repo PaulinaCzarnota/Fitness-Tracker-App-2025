@@ -1,18 +1,3 @@
-/**
- * Repository for handling workout set-related data operations in the Fitness Tracker application.
- *
- * This repository provides a clean API for workout set data management, abstracting the
- * database layer and providing business logic for set operations. It handles
- * CRUD operations, performance analytics, personal record tracking, and progression analysis.
- *
- * Key Features:
- * - Complete CRUD operations for workout set entities
- * - Personal record detection and management
- * - Performance analytics and volume calculations
- * - Exercise progression tracking
- * - Rest time and RPE management
- */
-
 package com.example.fitnesstrackerapp.repository
 
 import com.example.fitnesstrackerapp.data.dao.WorkoutSetDao

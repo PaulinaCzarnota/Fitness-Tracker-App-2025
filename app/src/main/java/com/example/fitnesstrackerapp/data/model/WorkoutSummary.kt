@@ -1,11 +1,11 @@
+package com.example.fitnesstrackerapp.data.model
+
 /**
  * Data model for workout summary statistics used in UI components.
  *
  * This data class provides aggregated workout statistics for display
  * in progress cards, charts, and summary screens throughout the app.
  */
-
-package com.example.fitnesstrackerapp.data.model
 
 /**
  * Represents aggregated workout statistics for display in UI components.

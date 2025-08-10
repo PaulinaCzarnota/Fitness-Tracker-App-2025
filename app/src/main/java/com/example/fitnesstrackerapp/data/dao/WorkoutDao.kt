@@ -1,18 +1,3 @@
-/**
- * Workout Data Access Object for the Fitness Tracker application.
- *
- * This DAO provides comprehensive database operations for Workout entities including
- * workout session management, performance tracking, analytics, and historical data.
- * All operations are coroutine-based for optimal performance and UI responsiveness.
- *
- * Key Features:
- * - Workout session creation, updates, and deletion
- * - Performance metrics and statistics calculation
- * - Date range queries for progress tracking
- * - Workout type filtering and categorization
- * - Analytics queries for charts and reports
- * - Batch operations for data management
- */
 package com.example.fitnesstrackerapp.data.dao
 
 import androidx.room.Dao

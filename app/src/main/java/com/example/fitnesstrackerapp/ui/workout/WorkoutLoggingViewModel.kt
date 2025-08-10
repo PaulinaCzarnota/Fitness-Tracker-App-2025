@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.workout
+
 /**
  * Enhanced WorkoutLoggingViewModel for detailed workout logging functionality.
  *
@@ -15,8 +17,6 @@
  * - Rest timer integration
  * - Comprehensive workout analytics
  */
-
-package com.example.fitnesstrackerapp.ui.workout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -403,7 +403,7 @@ class WorkoutLoggingViewModel(
                 // Get workout summary
                 val summary = workoutSetRepository.getWorkoutSummary(activeWorkout.id)
                 val totalVolume = workoutSetRepository.getWorkoutVolume(activeWorkout.id)
-                val totalCalories = summary.sumOf { (it.totalVolume * 0.5).toDouble() }.toInt() // Simple calorie calculation
+                val totalCalories = summary.sumOf { (it.totalVolume * 0.5) }.toInt() // Simple calorie calculation
 
                 val completedWorkout = activeWorkout.copy(
                     endTime = endTime,
