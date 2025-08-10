@@ -18,7 +18,7 @@ import android.content.Context
     "Use WorkManagerScheduler instead",
     ReplaceWith("WorkManagerScheduler")
 )
-class TaskScheduler(private val context: Context) {
+class TaskScheduler(context: Context) {
     private val workManagerScheduler = WorkManagerScheduler.getInstance(context)
 
     /**

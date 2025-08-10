@@ -13,14 +13,13 @@
 package com.example.fitnesstrackerapp.auth
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
+@RunWith(JUnit4::class)
 class ValidationUtilsTest {
-    @Nested
-    @DisplayName("Email Validation Tests")
-    inner class EmailValidationTests {
+    class EmailValidationTests {
         @Test
         fun `valid emails return true`() {
             val validEmails = listOf(
@@ -35,7 +34,7 @@ class ValidationUtilsTest {
 
             validEmails.forEach { email ->
                 assertThat(ValidationUtils.isValidEmail(email))
-                    .withContext("Email: $email")
+                    .withMessage("Email: $email")
                     .isTrue()
             }
         }
@@ -59,7 +58,7 @@ class ValidationUtilsTest {
 
             invalidEmails.forEach { email ->
                 assertThat(ValidationUtils.isValidEmail(email))
-                    .withContext("Email: $email")
+                    .withMessage("Email: $email")
                     .isFalse()
             }
         }
@@ -71,9 +70,7 @@ class ValidationUtilsTest {
         }
     }
 
-    @Nested
-    @DisplayName("Password Strength Validation Tests")
-    inner class PasswordStrengthTests {
+    class PasswordStrengthTests {
         @Test
         fun `strong passwords are valid`() {
             val strongPasswords = listOf(
@@ -87,7 +84,7 @@ class ValidationUtilsTest {
             strongPasswords.forEach { password ->
                 val result = ValidationUtils.validatePasswordStrength(password)
                 assertThat(result.isValid)
-                    .withContext("Password: $password, Message: ${result.message}")
+                    .withMessage("Password: $password, Message: ${result.message}")
                     .isTrue()
             }
         }
@@ -152,7 +149,7 @@ class ValidationUtilsTest {
             weakPasswords.forEach { password ->
                 val result = ValidationUtils.validatePasswordStrength(password)
                 assertThat(result.isValid)
-                    .withContext("Password: $password")
+                    .withMessage("Password: $password")
                     .isFalse()
                 assertThat(result.message).contains("common patterns")
             }
@@ -199,9 +196,7 @@ class ValidationUtilsTest {
         }
     }
 
-    @Nested
-    @DisplayName("Username Validation Tests")
-    inner class UsernameValidationTests {
+    class UsernameValidationTests {
         @Test
         fun `valid usernames pass validation`() {
             val validUsernames = listOf(
@@ -215,7 +210,7 @@ class ValidationUtilsTest {
             validUsernames.forEach { username ->
                 val result = ValidationUtils.validateUsername(username)
                 assertThat(result.isValid)
-                    .withContext("Username: $username, Message: ${result.message}")
+                    .withMessage("Username: $username, Message: ${result.message}")
                     .isTrue()
             }
         }
@@ -259,7 +254,7 @@ class ValidationUtilsTest {
             invalidUsernames.forEach { username ->
                 val result = ValidationUtils.validateUsername(username)
                 assertThat(result.isValid)
-                    .withContext("Username: $username")
+                    .withMessage("Username: $username")
                     .isFalse()
                 assertThat(result.message).contains("letters, numbers, and underscores")
             }
@@ -282,16 +277,14 @@ class ValidationUtilsTest {
             reservedUsernames.forEach { username ->
                 val result = ValidationUtils.validateUsername(username)
                 assertThat(result.isValid)
-                    .withContext("Username: $username")
+                    .withMessage("Username: $username")
                     .isFalse()
                 assertThat(result.message).contains("reserved")
             }
         }
     }
 
-    @Nested
-    @DisplayName("Full Name Validation Tests")
-    inner class FullNameValidationTests {
+    class FullNameValidationTests {
         @Test
         fun `valid names pass validation`() {
             val validNames = listOf(
@@ -308,7 +301,7 @@ class ValidationUtilsTest {
             validNames.forEach { name ->
                 val result = ValidationUtils.validateFullName(name)
                 assertThat(result.isValid)
-                    .withContext("Name: $name, Message: ${result.message}")
+                    .withMessage("Name: $name, Message: ${result.message}")
                     .isTrue()
             }
         }
@@ -342,16 +335,14 @@ class ValidationUtilsTest {
             invalidNames.forEach { name ->
                 val result = ValidationUtils.validateFullName(name)
                 assertThat(result.isValid)
-                    .withContext("Name: $name")
+                    .withMessage("Name: $name")
                     .isFalse()
                 assertThat(result.message).contains("letters, spaces, hyphens, and apostrophes")
             }
         }
     }
 
-    @Nested
-    @DisplayName("Form Validation Tests")
-    inner class FormValidationTests {
+    class FormValidationTests {
         @Test
         fun `valid registration form passes validation`() {
             val result = ValidationUtils.validateRegistrationForm(
@@ -415,9 +406,7 @@ class ValidationUtilsTest {
         }
     }
 
-    @Nested
-    @DisplayName("Security Validation Tests")
-    inner class SecurityValidationTests {
+    class SecurityValidationTests {
         @Test
         fun `safe input passes security check`() {
             val safeInputs = listOf(
@@ -430,7 +419,7 @@ class ValidationUtilsTest {
             safeInputs.forEach { input ->
                 val result = ValidationUtils.checkForSecurityIssues(input)
                 assertThat(result.isValid)
-                    .withContext("Input: $input")
+                    .withMessage("Input: $input")
                     .isTrue()
             }
         }
@@ -447,7 +436,7 @@ class ValidationUtilsTest {
             maliciousInputs.forEach { input ->
                 val result = ValidationUtils.checkForSecurityIssues(input)
                 assertThat(result.isValid)
-                    .withContext("Input: $input")
+                    .withMessage("Input: $input")
                     .isFalse()
                 assertThat(result.message).contains("harmful content")
             }
@@ -465,16 +454,14 @@ class ValidationUtilsTest {
             maliciousInputs.forEach { input ->
                 val result = ValidationUtils.checkForSecurityIssues(input)
                 assertThat(result.isValid)
-                    .withContext("Input: $input")
+                    .withMessage("Input: $input")
                     .isFalse()
                 assertThat(result.message).contains("harmful content")
             }
         }
     }
 
-    @Nested
-    @DisplayName("Reset Token Validation Tests")
-    inner class ResetTokenValidationTests {
+    class ResetTokenValidationTests {
         @Test
         fun `valid reset token passes validation`() {
             val validToken = "a".repeat(32)
@@ -516,9 +503,7 @@ class ValidationUtilsTest {
         }
     }
 
-    @Nested
-    @DisplayName("Extension Function Tests")
-    inner class ExtensionFunctionTests {
+    class ExtensionFunctionTests {
         @Test
         fun `matchesPassword extension works correctly`() {
             val password = "TestPassword123!"
@@ -552,9 +537,7 @@ class ValidationUtilsTest {
         }
     }
 
-    @Nested
-    @DisplayName("Edge Cases and Boundary Tests")
-    inner class EdgeCasesTests {
+    class EdgeCasesTests {
         @Test
         fun `null and empty string handling`() {
             // Test various validation functions with empty strings

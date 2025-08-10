@@ -180,7 +180,7 @@ class AuthenticationSecurityTest {
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true
         coEvery { mockUserDao.resetFailedLoginAttempts(any(), any()) } just Runs
         coEvery { mockUserDao.updateUser(any()) } just Runs
-        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
+        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Awaits
 
         // When
         val result = authRepository.login(TestData.VALID_EMAIL, TestData.STRONG_PASSWORD)
@@ -262,7 +262,7 @@ class AuthenticationSecurityTest {
         val uppercaseEmail = "USER@EXAMPLE.COM"
         coEvery { mockUserDao.getUserByEmail(uppercaseEmail.lowercase()) } returns null
         coEvery { mockUserDao.insertUser(any()) } returns 123L
-        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
+        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Awaits
 
         // When
         val result = authRepository.register(uppercaseEmail, TestData.STRONG_PASSWORD, "Test User")
@@ -286,7 +286,7 @@ class AuthenticationSecurityTest {
 
         coEvery { mockUserDao.getUserByEmail("user@example.com") } returns null
         coEvery { mockUserDao.insertUser(any()) } returns 123L
-        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
+        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Awaits
 
         // When
         val result = authRepository.register(emailWithSpaces, TestData.STRONG_PASSWORD, nameWithSpaces)
@@ -473,7 +473,7 @@ class AuthenticationSecurityTest {
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true
         coEvery { mockUserDao.resetFailedLoginAttempts(any(), any()) } just Runs
         coEvery { mockUserDao.updateUser(any()) } just Runs
-        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
+        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Awaits
 
         // When
         val result = authRepository.login(TestData.VALID_EMAIL, TestData.STRONG_PASSWORD)
@@ -488,7 +488,7 @@ class AuthenticationSecurityTest {
         val nameWithSpecialChars = "José María O'Connor-Smith"
         coEvery { mockUserDao.getUserByEmail(any()) } returns null
         coEvery { mockUserDao.insertUser(any()) } returns 123L
-        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
+        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Awaits
 
         // When
         val result = authRepository.register(TestData.VALID_EMAIL, TestData.STRONG_PASSWORD, nameWithSpecialChars)
@@ -518,7 +518,7 @@ class AuthenticationSecurityTest {
         every { mockCryptoManager.verifyPassword(any(), any(), any()) } returns true
         coEvery { mockUserDao.resetFailedLoginAttempts(any(), any()) } just Runs
         coEvery { mockUserDao.updateUser(any()) } just Runs
-        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Runs
+        coEvery { mockSessionManager.saveUserSession(any(), any()) } just Awaits
 
         // When - login with uppercase email
         val result = authRepository.login("USER@EXAMPLE.COM", TestData.STRONG_PASSWORD)
