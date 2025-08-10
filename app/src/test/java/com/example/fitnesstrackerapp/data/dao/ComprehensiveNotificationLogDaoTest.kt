@@ -3,7 +3,6 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
 import com.google.common.truth.Truth.assertThat
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.*
 import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.IOException
 import java.util.*
 
@@ -29,7 +29,7 @@ import java.util.*
  * - The new deleteLogsOlderThan method
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(JUnit4::class)
 class ComprehensiveNotificationLogDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -64,8 +64,9 @@ class ComprehensiveNotificationLogDaoTest {
             username = "testuser_${System.currentTimeMillis()}",
             email = "test_${System.currentTimeMillis()}@example.com",
             passwordHash = "hashedpassword",
+            passwordSalt = "salt123",
             firstName = "Test",
-            lastName = "User"
+            lastName = "User",
         )
     }
 
@@ -76,7 +77,7 @@ class ComprehensiveNotificationLogDaoTest {
             title = "Test Notification",
             message = "Test Message",
             scheduledTime = Date(),
-            channelId = "test_channel"
+            channelId = "test_channel",
         )
     }
 
@@ -88,7 +89,7 @@ class ComprehensiveNotificationLogDaoTest {
         isSuccess: Boolean = true,
         errorCode: String? = null,
         errorMessage: String? = null,
-        retryCount: Int = 0
+        retryCount: Int = 0,
     ): NotificationLog {
         return NotificationLog(
             userId = userId,
@@ -98,7 +99,7 @@ class ComprehensiveNotificationLogDaoTest {
             isSuccess = isSuccess,
             errorCode = errorCode,
             errorMessage = errorMessage,
-            retryCount = retryCount
+            retryCount = retryCount,
         )
     }
 
@@ -117,7 +118,7 @@ class ComprehensiveNotificationLogDaoTest {
             val log = createTestNotificationLog(
                 userId = userId,
                 notificationId = notificationId,
-                eventType = eventType
+                eventType = eventType,
             )
             val logId = notificationLogDao.insertNotificationLog(log)
             logs.add(logId)
@@ -147,7 +148,7 @@ class ComprehensiveNotificationLogDaoTest {
             val log = createTestNotificationLog(
                 userId = userId,
                 notificationId = notificationId,
-                deliveryChannel = channel
+                deliveryChannel = channel,
             )
             val logId = notificationLogDao.insertNotificationLog(log)
             logs.add(logId)
@@ -178,7 +179,7 @@ class ComprehensiveNotificationLogDaoTest {
                 title = "Test ${type.name}",
                 message = "Test Message",
                 scheduledTime = Date(),
-                channelId = "test_channel"
+                channelId = "test_channel",
             )
             val notificationId = notificationDao.insertNotification(notification)
             notifications.add(notificationId)
@@ -210,7 +211,7 @@ class ComprehensiveNotificationLogDaoTest {
                 message = "Test Message",
                 priority = priority,
                 scheduledTime = Date(),
-                channelId = "test_channel"
+                channelId = "test_channel",
             )
             val notificationId = notificationDao.insertNotification(notification)
             notifications.add(notificationId)
@@ -242,7 +243,7 @@ class ComprehensiveNotificationLogDaoTest {
                 message = "Test Message",
                 status = status,
                 scheduledTime = Date(),
-                channelId = "test_channel"
+                channelId = "test_channel",
             )
             val notificationId = notificationDao.insertNotification(notification)
             notifications.add(notificationId)
@@ -271,7 +272,7 @@ class ComprehensiveNotificationLogDaoTest {
             Triple(NotificationLogEvent.FAILED, NotificationDeliveryChannel.SMS, false),
             Triple(NotificationLogEvent.OPENED, NotificationDeliveryChannel.IN_APP, true),
             Triple(NotificationLogEvent.DISMISSED, NotificationDeliveryChannel.SYSTEM, true),
-            Triple(NotificationLogEvent.ERROR, NotificationDeliveryChannel.WEBHOOK, false)
+            Triple(NotificationLogEvent.ERROR, NotificationDeliveryChannel.WEBHOOK, false),
         )
 
         val logIds = mutableListOf<Long>()
@@ -282,7 +283,7 @@ class ComprehensiveNotificationLogDaoTest {
                 notificationId = notificationId,
                 eventType = eventType,
                 deliveryChannel = channel,
-                isSuccess = isSuccess
+                isSuccess = isSuccess,
             )
             val logId = notificationLogDao.insertNotificationLog(log)
             logIds.add(logId)
@@ -316,23 +317,23 @@ class ComprehensiveNotificationLogDaoTest {
         val oldLog1 = createTestNotificationLog(
             userId = userId,
             notificationId = notificationId,
-            eventType = NotificationLogEvent.SENT
+            eventType = NotificationLogEvent.SENT,
         ).copy(eventTimestamp = threeDaysAgo)
-        
+
         val oldLog2 = createTestNotificationLog(
             userId = userId,
             notificationId = notificationId,
-            eventType = NotificationLogEvent.DELIVERED
+            eventType = NotificationLogEvent.DELIVERED,
         ).copy(eventTimestamp = oneDayAgo)
 
         val recentLog = createTestNotificationLog(
             userId = userId,
             notificationId = notificationId,
-            eventType = NotificationLogEvent.OPENED
+            eventType = NotificationLogEvent.OPENED,
         ).copy(eventTimestamp = twoMinutesAgo)
 
         notificationLogDao.insertNotificationLog(oldLog1)
-        notificationLogDao.insertNotificationLog(oldLog2)  
+        notificationLogDao.insertNotificationLog(oldLog2)
         notificationLogDao.insertNotificationLog(recentLog)
 
         // Verify all logs are present
@@ -348,7 +349,7 @@ class ComprehensiveNotificationLogDaoTest {
         assertThat(allLogs).hasSize(2)
         assertThat(allLogs.map { it.eventType }).containsExactly(
             NotificationLogEvent.OPENED,
-            NotificationLogEvent.DELIVERED
+            NotificationLogEvent.DELIVERED,
         )
     }
 
@@ -365,7 +366,7 @@ class ComprehensiveNotificationLogDaoTest {
             val log = createTestNotificationLog(
                 userId = userId,
                 notificationId = notificationId,
-                eventType = eventType
+                eventType = eventType,
             )
             notificationLogDao.insertNotificationLog(log)
         }
@@ -391,7 +392,7 @@ class ComprehensiveNotificationLogDaoTest {
             val log = createTestNotificationLog(
                 userId = userId,
                 notificationId = notificationId,
-                deliveryChannel = channel
+                deliveryChannel = channel,
             )
             notificationLogDao.insertNotificationLog(log)
         }
@@ -418,7 +419,7 @@ class ComprehensiveNotificationLogDaoTest {
                 notificationId = notificationId,
                 eventType = NotificationLogEvent.SENT,
                 deliveryChannel = NotificationDeliveryChannel.PUSH,
-                isSuccess = true
+                isSuccess = true,
             ),
             createTestNotificationLog(
                 userId = userId,
@@ -426,22 +427,22 @@ class ComprehensiveNotificationLogDaoTest {
                 eventType = NotificationLogEvent.FAILED,
                 deliveryChannel = NotificationDeliveryChannel.PUSH,
                 isSuccess = false,
-                errorCode = "NETWORK_ERROR"
+                errorCode = "NETWORK_ERROR",
             ),
             createTestNotificationLog(
                 userId = userId,
                 notificationId = notificationId,
                 eventType = NotificationLogEvent.DELIVERED,
                 deliveryChannel = NotificationDeliveryChannel.EMAIL,
-                isSuccess = true
+                isSuccess = true,
             ),
             createTestNotificationLog(
                 userId = userId,
                 notificationId = notificationId,
                 eventType = NotificationLogEvent.OPENED,
                 deliveryChannel = NotificationDeliveryChannel.IN_APP,
-                isSuccess = true
-            )
+                isSuccess = true,
+            ),
         )
 
         testData.forEach { log ->
@@ -468,7 +469,7 @@ class ComprehensiveNotificationLogDaoTest {
         // Test with non-existent user - should fail
         val invalidLog = createTestNotificationLog(
             userId = 999L,
-            notificationId = 1L
+            notificationId = 1L,
         )
 
         try {
@@ -476,7 +477,7 @@ class ComprehensiveNotificationLogDaoTest {
             Assert.fail("Should have thrown foreign key constraint exception")
         } catch (e: Exception) {
             // Expected - foreign key constraint should prevent this
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 
@@ -492,9 +493,9 @@ class ComprehensiveNotificationLogDaoTest {
             userId = userId,
             notificationId = notificationId,
             eventType = NotificationLogEvent.ACTION_CLICKED,
-            deliveryChannel = NotificationDeliveryChannel.WEBHOOK
+            deliveryChannel = NotificationDeliveryChannel.WEBHOOK,
         )
-        
+
         val logId = notificationLogDao.insertNotificationLog(log)
         val retrievedLog = notificationLogDao.getNotificationLogById(logId)
 
