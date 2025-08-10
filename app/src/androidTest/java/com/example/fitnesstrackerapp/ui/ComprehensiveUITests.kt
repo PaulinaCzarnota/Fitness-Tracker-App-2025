@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui
+
 /**
  * Comprehensive Espresso UI Tests for Fitness Tracker App
  *
@@ -10,30 +12,41 @@
  * - Complete end-to-end user journeys
  */
 
-package com.example.fitnesstrackerapp.ui
-
-// Removed Hilt imports as app uses ServiceLocator pattern
 import android.content.Context
-import androidx.compose.ui.test.*
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performTextInput
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
-import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.example.fitnesstrackerapp.MainActivity
 import com.example.fitnesstrackerapp.data.database.AppDatabase
-import com.example.fitnesstrackerapp.data.entity.*
+import com.example.fitnesstrackerapp.data.entity.Goal
+import com.example.fitnesstrackerapp.data.entity.GoalType
+import com.example.fitnesstrackerapp.data.entity.Step
+import com.example.fitnesstrackerapp.data.entity.User
+import com.example.fitnesstrackerapp.data.entity.Workout
+import com.example.fitnesstrackerapp.data.entity.WorkoutType
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.Calendar
 
 /**
  * Comprehensive UI tests for the Fitness Tracker App
@@ -59,7 +72,7 @@ class ComprehensiveUITests {
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext()
-        
+
         // Get database instance - using Room.inMemoryDatabaseBuilder for testing
         database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
 
@@ -739,7 +752,7 @@ class ComprehensiveUITests {
                 passwordHash = "hashedpassword",
                 passwordSalt = "salt123",
                 firstName = "Test",
-                lastName = "User"
+                lastName = "User",
             )
             database.userDao().insertUser(user)
 
@@ -751,7 +764,7 @@ class ComprehensiveUITests {
                 targetValue = 10000.0,
                 currentValue = 7500.0,
                 unit = "steps",
-                targetDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 30) }.time
+                targetDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 30) }.time,
             )
             database.goalDao().insertGoal(stepGoal)
 
@@ -783,7 +796,7 @@ class ComprehensiveUITests {
                         add(Calendar.DAY_OF_MONTH, -dayIndex)
                     }.time,
                     caloriesBurned = ((8000 + dayIndex * 500) * 0.05).toFloat(),
-                    distanceMeters = (8000 + dayIndex * 500) * 0.8f // Rough conversion to meters
+                    distanceMeters = (8000 + dayIndex * 500) * 0.8f, // Rough conversion to meters
                 )
                 database.stepDao().insertStep(steps)
             }
