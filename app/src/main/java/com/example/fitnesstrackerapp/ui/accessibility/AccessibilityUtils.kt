@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.ui.accessibility
+
 /**
  * Accessibility Enhancement Utilities for Fitness Tracker App
  *
@@ -9,8 +11,6 @@
  * - Voice-over friendly components
  * - Accessibility action implementations
  */
-
-package com.example.fitnesstrackerapp.ui.accessibility
 
 import android.content.Context
 import android.os.Build
@@ -346,16 +346,36 @@ object AccessibilityActions {
         onSkip: (() -> Unit)? = null,
     ): List<CustomAccessibilityAction> = buildList {
         onStart?.let {
-            add(CustomAccessibilityAction("Start workout") { it(); true })
+            add(
+                CustomAccessibilityAction("Start workout") {
+                    it()
+                    true
+                },
+            )
         }
         onPause?.let {
-            add(CustomAccessibilityAction("Pause workout") { it(); true })
+            add(
+                CustomAccessibilityAction("Pause workout") {
+                    it()
+                    true
+                },
+            )
         }
         onStop?.let {
-            add(CustomAccessibilityAction("Stop workout") { it(); true })
+            add(
+                CustomAccessibilityAction("Stop workout") {
+                    it()
+                    true
+                },
+            )
         }
         onSkip?.let {
-            add(CustomAccessibilityAction("Skip exercise") { it(); true })
+            add(
+                CustomAccessibilityAction("Skip exercise") {
+                    it()
+                    true
+                },
+            )
         }
     }
 
@@ -368,13 +388,28 @@ object AccessibilityActions {
         onUpdateProgress: (() -> Unit)? = null,
     ): List<CustomAccessibilityAction> = buildList {
         onEdit?.let {
-            add(CustomAccessibilityAction("Edit goal") { it(); true })
+            add(
+                CustomAccessibilityAction("Edit goal") {
+                    it()
+                    true
+                },
+            )
         }
         onUpdateProgress?.let {
-            add(CustomAccessibilityAction("Update progress") { it(); true })
+            add(
+                CustomAccessibilityAction("Update progress") {
+                    it()
+                    true
+                },
+            )
         }
         onDelete?.let {
-            add(CustomAccessibilityAction("Delete goal") { it(); true })
+            add(
+                CustomAccessibilityAction("Delete goal") {
+                    it()
+                    true
+                },
+            )
         }
     }
 }
@@ -383,7 +418,7 @@ object AccessibilityActions {
  * Accessibility Manager utilities for checking accessibility service state
  */
 object AccessibilityManagerUtils {
-    
+
     /**
      * Checks if any accessibility services are enabled
      */
@@ -395,7 +430,7 @@ object AccessibilityManagerUtils {
             false // Graceful fallback for older APIs
         }
     }
-    
+
     /**
      * Checks if TalkBack or other screen readers are enabled
      */
@@ -407,7 +442,7 @@ object AccessibilityManagerUtils {
             false // Graceful fallback
         }
     }
-    
+
     /**
      * Checks if high contrast text is enabled (API 21+)
      */
@@ -421,7 +456,7 @@ object AccessibilityManagerUtils {
             false
         }
     }
-    
+
     /**
      * Gets the recommended timeout for showing UI elements to users with disabilities
      * Returns timeout in milliseconds
@@ -431,7 +466,7 @@ object AccessibilityManagerUtils {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
                 val accessibilityManager = ContextCompat.getSystemService(context, AccessibilityManager::class.java)
-                accessibilityManager?.getRecommendedTimeoutMillis(originalTimeout, AccessibilityManager.FLAG_CONTENT_TEXT) 
+                accessibilityManager?.getRecommendedTimeoutMillis(originalTimeout, AccessibilityManager.FLAG_CONTENT_TEXT)
                     ?: originalTimeout
             } catch (e: Exception) {
                 originalTimeout
@@ -447,7 +482,7 @@ object AccessibilityManagerUtils {
  * Text-to-Speech accessibility utilities
  */
 object SpeakOutUtils {
-    
+
     /**
      * Announces text using accessibility services (TalkBack, etc.)
      * This is backward compatible and handles different API levels gracefully
@@ -457,9 +492,9 @@ object SpeakOutUtils {
             if (!AccessibilityManagerUtils.isAccessibilityEnabled(context)) {
                 return // No accessibility services enabled
             }
-            
+
             val accessibilityManager = ContextCompat.getSystemService(context, AccessibilityManager::class.java)
-            
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 // API 30+ method
                 announceForAccessibilityApi30(accessibilityManager, text)
@@ -472,20 +507,20 @@ object SpeakOutUtils {
             // Graceful failure - don't crash the app if accessibility features fail
         }
     }
-    
+
     @RequiresApi(Build.VERSION_CODES.R)
     private fun announceForAccessibilityApi30(accessibilityManager: AccessibilityManager?, text: String) {
         // Modern approach using AccessibilityManager interrupt method
         // Note: This is a placeholder as the actual implementation would need AccessibilityEvent
         // In real implementation, you'd create an AccessibilityEvent and send it
     }
-    
+
     @Suppress("DEPRECATION")
     private fun announceForAccessibilityLegacy(accessibilityManager: AccessibilityManager?, text: String) {
         // Legacy method for older Android versions
         // This would use the deprecated accessibility methods for backward compatibility
     }
-    
+
     /**
      * Announces fitness-specific updates with appropriate priority
      */
@@ -501,16 +536,16 @@ object SpeakOutUtils {
             announceForAccessibility(context, prioritizedMessage)
         }
     }
-    
+
     /**
      * Types of fitness updates for prioritized accessibility announcements
      */
     enum class FitnessUpdateType {
         GOAL_ACHIEVED,
-        WORKOUT_MILESTONE, 
+        WORKOUT_MILESTONE,
         WARNING,
         PROGRESS_UPDATE,
-        NAVIGATION
+        NAVIGATION,
     }
 }
 
@@ -518,27 +553,27 @@ object SpeakOutUtils {
  * Composable accessibility utilities
  */
 object AccessibilityComposables {
-    
+
     /**
      * Modifier that provides live region announcements for dynamic content
      */
     fun Modifier.accessibilityLiveRegion(
-        priority: LiveRegionPriority = LiveRegionPriority.POLITE
+        priority: LiveRegionPriority = LiveRegionPriority.POLITE,
     ): Modifier = this.semantics {
         liveRegion = when (priority) {
             LiveRegionPriority.ASSERTIVE -> LiveRegionMode.Assertive
             LiveRegionPriority.POLITE -> LiveRegionMode.Polite
         }
     }
-    
+
     /**
      * Priority levels for live region announcements
      */
     enum class LiveRegionPriority {
-        POLITE,   // Announces when user is idle
-        ASSERTIVE // Announces immediately, interrupting other speech
+        POLITE, // Announces when user is idle
+        ASSERTIVE, // Announces immediately, interrupting other speech
     }
-    
+
     /**
      * Composable hook to check accessibility settings
      */
@@ -549,18 +584,18 @@ object AccessibilityComposables {
             AccessibilityState(
                 isEnabled = AccessibilityManagerUtils.isAccessibilityEnabled(context),
                 isTalkBackEnabled = AccessibilityManagerUtils.isTalkBackEnabled(context),
-                isHighContrastEnabled = AccessibilityManagerUtils.isHighTextContrastEnabled(context)
+                isHighContrastEnabled = AccessibilityManagerUtils.isHighTextContrastEnabled(context),
             )
         }
     }
-    
+
     /**
      * Data class representing current accessibility state
      */
     data class AccessibilityState(
         val isEnabled: Boolean,
         val isTalkBackEnabled: Boolean,
-        val isHighContrastEnabled: Boolean
+        val isHighContrastEnabled: Boolean,
     )
 }
 
