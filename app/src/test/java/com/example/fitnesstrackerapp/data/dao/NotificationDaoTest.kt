@@ -3,7 +3,6 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
 import com.example.fitnesstrackerapp.util.test.TestHelper
@@ -23,7 +22,7 @@ import java.util.*
  * relationship management with other entities.
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class NotificationDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -82,9 +81,21 @@ class NotificationDaoTest {
 
         // Insert multiple notifications
         val notifications = listOf(
-            TestHelper.createTestNotification(userId = userId, title = "Notification 1", type = NotificationType.WORKOUT_REMINDER),
-            TestHelper.createTestNotification(userId = userId, title = "Notification 2", type = NotificationType.GOAL_ACHIEVEMENT),
-            TestHelper.createTestNotification(userId = userId, title = "Notification 3", type = NotificationType.DAILY_MOTIVATION),
+            TestHelper.createTestNotification(
+                userId = userId,
+                title = "Notification 1",
+                type = NotificationType.WORKOUT_REMINDER,
+            ),
+            TestHelper.createTestNotification(
+                userId = userId,
+                title = "Notification 2",
+                type = NotificationType.GOAL_ACHIEVEMENT,
+            ),
+            TestHelper.createTestNotification(
+                userId = userId,
+                title = "Notification 3",
+                type = NotificationType.DAILY_MOTIVATION,
+            ),
         )
 
         notifications.forEach { notification ->
@@ -96,7 +107,11 @@ class NotificationDaoTest {
         Assert.assertTrue(
             "Should contain all notification types",
             userNotifications.map { it.type }.containsAll(
-                listOf(NotificationType.WORKOUT_REMINDER, NotificationType.GOAL_ACHIEVEMENT, NotificationType.DAILY_MOTIVATION),
+                listOf(
+                    NotificationType.WORKOUT_REMINDER,
+                    NotificationType.GOAL_ACHIEVEMENT,
+                    NotificationType.DAILY_MOTIVATION,
+                ),
             ),
         )
     }
@@ -108,23 +123,41 @@ class NotificationDaoTest {
 
         // Insert notifications of different types
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, type = NotificationType.WORKOUT_REMINDER, title = "Workout 1"),
+            TestHelper.createTestNotification(
+                userId = userId,
+                type = NotificationType.WORKOUT_REMINDER,
+                title = "Workout 1",
+            ),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, type = NotificationType.WORKOUT_REMINDER, title = "Workout 2"),
+            TestHelper.createTestNotification(
+                userId = userId,
+                type = NotificationType.WORKOUT_REMINDER,
+                title = "Workout 2",
+            ),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, type = NotificationType.GOAL_ACHIEVEMENT, title = "Goal Achieved"),
+            TestHelper.createTestNotification(
+                userId = userId,
+                type = NotificationType.GOAL_ACHIEVEMENT,
+                title = "Goal Achieved",
+            ),
         )
 
-        val workoutNotifications = notificationDao.getNotificationsByType(userId, NotificationType.WORKOUT_REMINDER).first()
+        val workoutNotifications = notificationDao.getNotificationsByType(
+            userId,
+            NotificationType.WORKOUT_REMINDER,
+        ).first()
         Assert.assertEquals("Should have 2 workout notifications", 2, workoutNotifications.size)
         Assert.assertTrue(
             "All should be workout reminders",
             workoutNotifications.all { it.type == NotificationType.WORKOUT_REMINDER },
         )
 
-        val goalNotifications = notificationDao.getNotificationsByType(userId, NotificationType.GOAL_ACHIEVEMENT).first()
+        val goalNotifications = notificationDao.getNotificationsByType(
+            userId,
+            NotificationType.GOAL_ACHIEVEMENT,
+        ).first()
         Assert.assertEquals("Should have 1 goal notification", 1, goalNotifications.size)
     }
 
@@ -203,13 +236,21 @@ class NotificationDaoTest {
 
         // Insert notifications with different priorities
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "High Priority", priority = NotificationPriority.HIGH),
+            TestHelper.createTestNotification(
+                userId = userId,
+                title = "High Priority",
+                priority = NotificationPriority.HIGH,
+            ),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Low Priority", priority = NotificationPriority.LOW),
+            TestHelper.createTestNotification(
+                userId = userId,
+                title = "Low Priority",
+                priority = NotificationPriority.LOW,
+            ),
         )
         notificationDao.insertNotification(
-            TestHelper.createTestNotification(userId = userId, title = "Default Priority", priority = NotificationPriority.DEFAULT),
+            TestHelper.createTestNotification(userId = userId, title = "Default Priority", priority = NotificationPriority.MEDIUM),
         )
 
         val highPriorityNotifications = notificationDao.getNotificationsByPriority(userId, NotificationPriority.HIGH).first()
