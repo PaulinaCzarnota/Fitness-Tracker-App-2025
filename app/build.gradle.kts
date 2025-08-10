@@ -52,6 +52,11 @@ android {
         multiDexEnabled = true
     }
 
+    // KSP configuration for Room schema export
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
+
     signingConfigs {
         create("release") {
             if (keystorePropertiesFile.exists()) {
@@ -130,16 +135,50 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
-        }
-        animationsDisabled = true
+            all {
+                it.systemProperty("robolectric.enabledSdks", "28") // Target API 28 for Robolectric
+                it.systemProperty("robolectric.logging.enabled", "true")
+                it.jvmArgs("-noverify") // Disable bytecode verification for Robolectric
 
-        // Configure test orchestrator for improved test isolation
+                // Configure test logging
+                it.testLogging {
+                    events("passed", "skipped", "failed", "standardOut", "standardError")
+                    showStandardStreams = true
+                    showExceptions = true
+                    showStackTraces = true
+                    showCauses = true
+                    showStackTraces = true
+                    exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+                }
+            }
+        }
+
+        // Configure test orchestrator for instrumented tests
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
 
-        // Enable code coverage for unit tests
+        // Enable animations in tests
+        animationsDisabled = true
+
+        // Enable execution of unit tests with Gradle
         unitTests.all {
-            it.useJUnitPlatform()
+            it.useJUnit() // Use JUnit 4 for all unit tests
             it.systemProperty("robolectric.enabledSdks", "28,29,30,31,32,33,34")
+
+            // Set heap size for the test JVM(s)
+            it.minHeapSize = "128m"
+            it.maxHeapSize = "2048m"
+
+            // Enable parallel test execution
+            it.maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
+
+            // Fail the 'test' task on the first test failure
+            it.failFast = false
+
+            // Show standard out and standard error of the test JVM(s) on the console
+            it.testLogging {
+                events("passed", "skipped", "failed")
+                showStandardStreams = true
+            }
         }
     }
 }
@@ -399,30 +438,67 @@ dependencies {
     androidTestImplementation("androidx.work:work-testing:2.10.3")
 
     // Test dependencies for Robolectric, MockK, Google Truth
-    testImplementation("org.robolectric:robolectric:4.15.1")
-    testImplementation("io.mockk:mockk:1.14.5")
+    testImplementation("org.robolectric:robolectric:4.15.1") {
+        exclude(group = "org.checkerframework", module = "checker")
+    }
+    testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("io.mockk:mockk-agent-jvm:1.13.10")
     testImplementation("com.google.truth:truth:1.4.4")
-    androidTestImplementation("io.mockk:mockk-android:1.14.5")
+    androidTestImplementation("io.mockk:mockk-android:1.13.10")
+    androidTestImplementation("io.mockk:mockk-agent-jvm:1.13.10")
     androidTestImplementation("com.google.truth:truth:1.4.4")
 
-    // JUnit 5 (Jupiter) for unit testing
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.4")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.4")
+    // JUnit 4 for Robolectric tests
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("androidx.test.ext:junit:1.1.5") {
+        exclude(group = "org.hamcrest", module = "hamcrest-core")
+    }
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test:runner:1.5.2") {
+        exclude(group = "org.hamcrest", module = "hamcrest-core")
+    }
+    testImplementation("androidx.test:rules:1.5.0")
+    testImplementation("androidx.test.ext:truth:1.5.0")
 
-    // Truth for assertions
-    testImplementation("com.google.truth:truth:1.4.4")
+    // Kotlin Coroutines Test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3") {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-debug")
+    }
 
-    // (Optional) Mockito for mocking
-    testImplementation(libs.mockito.core)
-
-    // AndroidX Test Core (if needed)
+    // AndroidX Test Core
     testImplementation(libs.androidx.test.core)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
 
-    // Standard Android testing libraries only
+    // Standard Android testing libraries
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestUtil(libs.androidx.test.orchestrator)
-    testImplementation(libs.androidx.test.core)
+
+    // Room testing
+    testImplementation("androidx.room:room-testing:2.6.1")
+
+    // WorkManager testing
+    testImplementation("androidx.work:work-testing:2.9.0")
+
+    // Fragment testing
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+
+    // Test rules and runners
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("androidx.test:rules:1.5.0")
+    testImplementation("androidx.test:runner:1.5.2")
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+
+    // For InstantTaskExecutorRule
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // For testing LiveData
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // For testing coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3") {
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-debug")
+    }
 }
 
 /**
