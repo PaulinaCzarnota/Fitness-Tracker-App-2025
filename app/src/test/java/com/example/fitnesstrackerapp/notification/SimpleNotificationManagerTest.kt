@@ -4,9 +4,18 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.test.core.app.ApplicationProvider
-import io.mockk.*
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.unmockkAll
+import io.mockk.verify
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +26,7 @@ import org.robolectric.annotation.Config
  * Unit tests for SimpleNotificationManager to verify API surface and functionality.
  * These tests lock the public API surface and ensure consistent behavior.
  */
+@Suppress("DANGEROUS_CHARACTERS")
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
 class SimpleNotificationManagerTest {

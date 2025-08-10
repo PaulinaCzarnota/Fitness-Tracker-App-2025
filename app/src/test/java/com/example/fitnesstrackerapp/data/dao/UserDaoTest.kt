@@ -3,7 +3,6 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.ActivityLevel
 import com.example.fitnesstrackerapp.data.entity.Gender
@@ -12,10 +11,14 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.*
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
-import java.util.*
+import java.util.Date
 
 /**
  * Comprehensive unit tests for UserDao.
@@ -28,7 +31,7 @@ import java.util.*
  * - Data integrity and constraints
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class UserDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -40,7 +43,7 @@ class UserDaoTest {
     fun createDb() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            AppDatabase::class.java,
         )
             .allowMainThreadQueries()
             .build()
@@ -58,7 +61,7 @@ class UserDaoTest {
     fun insertAndGetUser() = runTest {
         val user = createTestUser(
             email = "test@example.com",
-            username = "testuser"
+            username = "testuser",
         )
 
         val userId = userDao.insertUser(user)
@@ -75,7 +78,7 @@ class UserDaoTest {
     fun getUserByEmail() = runTest {
         val user = createTestUser(
             email = "email@test.com",
-            username = "emailuser"
+            username = "emailuser",
         )
 
         userDao.insertUser(user)
@@ -89,7 +92,7 @@ class UserDaoTest {
     fun getUserByUsername() = runTest {
         val user = createTestUser(
             email = "username@test.com",
-            username = "uniqueusername"
+            username = "uniqueusername",
         )
 
         userDao.insertUser(user)
@@ -103,7 +106,7 @@ class UserDaoTest {
     fun isEmailRegistered() = runTest {
         val user = createTestUser(
             email = "registered@test.com",
-            username = "reguser"
+            username = "reguser",
         )
 
         // Email should not be registered initially
@@ -120,7 +123,7 @@ class UserDaoTest {
     fun isUsernameTaken() = runTest {
         val user = createTestUser(
             email = "taken@test.com",
-            username = "takenusername"
+            username = "takenusername",
         )
 
         // Username should not be taken initially
@@ -138,17 +141,17 @@ class UserDaoTest {
         val activeUser1 = createTestUser(
             email = "active1@test.com",
             username = "active1",
-            isActive = true
+            isActive = true,
         )
         val activeUser2 = createTestUser(
             email = "active2@test.com",
             username = "active2",
-            isActive = true
+            isActive = true,
         )
         val inactiveUser = createTestUser(
             email = "inactive@test.com",
             username = "inactive",
-            isActive = false
+            isActive = false,
         )
 
         userDao.insertUser(activeUser1)
@@ -181,14 +184,14 @@ class UserDaoTest {
         val user = createTestUser(
             email = "update@test.com",
             username = "updateuser",
-            firstName = "Original"
+            firstName = "Original",
         )
 
         val userId = userDao.insertUser(user)
         val updatedUser = user.copy(
             id = userId,
             firstName = "Updated",
-            updatedAt = Date()
+            updatedAt = Date(),
         )
 
         userDao.updateUser(updatedUser)
@@ -202,7 +205,7 @@ class UserDaoTest {
         val user = createTestUser(
             email = "height@test.com",
             username = "heightuser",
-            heightCm = 170f
+            heightCm = 170f,
         )
 
         val userId = userDao.insertUser(user)
@@ -221,7 +224,7 @@ class UserDaoTest {
         val user = createTestUser(
             email = "weight@test.com",
             username = "weightuser",
-            weightKg = 70f
+            weightKg = 70f,
         )
 
         val userId = userDao.insertUser(user)
@@ -240,7 +243,7 @@ class UserDaoTest {
         val user = createTestUser(
             email = "stepgoal@test.com",
             username = "stepgoaluser",
-            dailyStepGoal = 8000
+            dailyStepGoal = 8000,
         )
 
         val userId = userDao.insertUser(user)
@@ -258,7 +261,7 @@ class UserDaoTest {
     fun updateLastLogin() = runTest {
         val user = createTestUser(
             email = "lastlogin@test.com",
-            username = "lastloginuser"
+            username = "lastloginuser",
         )
 
         val userId = userDao.insertUser(user)
@@ -276,7 +279,7 @@ class UserDaoTest {
         val user = createTestUser(
             email = "lock@test.com",
             username = "lockuser",
-            isAccountLocked = false
+            isAccountLocked = false,
         )
 
         val userId = userDao.insertUser(user)
@@ -302,7 +305,7 @@ class UserDaoTest {
         val user = createTestUser(
             email = "failed@test.com",
             username = "faileduser",
-            failedLoginAttempts = 2
+            failedLoginAttempts = 2,
         )
 
         val userId = userDao.insertUser(user)
@@ -326,7 +329,7 @@ class UserDaoTest {
         val user = createTestUser(
             email = "activate@test.com",
             username = "activateuser",
-            isActive = true
+            isActive = true,
         )
 
         val userId = userDao.insertUser(user)
@@ -370,11 +373,11 @@ class UserDaoTest {
     fun deleteUser() = runTest {
         val user = createTestUser(
             email = "delete@test.com",
-            username = "deleteuser"
+            username = "deleteuser",
         )
 
         val userId = userDao.insertUser(user)
-        
+
         // Verify user exists
         var retrievedUser = userDao.getUserById(userId)
         assertThat(retrievedUser).isNotNull()
@@ -391,7 +394,7 @@ class UserDaoTest {
     fun deleteUserById() = runTest {
         val user = createTestUser(
             email = "deletebyid@test.com",
-            username = "deletebyiduser"
+            username = "deletebyiduser",
         )
 
         val userId = userDao.insertUser(user)
@@ -412,11 +415,11 @@ class UserDaoTest {
     fun emailUniquenessConstraint() = runTest {
         val user1 = createTestUser(
             email = "unique@test.com",
-            username = "user1"
+            username = "user1",
         )
         val user2 = createTestUser(
             email = "unique@test.com", // Same email
-            username = "user2"
+            username = "user2",
         )
 
         userDao.insertUser(user1)
@@ -426,7 +429,7 @@ class UserDaoTest {
             Assert.fail("Should throw exception for duplicate email")
         } catch (e: Exception) {
             // Expected exception for unique constraint violation
-            assertThat(e.message).containsAnyOf("UNIQUE", "constraint", "ABORT")
+            assertThat(e.message).contains("UNIQUE")
         }
     }
 
@@ -439,23 +442,23 @@ class UserDaoTest {
             heightCm = 175f,
             weightKg = 70f,
             gender = Gender.MALE,
-            activityLevel = ActivityLevel.MODERATELY_ACTIVE
+            activityLevel = ActivityLevel.MODERATELY_ACTIVE,
         )
 
         val userId = userDao.insertUser(user)
         val retrievedUser = userDao.getUserById(userId)
-        
+
         assertThat(retrievedUser).isNotNull()
         // Test BMI calculation
         val expectedBmi = 70f / ((175f / 100f) * (175f / 100f))
         assertThat(retrievedUser!!.getBMI()).isWithin(0.1f).of(expectedBmi)
-        
+
         // Test age calculation
         assertThat(retrievedUser.getAge()).isEqualTo(25)
-        
+
         // Test profile completion
         assertThat(retrievedUser.isProfileComplete()).isTrue()
-        
+
         // Test login capability
         assertThat(retrievedUser.canLogin()).isTrue()
     }
@@ -466,19 +469,19 @@ class UserDaoTest {
             email = "normal@test.com",
             username = "normal",
             isAccountLocked = false,
-            failedLoginAttempts = 2
+            failedLoginAttempts = 2,
         )
         val lockedUser = createTestUser(
-            email = "locked@test.com", 
+            email = "locked@test.com",
             username = "locked",
             isAccountLocked = true,
-            failedLoginAttempts = 3
+            failedLoginAttempts = 3,
         )
         val failedUser = createTestUser(
             email = "failed@test.com",
-            username = "failed", 
+            username = "failed",
             isAccountLocked = false,
-            failedLoginAttempts = 5
+            failedLoginAttempts = 5,
         )
 
         userDao.insertUser(normalUser)
@@ -503,7 +506,7 @@ class UserDaoTest {
         isActive: Boolean = true,
         isAccountLocked: Boolean = false,
         failedLoginAttempts: Int = 0,
-        dailyStepGoal: Int = 10000
+        dailyStepGoal: Int = 10000,
     ) = User(
         email = email,
         username = username,
@@ -521,6 +524,6 @@ class UserDaoTest {
         failedLoginAttempts = failedLoginAttempts,
         dailyStepGoal = dailyStepGoal,
         createdAt = Date(),
-        updatedAt = Date()
+        updatedAt = Date(),
     )
 }

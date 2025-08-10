@@ -3,7 +3,6 @@ package com.example.fitnesstrackerapp.data.dao
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.fitnesstrackerapp.data.database.AppDatabase
 import com.example.fitnesstrackerapp.data.entity.*
 import com.example.fitnesstrackerapp.util.test.TestHelper
@@ -28,7 +27,7 @@ import java.util.*
  * - Quality scoring and recommendation algorithms
  */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+@RunWith(org.junit.runners.JUnit4::class)
 class NutritionEntryDaoTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
@@ -734,7 +733,7 @@ class NutritionEntryDaoTest {
             Assert.fail("Should throw foreign key constraint exception")
         } catch (e: Exception) {
             // Expected foreign key constraint violation
-            assertThat(e.message).containsAnyOf("FOREIGN KEY", "constraint", "no such table")
+            assertThat(e.message).contains("FOREIGN KEY")
         }
     }
 

@@ -2,11 +2,15 @@ package com.example.fitnesstrackerapp.data
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.example.fitnesstrackerapp.settings.MeasurementUnit
 import com.example.fitnesstrackerapp.settings.SettingsManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,371 +35,179 @@ class SettingsManagerTest {
     }
 
     @Test
-    fun `getDarkModeEnabled returns default value initially`() = runTest {
+    fun `themeMode returns default value initially`() = runTest {
         // When
-        val darkMode = settingsManager.getDarkModeEnabled().first()
+        val themeMode = settingsManager.themeMode.first()
 
         // Then
-        // Should return system default or false (implementation dependent)
-        assertNotNull("Dark mode setting should not be null", darkMode)
+        // Should return system default
+        assertNotNull("Theme mode setting should not be null", themeMode)
+        assertEquals("Should default to system", "system", themeMode)
     }
 
     @Test
-    fun `setDarkModeEnabled updates setting correctly`() = runTest {
+    fun `updateThemeMode updates setting correctly`() = runTest {
         // Given
-        val newValue = true
+        val newValue = "dark"
 
         // When
-        settingsManager.setDarkModeEnabled(newValue)
-        val result = settingsManager.getDarkModeEnabled().first()
+        settingsManager.updateThemeMode(newValue)
+        val result = settingsManager.themeMode.first()
 
         // Then
-        assertEquals("Dark mode should be updated", newValue, result)
+        assertEquals("Theme mode should be updated", newValue, result)
     }
 
     @Test
-    fun `getNotificationsEnabled returns default value initially`() = runTest {
+    fun `notificationEnabled returns default value initially`() = runTest {
         // When
-        val notifications = settingsManager.getNotificationsEnabled().first()
+        val notifications = settingsManager.notificationEnabled.first()
 
         // Then
         assertNotNull("Notifications setting should not be null", notifications)
+        assertTrue("Should default to enabled", notifications)
     }
 
     @Test
-    fun `setNotificationsEnabled updates setting correctly`() = runTest {
+    fun `updateNotificationsEnabled updates setting correctly`() = runTest {
         // Given
         val newValue = false
 
         // When
-        settingsManager.setNotificationsEnabled(newValue)
-        val result = settingsManager.getNotificationsEnabled().first()
+        settingsManager.updateNotificationsEnabled(newValue)
+        val result = settingsManager.notificationEnabled.first()
 
         // Then
         assertEquals("Notifications should be updated", newValue, result)
     }
 
     @Test
-    fun `getStepGoal returns default value initially`() = runTest {
+    fun `stepGoal returns default value initially`() = runTest {
         // When
-        val stepGoal = settingsManager.getStepGoal().first()
+        val stepGoal = settingsManager.stepGoal.first()
 
         // Then
         assertTrue("Step goal should be positive", stepGoal > 0)
-        assertTrue("Step goal should be reasonable", stepGoal <= 50000)
+        assertEquals("Should default to 10000", 10000, stepGoal)
     }
 
     @Test
-    fun `setStepGoal updates setting correctly`() = runTest {
+    fun `updateStepGoal updates setting correctly`() = runTest {
         // Given
         val newGoal = 12000
 
         // When
-        settingsManager.setStepGoal(newGoal)
-        val result = settingsManager.getStepGoal().first()
+        settingsManager.updateStepGoal(newGoal)
+        val result = settingsManager.stepGoal.first()
 
         // Then
         assertEquals("Step goal should be updated", newGoal, result)
     }
 
     @Test
-    fun `getWeightUnit returns default value initially`() = runTest {
+    fun `measurementUnit returns default value initially`() = runTest {
         // When
-        val weightUnit = settingsManager.getWeightUnit().first()
+        val measurementUnit = settingsManager.measurementUnit.first()
 
         // Then
-        assertNotNull("Weight unit should not be null", weightUnit)
+        assertNotNull("Measurement unit should not be null", measurementUnit)
         assertTrue(
-            "Weight unit should be valid",
-            weightUnit == "kg" || weightUnit == "lbs",
+            "Measurement unit should be valid",
+            measurementUnit.name == "METRIC" || measurementUnit.name == "IMPERIAL",
         )
     }
 
     @Test
-    fun `setWeightUnit updates setting correctly`() = runTest {
+    fun `updateMeasurementUnit updates setting correctly`() = runTest {
         // Given
-        val newUnit = "lbs"
+        val newUnit = MeasurementUnit.IMPERIAL
 
         // When
-        settingsManager.setWeightUnit(newUnit)
-        val result = settingsManager.getWeightUnit().first()
+        settingsManager.updateMeasurementUnit(newUnit)
+        val result = settingsManager.measurementUnit.first()
 
         // Then
-        assertEquals("Weight unit should be updated", newUnit, result)
+        assertEquals("Measurement unit should be updated", newUnit, result)
     }
 
     @Test
-    fun `getDistanceUnit returns default value initially`() = runTest {
+    fun `dailyCalorieTarget returns default value initially`() = runTest {
         // When
-        val distanceUnit = settingsManager.getDistanceUnit().first()
+        val calorieTarget = settingsManager.dailyCalorieTarget.first()
 
         // Then
-        assertNotNull("Distance unit should not be null", distanceUnit)
-        assertTrue(
-            "Distance unit should be valid",
-            distanceUnit == "km" || distanceUnit == "miles",
-        )
+        assertTrue("Calorie target should be positive", calorieTarget > 0)
+        assertEquals("Should default to 2000", 2000, calorieTarget)
     }
 
     @Test
-    fun `setDistanceUnit updates setting correctly`() = runTest {
+    fun `updateDailyCalorieTarget updates setting correctly`() = runTest {
         // Given
-        val newUnit = "miles"
+        val newTarget = 2500
 
         // When
-        settingsManager.setDistanceUnit(newUnit)
-        val result = settingsManager.getDistanceUnit().first()
+        settingsManager.updateDailyCalorieTarget(newTarget)
+        val result = settingsManager.dailyCalorieTarget.first()
 
         // Then
-        assertEquals("Distance unit should be updated", newUnit, result)
+        assertEquals("Calorie target should be updated", newTarget, result)
     }
 
     @Test
-    fun `getAutoBackup returns default value initially`() = runTest {
+    fun `workoutReminders returns default value initially`() = runTest {
         // When
-        val autoBackup = settingsManager.getAutoBackup().first()
+        val workoutReminders = settingsManager.workoutReminders.first()
 
         // Then
-        assertNotNull("Auto backup setting should not be null", autoBackup)
+        assertNotNull("Workout reminders setting should not be null", workoutReminders)
+        assertTrue("Should default to enabled", workoutReminders)
     }
 
     @Test
-    fun `setAutoBackup updates setting correctly`() = runTest {
+    fun `updateWorkoutReminders updates setting correctly`() = runTest {
         // Given
-        val newValue = true
+        val newValue = false
 
         // When
-        settingsManager.setAutoBackup(newValue)
-        val result = settingsManager.getAutoBackup().first()
+        settingsManager.updateWorkoutReminders(newValue)
+        val result = settingsManager.workoutReminders.first()
 
         // Then
-        assertEquals("Auto backup should be updated", newValue, result)
+        assertEquals("Workout reminders should be updated", newValue, result)
     }
 
     @Test
-    fun `getPrivacyMode returns default value initially`() = runTest {
+    fun `notificationTime returns default value initially`() = runTest {
         // When
-        val privacyMode = settingsManager.getPrivacyMode().first()
+        val notificationTime = settingsManager.notificationTime.first()
 
         // Then
-        assertNotNull("Privacy mode setting should not be null", privacyMode)
+        assertNotNull("Notification time should not be null", notificationTime)
+        assertEquals("Should default to 09:00", "09:00", notificationTime)
     }
 
     @Test
-    fun `setPrivacyMode updates setting correctly`() = runTest {
+    fun `updateNotificationTime updates setting correctly`() = runTest {
         // Given
-        val newValue = true
+        val newTime = "18:30"
 
         // When
-        settingsManager.setPrivacyMode(newValue)
-        val result = settingsManager.getPrivacyMode().first()
+        settingsManager.updateNotificationTime(newTime)
+        val result = settingsManager.notificationTime.first()
 
         // Then
-        assertEquals("Privacy mode should be updated", newValue, result)
-    }
-
-    @Test
-    fun `getLanguage returns default value initially`() = runTest {
-        // When
-        val language = settingsManager.getLanguage().first()
-
-        // Then
-        assertNotNull("Language should not be null", language)
-        assertTrue("Language should not be empty", language.isNotEmpty())
-    }
-
-    @Test
-    fun `setLanguage updates setting correctly`() = runTest {
-        // Given
-        val newLanguage = "es"
-
-        // When
-        settingsManager.setLanguage(newLanguage)
-        val result = settingsManager.getLanguage().first()
-
-        // Then
-        assertEquals("Language should be updated", newLanguage, result)
-    }
-
-    @Test
-    fun `exportSettings returns valid JSON`() = runTest {
-        // Given - Set some values
-        settingsManager.setDarkModeEnabled(true)
-        settingsManager.setStepGoal(15000)
-        settingsManager.setWeightUnit("lbs")
-
-        // When
-        val exportedSettings = settingsManager.exportSettings()
-
-        // Then
-        assertNotNull("Exported settings should not be null", exportedSettings)
-        assertTrue("Exported settings should not be empty", exportedSettings.isNotEmpty())
-        assertTrue("Should contain JSON brackets", exportedSettings.contains("{") && exportedSettings.contains("}"))
-    }
-
-    @Test
-    fun `importSettings restores settings from JSON`() = runTest {
-        // Given - Set initial values
-        settingsManager.setDarkModeEnabled(false)
-        settingsManager.setStepGoal(10000)
-
-        // Export current settings
-        val originalSettings = settingsManager.exportSettings()
-
-        // Change values
-        settingsManager.setDarkModeEnabled(true)
-        settingsManager.setStepGoal(20000)
-
-        // When - Import original settings
-        val success = settingsManager.importSettings(originalSettings)
-
-        // Then
-        assertTrue("Import should succeed", success)
-        // Values should be restored (this test verifies the method works, not specific values)
-    }
-
-    @Test
-    fun `importSettings handles invalid JSON`() = runTest {
-        // Given
-        val invalidJson = "not valid json"
-
-        // When
-        val success = settingsManager.importSettings(invalidJson)
-
-        // Then
-        assertFalse("Import should fail for invalid JSON", success)
-    }
-
-    @Test
-    fun `resetToDefaults resets all settings`() = runTest {
-        // Given - Set some custom values
-        settingsManager.setDarkModeEnabled(true)
-        settingsManager.setStepGoal(20000)
-        settingsManager.setWeightUnit("lbs")
-        settingsManager.setNotificationsEnabled(false)
-
-        // When
-        settingsManager.resetToDefaults()
-
-        // Then - Values should be reset (verify at least one to ensure method works)
-        val stepGoal = settingsManager.getStepGoal().first()
-        // Step goal should be reset to some default value
-        assertTrue("Step goal should be reset to reasonable default", stepGoal in 5000..15000)
-    }
-
-    @Test
-    fun `getSetting returns correct value for existing key`() = runTest {
-        // Given
-        settingsManager.setStepGoal(12345)
-
-        // When
-        val value = settingsManager.getSetting("step_goal", 0)
-
-        // Then
-        assertEquals("Should return stored step goal", 12345, value)
-    }
-
-    @Test
-    fun `getSetting returns default for non-existing key`() = runTest {
-        // Given
-        val defaultValue = 999
-
-        // When
-        val value = settingsManager.getSetting("non_existing_key", defaultValue)
-
-        // Then
-        assertEquals("Should return default value", defaultValue, value)
-    }
-
-    @Test
-    fun `setSetting stores value correctly`() = runTest {
-        // Given
-        val key = "custom_setting"
-        val value = "custom_value"
-
-        // When
-        settingsManager.setSetting(key, value)
-        val retrieved = settingsManager.getSetting(key, "")
-
-        // Then
-        assertEquals("Should store and retrieve custom setting", value, retrieved)
-    }
-
-    @Test
-    fun `getSettingFlow emits current and updated values`() = runTest {
-        // Given
-        val key = "test_flow_key"
-        val initialValue = "initial"
-        val updatedValue = "updated"
-
-        settingsManager.setSetting(key, initialValue)
-
-        // When
-        val flow = settingsManager.getSettingFlow(key, "default")
-        val initial = flow.first()
-
-        // Update the value
-        settingsManager.setSetting(key, updatedValue)
-        val updated = flow.first()
-
-        // Then
-        assertEquals("Should emit initial value", initialValue, initial)
-        assertEquals("Should emit updated value", updatedValue, updated)
-    }
-
-    // API Surface Tests - Ensure methods exist and have correct signatures
-    @Test
-    fun `SettingsManager API surface test`() {
-        // Test that all expected public methods exist with correct signatures
-        try {
-            // Boolean settings
-            settingsManager.getDarkModeEnabled()
-            settingsManager.setDarkModeEnabled(true)
-            settingsManager.getNotificationsEnabled()
-            settingsManager.setNotificationsEnabled(true)
-            settingsManager.getAutoBackup()
-            settingsManager.setAutoBackup(true)
-            settingsManager.getPrivacyMode()
-            settingsManager.setPrivacyMode(true)
-
-            // Numeric settings
-            settingsManager.getStepGoal()
-            settingsManager.setStepGoal(10000)
-
-            // String settings
-            settingsManager.getWeightUnit()
-            settingsManager.setWeightUnit("kg")
-            settingsManager.getDistanceUnit()
-            settingsManager.setDistanceUnit("km")
-            settingsManager.getLanguage()
-            settingsManager.setLanguage("en")
-
-            // Generic settings
-            settingsManager.getSetting("key", "default")
-            settingsManager.setSetting("key", "value")
-            settingsManager.getSettingFlow("key", "default")
-
-            // Import/Export
-            settingsManager.exportSettings()
-            settingsManager.importSettings("{}")
-            settingsManager.resetToDefaults()
-
-            // Success - API surface is stable
-            assertTrue(true)
-        } catch (e: NoSuchMethodError) {
-            fail("API surface has changed: ${e.message}")
-        }
+        assertEquals("Notification time should be updated", newTime, result)
     }
 
     @Test
     fun `settings persist across manager instances`() = runTest {
         // Given
         val testValue = 12345
-        settingsManager.setStepGoal(testValue)
+        settingsManager.updateStepGoal(testValue)
 
         // When - Create new manager instance
         val newSettingsManager = SettingsManager(context)
-        val retrievedValue = newSettingsManager.getStepGoal().first()
+        val retrievedValue = newSettingsManager.stepGoal.first()
 
         // Then
         assertEquals("Settings should persist across instances", testValue, retrievedValue)
@@ -407,8 +219,8 @@ class SettingsManagerTest {
         val updates = listOf(5000, 8000, 12000, 15000)
 
         // When
-        updates.forEach { settingsManager.setStepGoal(it) }
-        val finalValue = settingsManager.getStepGoal().first()
+        updates.forEach { settingsManager.updateStepGoal(it) }
+        val finalValue = settingsManager.stepGoal.first()
 
         // Then
         assertEquals("Should have final updated value", updates.last(), finalValue)
@@ -417,19 +229,49 @@ class SettingsManagerTest {
     @Test
     fun `boolean settings handle toggle correctly`() = runTest {
         // Given
-        val initialValue = settingsManager.getDarkModeEnabled().first()
+        val initialValue = settingsManager.notificationEnabled.first()
 
         // When - Toggle
-        settingsManager.setDarkModeEnabled(!initialValue)
-        val toggledValue = settingsManager.getDarkModeEnabled().first()
+        settingsManager.updateNotificationsEnabled(!initialValue)
+        val toggledValue = settingsManager.notificationEnabled.first()
 
         // Toggle back
-        settingsManager.setDarkModeEnabled(initialValue)
-        val restoredValue = settingsManager.getDarkModeEnabled().first()
+        settingsManager.updateNotificationsEnabled(initialValue)
+        val restoredValue = settingsManager.notificationEnabled.first()
 
         // Then
         assertEquals("Should toggle correctly", !initialValue, toggledValue)
         assertEquals("Should restore correctly", initialValue, restoredValue)
+    }
+
+    // API Surface Tests - Ensure methods exist and have correct signatures
+    @Test
+    fun `SettingsManager API surface test`() = runTest {
+        // Test that all expected public methods exist with correct signatures
+        try {
+            // Flow properties
+            settingsManager.measurementUnit
+            settingsManager.dailyCalorieTarget
+            settingsManager.stepGoal
+            settingsManager.workoutReminders
+            settingsManager.notificationEnabled
+            settingsManager.notificationTime
+            settingsManager.themeMode
+
+            // Update methods
+            settingsManager.updateMeasurementUnit(MeasurementUnit.METRIC)
+            settingsManager.updateDailyCalorieTarget(2000)
+            settingsManager.updateStepGoal(10000)
+            settingsManager.updateWorkoutReminders(true)
+            settingsManager.updateNotificationsEnabled(true)
+            settingsManager.updateNotificationTime("09:00")
+            settingsManager.updateThemeMode("system")
+
+            // Success - API surface is stable
+            assertTrue(true)
+        } catch (e: NoSuchMethodError) {
+            fail("API surface has changed: ${e.message}")
+        }
     }
 
     @Test
@@ -438,8 +280,8 @@ class SettingsManagerTest {
         val emptyString = ""
 
         // When
-        settingsManager.setLanguage(emptyString)
-        val result = settingsManager.getLanguage().first()
+        settingsManager.updateNotificationTime(emptyString)
+        val result = settingsManager.notificationTime.first()
 
         // Then
         assertEquals("Should handle empty string", emptyString, result)
@@ -452,11 +294,11 @@ class SettingsManagerTest {
         val maxValue = 100000
 
         // When
-        settingsManager.setStepGoal(minValue)
-        val minResult = settingsManager.getStepGoal().first()
+        settingsManager.updateStepGoal(minValue)
+        val minResult = settingsManager.stepGoal.first()
 
-        settingsManager.setStepGoal(maxValue)
-        val maxResult = settingsManager.getStepGoal().first()
+        settingsManager.updateStepGoal(maxValue)
+        val maxResult = settingsManager.stepGoal.first()
 
         // Then
         assertEquals("Should handle minimum value", minValue, minResult)

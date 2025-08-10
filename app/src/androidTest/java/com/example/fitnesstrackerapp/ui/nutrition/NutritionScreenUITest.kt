@@ -1,12 +1,12 @@
+package com.example.fitnesstrackerapp.ui.nutrition
+
 /**
  * Simplified UI tests for NutritionScreen
- * 
+ *
  * Note: Complex ViewModel dependencies have been simplified to avoid compilation issues
  * with AuthViewModel setup. Tests use placeholder assertions to maintain test structure
  * while ensuring compilation success.
  */
-
-package com.example.fitnesstrackerapp.ui.nutrition
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class NutritionScreenUITest {
@@ -131,7 +131,7 @@ class NutritionScreenUITest {
             fiberGrams = fiberGrams,
             sugarGrams = sugarGrams,
             mealType = mealType,
-            dateConsumed = dateConsumed
+            dateConsumed = dateConsumed,
         )
     }
 }
