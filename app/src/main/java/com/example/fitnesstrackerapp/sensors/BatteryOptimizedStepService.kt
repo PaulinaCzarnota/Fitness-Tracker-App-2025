@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.sensors
+
 /**
  * Battery-Optimized Step Counter Service
  *
@@ -9,7 +11,6 @@
  * - Service binding for UI integration and live updates
  * - Automatic goal tracking with achievement notifications
  */
-package com.example.fitnesstrackerapp.sensors
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -688,4 +689,3 @@ data class StepDataPoint(
     val calories: Float,
     val distance: Float,
 )
-

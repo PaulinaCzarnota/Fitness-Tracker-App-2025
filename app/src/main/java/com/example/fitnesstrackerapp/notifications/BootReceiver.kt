@@ -1,3 +1,5 @@
+package com.example.fitnesstrackerapp.notifications
+
 /**
  * BootReceiver BroadcastReceiver for the Fitness Tracker application.
  *
@@ -13,8 +15,6 @@
  * - Maintains user notification schedules across reboots
  */
 
-package com.example.fitnesstrackerapp.notifications
-
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -26,8 +26,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * BroadcastReceiver for handling device boot events.
- *
  * This receiver is triggered when the device finishes booting and
  * re-establishes all scheduled alarms and notifications that were
  * cleared during the reboot process. It ensures continuity of
