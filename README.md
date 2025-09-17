@@ -8,8 +8,6 @@
 
 **Due Date:** 11/08/2025
 
----
-
 ## Project Overview
 
 A comprehensive Android fitness tracking application built with Kotlin and Jetpack Compose that enables users to track workouts, set goals, monitor nutrition, and maintain a healthy lifestyle. The app is designed as a minimum viable product ready for Google Play Store deployment.
@@ -111,7 +109,5 @@ app/
 ## License
 
 This project is developed as part of TU856/3 Mobile Software Development coursework at TU Dublin.
-
----
 
 **Fitness Tracker App** - A comprehensive Android fitness tracking solution built with modern development practices and ready for production deployment.
