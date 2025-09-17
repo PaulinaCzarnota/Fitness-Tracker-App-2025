@@ -1,8 +1,11 @@
 # Fitness Tracker App
 
 **Author:** Paulina Czarnota
+
 **Student Number:** C21365726
+
 **Course/Module:** TU856/3 Mobile Software Development
+
 **Due Date:** 11/08/2025
 
 ---
