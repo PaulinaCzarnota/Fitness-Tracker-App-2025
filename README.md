@@ -1,18 +1,8 @@
-# Fitness Tracker App
-
-**Author:** Paulina Czarnota
-
-**Student Number:** C21365726
-
-**Course/Module:** TU856/3 Mobile Software Development
-
-**Due Date:** 11/08/2025
-
-## Project Overview
+# Project Overview
 
 A comprehensive Android fitness tracking application built with Kotlin and Jetpack Compose that enables users to track workouts, set goals, monitor nutrition, and maintain a healthy lifestyle. The app is designed as a minimum viable product ready for Google Play Store deployment.
 
-## Core Features
+# Core Features
 
 ### ✅ 1. User Authentication
 - Email/password authentication with biometric support
@@ -38,7 +28,7 @@ A comprehensive Android fitness tracking application built with Kotlin and Jetpa
 - Food logging with comprehensive nutritional information
 - Macro tracking and daily nutrition summaries
 
-## Technical Stack
+# Technical Stack
 
 - **Language:** Kotlin
 - **UI Framework:** Jetpack Compose with Material 3 Design
@@ -48,7 +38,7 @@ A comprehensive Android fitness tracking application built with Kotlin and Jetpa
 - **Security:** Android Keystore, PBKDF2 password hashing
 - **Background Processing:** WorkManager for notifications and step tracking
 
-## Getting Started
+# Getting Started
 
 ### Prerequisites
 - Android Studio Arctic Fox or later
@@ -73,23 +63,6 @@ A comprehensive Android fitness tracking application built with Kotlin and Jetpa
 ./gradlew connectedAndroidTest  # Instrumented tests
 ```
 
-## Project Structure
-```
-app/
-├── src/main/java/com/example/fitnesstrackerapp/
-│   ├── ui/                    # Jetpack Compose UI components
-│   ├── viewmodel/            # MVVM ViewModels
-│   ├── repository/           # Data repositories
-│   ├── data/                 # Database entities and DAOs
-│   ├── auth/                 # Authentication components
-│   ├── sensors/              # Sensor integration
-│   ├── notification/         # Notification management
-│   └── util/                 # Utility classes
-├── src/test/                 # Unit tests
-├── src/androidTest/          # Instrumented tests
-└── build.gradle.kts          # Build configuration
-```
-
 ## Assignment Compliance
 
 ### Requirements Met
@@ -105,9 +78,3 @@ app/
 - ✅ **97/97 tests passed** (100% success rate)
 - ✅ **87% code coverage** across all modules
 - ✅ **Comprehensive testing:** Unit, integration, UI, and security tests
-
-## License
-
-This project is developed as part of TU856/3 Mobile Software Development coursework at TU Dublin.
-
-**Fitness Tracker App** - A comprehensive Android fitness tracking solution built with modern development practices and ready for production deployment.
